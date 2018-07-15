@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Kino;
+using UnityEngine;
 
 public class PointCloudGPU : MonoBehaviour {
 
@@ -10,6 +11,8 @@ public class PointCloudGPU : MonoBehaviour {
     int width = 0;
     int height = 0;
     float valueNN = 0;
+    Feedback feedback;
+    GlitchFx glitch;
 
     private void Awake()
     {
@@ -19,7 +22,8 @@ public class PointCloudGPU : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-		
+        feedback = FindObjectOfType<Feedback>();
+        glitch = FindObjectOfType<GlitchFx>();
 	}
 	
 	// Update is called once per frame
@@ -59,8 +63,19 @@ public class PointCloudGPU : MonoBehaviour {
     {
         if (valueNN < 0.975)
         {
+            if (!feedback.enabled)
+                feedback.enabled = true;
+            if (!glitch.enabled)
+                glitch.enabled = true;
             matPointCloud.SetPass(0);
             Graphics.DrawProcedural(MeshTopology.Points, 1, width * height);
+        }
+        else 
+        {
+            if (feedback.enabled)
+                feedback.enabled = false;
+            if (glitch.enabled)
+                glitch.enabled = false;
         }
     }
 

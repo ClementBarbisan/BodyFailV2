@@ -112,7 +112,7 @@ public class GlitchFx : MonoBehaviour
         if ((frameCount % 73) == 0) Graphics.Blit(source, oldFrame2);
 
         // Set up the material.
-        material.SetFloat("_Intensity", _intensity);
+        material.SetFloat("_Intensity", PointCloudGPU.Instance.matPointCloud.GetFloat("_Value"));
         material.SetTexture("_GlitchTex", noiseTexture);
         material.SetTexture("_BufferTex", Random.value > 0.5f ? oldFrame1 : oldFrame2);
 
