@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 38ec2ebb3c94d8a4fb16992e5001562f
-timeCreated: 1531448103
+guid: a4be6bc17c29d5b42bc87eeb1b1a29a7
+timeCreated: 1531662931
 licenseType: Free
 PluginImporter:
   serializedVersion: 2
@@ -21,78 +21,78 @@ PluginImporter:
       second:
         enabled: 0
         settings:
-          CPU: x86
+          CPU: x86_64
           DefaultValueInitialized: true
     data:
       first:
         Facebook: Win
+      second:
+        enabled: 0
+        settings:
+          CPU: None
+    data:
+      first:
+        Facebook: Win64
       second:
         enabled: 1
         settings:
           CPU: AnyCPU
     data:
       first:
-        Facebook: Win64
+        Standalone: Linux
       second:
         enabled: 0
         settings:
           CPU: None
-    data:
-      first:
-        Standalone: Linux
-      second:
-        enabled: 1
-        settings:
-          CPU: x86
     data:
       first:
         Standalone: Linux64
       second:
-        enabled: 0
+        enabled: 1
         settings:
-          CPU: None
+          CPU: x86_64
     data:
       first:
         Standalone: LinuxUniversal
       second:
         enabled: 1
         settings:
-          CPU: x86
+          CPU: x86_64
     data:
       first:
         Standalone: OSXIntel
       second:
-        enabled: 1
+        enabled: 0
         settings:
-          CPU: AnyCPU
+          CPU: None
     data:
       first:
         Standalone: OSXIntel64
       second:
-        enabled: 0
+        enabled: 1
         settings:
-          CPU: None
+          CPU: AnyCPU
     data:
       first:
         Standalone: OSXUniversal
       second:
         enabled: 0
         settings:
-          CPU: x86
+          CPU: x86_64
     data:
       first:
         Standalone: Win
       second:
-        enabled: 1
+        enabled: 0
         settings:
-          CPU: AnyCPU
+          CPU: None
     data:
       first:
         Standalone: Win64
       second:
-        enabled: 0
+        enabled: 1
         settings:
-          CPU: None
+          CPU: AnyCPU
   userData: 
   assetBundleName: 
   assetBundleVariant: 

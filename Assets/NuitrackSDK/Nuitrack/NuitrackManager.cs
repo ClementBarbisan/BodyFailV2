@@ -12,7 +12,7 @@ public class InitEvent : UnityEvent<NuitrackInitState>
 }
 public class NuitrackManager : MonoBehaviour
 {
-    public Material mat;
+    
 	public NuitrackInitState InitState{get{return NuitrackLoader.initState;}}
     [SerializeField]bool 
     depthModuleOn = true,
@@ -36,7 +36,7 @@ public class NuitrackManager : MonoBehaviour
     static nuitrack.HandTracker handTracker;
 
     static nuitrack.DepthFrame depthFrame;
-    public static nuitrack.DepthFrame DepthFrame {get {return depthFrame;}}
+    public static nuitrack.DepthFrame frame {get {return depthFrame;}}
     static nuitrack.ColorFrame colorFrame;
     public static nuitrack.ColorFrame ColorFrame { get { return colorFrame; } }
     static nuitrack.UserFrame userFrame;
@@ -68,10 +68,7 @@ public class NuitrackManager : MonoBehaviour
     bool prevColor = false;
     bool prevGest = false;
     bool prevUser = false;
-    Vector3[] particles;
-    ComputeBuffer buffer;
-    int width = 0;
-    int height = 0;
+   
 
     public static NuitrackManager Instance
     {
@@ -104,7 +101,6 @@ public class NuitrackManager : MonoBehaviour
 	    }
 
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
-
         Application.targetFrameRate = 60;
 
         //	Debug.Log ("NuitrackStart");
@@ -218,22 +214,7 @@ public class NuitrackManager : MonoBehaviour
     {
 //        Debug.Log("Depth Update");
         depthFrame = frame;
-        if (buffer == null)
-        {
-            particles = new Vector3[frame.Cols * frame.Rows];
-            buffer = new ComputeBuffer(frame.Cols * frame.Rows, 12);
-            width = frame.Cols;
-            height = frame.Rows;
-            mat.SetBuffer("particleBuffer", buffer);
-            mat.SetInt("_Width", width);
-            mat.SetInt("_Height", height);
-        }
-        for (int i = 0; i < frame.Rows; i++)
-        {
-            for (int j = 0; j < frame.Cols; j++)
-                particles[i * frame.Cols + j] = DepthSensor.ConvertProjToRealCoords(j, i, depthFrame[i, j]).ToVector3();
-        }
-        buffer.SetData(particles);
+       
         if (onDepthUpdate != null) onDepthUpdate(depthFrame);
     }
 
@@ -394,15 +375,10 @@ public class NuitrackManager : MonoBehaviour
         handTrackerData = null;
     }
 
-    void OnRenderObject()
-    {
-        mat.SetPass(0);
-        Graphics.DrawProcedural(MeshTopology.Points, 1, width * height);
-    }
+   
 
     void OnDestroy()
     {
-        buffer.Release();
         CloseUserGen();
     }
 }

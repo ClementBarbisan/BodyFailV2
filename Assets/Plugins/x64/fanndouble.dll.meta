@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 29359c7104d99d241a7ba4055ca9c060
-timeCreated: 1531448102
+guid: d703cf3c49349f54c904bb1027abd0a6
+timeCreated: 1531662931
 licenseType: Free
 PluginImporter:
   serializedVersion: 2
@@ -11,29 +11,6 @@ PluginImporter:
   platformData:
     data:
       first:
-        '': Any
-      second:
-        enabled: 0
-        settings:
-          Exclude Editor: 0
-          Exclude Linux: 0
-          Exclude Linux64: 0
-          Exclude LinuxUniversal: 0
-          Exclude OSXIntel: 0
-          Exclude OSXIntel64: 0
-          Exclude OSXUniversal: 0
-          Exclude Win: 0
-          Exclude Win64: 0
-    data:
-      first:
-        '': Editor
-      second:
-        enabled: 0
-        settings:
-          CPU: AnyCPU
-          OS: AnyOS
-    data:
-      first:
         Any: 
       second:
         enabled: 1
@@ -42,7 +19,7 @@ PluginImporter:
       first:
         Editor: Editor
       second:
-        enabled: 1
+        enabled: 0
         settings:
           CPU: x86_64
           DefaultValueInitialized: true
@@ -52,7 +29,7 @@ PluginImporter:
       second:
         enabled: 0
         settings:
-          CPU: AnyCPU
+          CPU: None
     data:
       first:
         Facebook: Win64
@@ -64,7 +41,7 @@ PluginImporter:
       first:
         Standalone: Linux
       second:
-        enabled: 1
+        enabled: 0
         settings:
           CPU: None
     data:
@@ -80,12 +57,12 @@ PluginImporter:
       second:
         enabled: 1
         settings:
-          CPU: AnyCPU
+          CPU: x86_64
     data:
       first:
         Standalone: OSXIntel
       second:
-        enabled: 1
+        enabled: 0
         settings:
           CPU: None
     data:
@@ -99,16 +76,16 @@ PluginImporter:
       first:
         Standalone: OSXUniversal
       second:
-        enabled: 1
+        enabled: 0
         settings:
-          CPU: AnyCPU
+          CPU: x86_64
     data:
       first:
         Standalone: Win
       second:
-        enabled: 1
+        enabled: 0
         settings:
-          CPU: AnyCPU
+          CPU: None
     data:
       first:
         Standalone: Win64
