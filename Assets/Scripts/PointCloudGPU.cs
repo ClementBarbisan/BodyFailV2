@@ -8,6 +8,7 @@ public class PointCloudGPU : MonoBehaviour {
     [HideInInspector]
     public Vector3[] particles;
     ComputeBuffer buffer;
+    Texture2D texture;
     int width = 0;
     int height = 0;
     float valueNN = 0;
@@ -18,6 +19,7 @@ public class PointCloudGPU : MonoBehaviour {
     {
         Instance = this;
         NuitrackManager.DepthSensor.OnUpdateEvent += HandleOnDepthSensorUpdateEvent;
+        NuitrackManager.ColorSensor.OnUpdateEvent += HandleOnColorSensorUpdateEvent;
     }
 
     // Use this for initialization
@@ -25,9 +27,22 @@ public class PointCloudGPU : MonoBehaviour {
         feedback = FindObjectOfType<Feedback>();
         glitch = FindObjectOfType<GlitchFx>();
 	}
-	
-	// Update is called once per frame
-	void HandleOnDepthSensorUpdateEvent(nuitrack.DepthFrame frame) {
+
+    void HandleOnColorSensorUpdateEvent(nuitrack.ColorFrame frame)
+    {
+        if (texture == null)
+        {
+            nuitrack.OutputMode ouput = NuitrackManager.ColorSensor.GetOutputMode();
+            texture = new Texture2D(ouput.XRes, ouput.YRes, TextureFormat.RGB24, false);
+            matPointCloud.SetTexture("_MainTex", texture);
+        }
+        texture.LoadRawTextureData(frame.Data);
+        texture.Apply();
+    }
+
+
+        // Update is called once per frame
+    void HandleOnDepthSensorUpdateEvent(nuitrack.DepthFrame frame) {
         if (buffer == null)
         {
             particles = new Vector3[frame.Cols * frame.Rows];

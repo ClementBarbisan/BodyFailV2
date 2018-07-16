@@ -6,6 +6,7 @@ Shader "Particle"
 {
 	Properties
 	{
+		_MainTex("Main Texture", 2D) = "white" {}
 		_Value("Detect Disruption", Range(0,1)) = 0.0
 	}
 
@@ -38,6 +39,8 @@ Shader "Particle"
 			StructuredBuffer<float3> particleBuffer;
 			StructuredBuffer<int> segmentBuffer;
 			
+			sampler2D _MainTex;
+
 			// Properties variables
 			uniform int _Width;
 			uniform int _Height;
@@ -57,9 +60,9 @@ Shader "Particle"
 			{
 				PS_INPUT o = (PS_INPUT)0;
 				// Position
-				o.position = float4(sin(particleBuffer[instance_id].y * instance_id * _Time.y) * cos(particleBuffer[instance_id].x * instance_id * _Time.y), sin(particleBuffer[instance_id].z * instance_id * _Time.y) * sin(particleBuffer[instance_id].y * instance_id * _Time.y), sin(particleBuffer[instance_id].x * instance_id * _Time.y) * cos(particleBuffer[instance_id].z * instance_id * _Time.y), 1.0f) * 100 * _Value + float4(particleBuffer[instance_id], 1.0f);
+				o.position = float4(sin(particleBuffer[instance_id].y * instance_id * _Time.y) * cos(particleBuffer[instance_id].x * instance_id * _Time.y), sin(particleBuffer[instance_id].z * instance_id * _Time.y) * sin(particleBuffer[instance_id].y * instance_id * _Time.y), sin(particleBuffer[instance_id].x * instance_id * _Time.y) * cos(particleBuffer[instance_id].z * instance_id * _Time.y), 1.0f) * 100 * _Value + float4(particleBuffer[instance_id].x, particleBuffer[instance_id].y, particleBuffer[instance_id].z, 1.0f);
 				o.instance = int(instance_id);
-				o.keep.y = pow(1.0 - (o.position.z - _MinZ) / (_MaxZ - _MinZ), 2);
+				//o.keep.y = pow(1.0 - (o.position.z - _MinZ) / (_MaxZ - _MinZ), 2);
 				if (segmentBuffer[instance_id] == 0 || o.position.z == 0 || ((instance_id / _Width) % 20 != 0 && segmentBuffer[instance_id - 1] == 1 && segmentBuffer[instance_id + 1] == 1 && segmentBuffer[instance_id - _Width] == 1 && segmentBuffer[instance_id + _Width] == 1))
 				{
 					o.keep.x = 0;
@@ -86,14 +89,14 @@ Shader "Particle"
 				o.keep.y = p[0].keep.y;
 				float4 position = float4(p[0].position.x + rand(float2(p[0].position.z, o.instance) - 0.5f) * 1000.0f * _Value, p[0].position.y + rand(float2(p[0].position.x, o.instance) - 0.5f) * 1000.0f * _Value, p[0].position.z + rand(float2(p[0].position.y, o.instance) - 0.5f) * 1000.0f * _Value, p[0].position.w);
 				float4 positionZ = float4(p[0].position.x + rand(float2(o.instance, p[0].position.y) - 0.5f) * 1000.0f * _Value, p[0].position.y + rand(float2(o.instance, p[0].position.z) - 0.5f) * 1000.0f * _Value, p[0].position.z + rand(float2(o.instance, p[0].position.x) - 0.5f) * 1000.0f * _Value, p[0].position.w);
-				float size = 1 + clamp(rand(float2(o.instance, _Time.y)) * 100.0f * _Value, 0, 100);
+				float size = 5 + clamp(rand(float2(o.instance, _Time.y)) * 100.0f * _Value, 0, 100);
 				if (p[0].keep.x == 1)
 					size = clamp(rand(float2(o.instance, _Time.y)) * 100.0f * _Value, 5, 100);
-				float4 B = float4(size * 5, 0, 0, 0);
+				float4 B = float4(size * (5 * _Value + 1), 0, 0, 0);
 				float4 C = float4(0, 0, -size, 0);
-				float4 D = float4(size * 5, 0, -size, 0);
-				float4 E = float4(size * 5, -size, -size, 0);
-				float4 F = float4(size * 5, -size, 0, 0);
+				float4 D = float4(size * (5 * _Value + 1), 0, -size, 0);
+				float4 E = float4(size * (5 * _Value + 1), -size, -size, 0);
+				float4 F = float4(size * (5 * _Value + 1), -size, 0, 0);
 				float4 G = float4(0, -size, 0, 0);
 				float4 H = float4(0, -size, -size, 0);
 				o.position = UnityObjectToClipPos(position);
@@ -152,6 +155,11 @@ Shader "Particle"
 				triStream.RestartStrip();
 			}
 
+			float CalcLuminance(float3 color)
+			{
+				return dot(color, float3(0.299f, 0.587f, 0.114f)) * 3;
+			}
+
 			// Pixel shader
 			float4 frag(PS_INPUT i) : COLOR
 			{
@@ -160,7 +168,7 @@ Shader "Particle"
 					discard;
 					return (float4(0, 0, 0, 0));
 				}
-				return (float4(1.0f, 1.0f, 1.0f, 1.0f) * i.keep.y);
+				return (float4(1.0f, 1.0f, 1.0f, 1.0f) * (1.0f - i.position.z / i.position.w) * CalcLuminance(tex2D(_MainTex, float2(i.instance % _Width / _Width, i.instance / _Width / _Height)).xyz));// *i.keep.y);
 			}
 			
 			ENDCG

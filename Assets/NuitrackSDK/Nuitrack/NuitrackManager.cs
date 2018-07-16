@@ -30,6 +30,7 @@ public class NuitrackManager : MonoBehaviour
     static nuitrack.DepthSensor depthSensor;
     public static nuitrack.DepthSensor DepthSensor { get { return depthSensor; } }
     static nuitrack.ColorSensor colorSensor;
+    public static nuitrack.ColorSensor ColorSensor { get { return colorSensor; } }
     static nuitrack.UserTracker userTracker;
     static nuitrack.SkeletonTracker skeletonTracker;
     static nuitrack.GestureRecognizer gestureRecognizer;

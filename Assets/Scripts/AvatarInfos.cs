@@ -120,5 +120,6 @@ public class AvatarInfos : MonoBehaviour
                     CreatedJoint[q].SetActive(false);
                 }
             }
+        }
     }
 }

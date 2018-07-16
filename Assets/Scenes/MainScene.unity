@@ -133,8 +133,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 3943555}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1, y: 3.96, z: 10}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -31.42, y: 57.96, z: 100}
+  m_LocalScale: {x: 2.7519457, y: 2.7519467, z: 2.7519467}
   m_Children: []
   m_Father: {fileID: 195956914}
   m_RootOrder: 0
@@ -153,7 +153,7 @@ TextMesh:
   m_Anchor: 0
   m_Alignment: 0
   m_TabSize: 4
-  m_FontSize: 7
+  m_FontSize: 36
   m_FontStyle: 0
   m_RichText: 1
   m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
@@ -242,7 +242,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57d907774621725489798ae3309972cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  samples: 50
 --- !u!114 &195956912
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -278,9 +277,9 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.1
-  far clip plane: 10000
-  field of view: 45
+  near clip plane: 100
+  far clip plane: 4000
+  field of view: 60
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -305,7 +304,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 195956909}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -320}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3943556}
@@ -342,6 +341,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   matPointCloud: {fileID: 2100000, guid: b25c5885fb1136640b15c8e56082697f, type: 2}
   particles: []
+  colors: []
 --- !u!1 &367775946
 GameObject:
   m_ObjectHideFlags: 0

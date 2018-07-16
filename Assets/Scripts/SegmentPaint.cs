@@ -5,13 +5,13 @@ using UnityEngine.UI;
 
 public class SegmentPaint : MonoBehaviour
 {
-    public int samples;
+    //public int samples;
     ComputeBuffer segmentBuffer;
     int[] outSegment;
     int cols = 0;
     int rows = 0;
-    List<float> minZArray;
-    List<float> maxZArray;
+    //List<float> minZArray;
+    //List<float> maxZArray;
 
     void Start()
     {
@@ -26,8 +26,8 @@ public class SegmentPaint : MonoBehaviour
         segmentBuffer = new ComputeBuffer(cols * rows, 4);
         outSegment = new int[cols * rows];
         PointCloudGPU.Instance.matPointCloud.SetBuffer("segmentBuffer", segmentBuffer);
-        minZArray = new List<float>();
-        maxZArray = new List<float>();
+        //minZArray = new List<float>();
+        //maxZArray = new List<float>();
     }
 
     void OnDestroy()
@@ -38,29 +38,29 @@ public class SegmentPaint : MonoBehaviour
 
     void ColorizeUser(nuitrack.UserFrame frame)
     {
-        float minZ = 100000;
-        float maxZ = 0;
+        //float minZ = 100000;
+        //float maxZ = 0;
         for (int i = 0; i < (cols * rows); i++)
         {
             outSegment[i] = 0;
             if (frame[i] > 0)
             {
                 outSegment[i] = 1;
-                if (PointCloudGPU.Instance.particles[i].z < minZ)
-                    minZ = PointCloudGPU.Instance.particles[i].z;
-                else if (PointCloudGPU.Instance.particles[i].z > maxZ)
-                    maxZ = PointCloudGPU.Instance.particles[i].z;
+                //if (PointCloudGPU.Instance.particles[i].z < minZ)
+                //    minZ = PointCloudGPU.Instance.particles[i].z;
+                //else if (PointCloudGPU.Instance.particles[i].z > maxZ)
+                //    maxZ = PointCloudGPU.Instance.particles[i].z;
             }
         }
-        minZArray.Add(minZ);
-        maxZArray.Add(maxZ);
-        if (minZArray.Count > samples)
-        {
-            minZArray.RemoveAt(0);
-            maxZArray.RemoveAt(0);
-        }
-        PointCloudGPU.Instance.matPointCloud.SetFloat("_MinZ", minZArray.Average());
-        PointCloudGPU.Instance.matPointCloud.SetFloat("_MaxZ", maxZArray.Average());
+        //minZArray.Add(minZ);
+        //maxZArray.Add(maxZ);
+        //if (minZArray.Count > samples)
+        //{
+        //    minZArray.RemoveAt(0);
+        //    maxZArray.RemoveAt(0);
+        //}
+        //PointCloudGPU.Instance.matPointCloud.SetFloat("_MinZ", minZArray.Average());
+        //PointCloudGPU.Instance.matPointCloud.SetFloat("_MaxZ", maxZArray.Average());
         segmentBuffer.SetData(outSegment);
     }  
 }
