@@ -84,7 +84,8 @@ Shader "Particle"
 				}
 				o.keep.x = 1;
 				o.keep.y = p[0].keep.y;
-				float4 position = float4(p[0].position.x + rand(float2(o.instance, p[0].position.y) - 0.5f) * 1000.0f * _Value, p[0].position.y + rand(float2(o.instance, p[0].position.z) - 0.5f) * 1000.0f * _Value, p[0].position.z + rand(float2(o.instance, p[0].position.x) - 0.5f) * 1000.0f * _Value, p[0].position.w);
+				float4 position = float4(p[0].position.x + rand(float2(p[0].position.z, o.instance) - 0.5f) * 1000.0f * _Value, p[0].position.y + rand(float2(p[0].position.x, o.instance) - 0.5f) * 1000.0f * _Value, p[0].position.z + rand(float2(p[0].position.y, o.instance) - 0.5f) * 1000.0f * _Value, p[0].position.w);
+				float4 positionZ = float4(p[0].position.x + rand(float2(o.instance, p[0].position.y) - 0.5f) * 1000.0f * _Value, p[0].position.y + rand(float2(o.instance, p[0].position.z) - 0.5f) * 1000.0f * _Value, p[0].position.z + rand(float2(o.instance, p[0].position.x) - 0.5f) * 1000.0f * _Value, p[0].position.w);
 				float size = 1 + clamp(rand(float2(o.instance, _Time.y)) * 100.0f * _Value, 0, 100);
 				if (p[0].keep.x == 1)
 					size = clamp(rand(float2(o.instance, _Time.y)) * 100.0f * _Value, 5, 100);
@@ -97,27 +98,27 @@ Shader "Particle"
 				float4 H = float4(0, -size, -size, 0);
 				o.position = UnityObjectToClipPos(position);
 				triStream.Append(o);
-				o.position = UnityObjectToClipPos(position + B);
+				o.position = UnityObjectToClipPos(positionZ + B);
 				triStream.Append(o);
 				o.position = UnityObjectToClipPos(position + C);
 				triStream.Append(o);
-				o.position = UnityObjectToClipPos(position + D);
+				o.position = UnityObjectToClipPos(positionZ + D);
 				triStream.Append(o);
 				triStream.RestartStrip();
-				o.position = UnityObjectToClipPos(position + D);
+				o.position = UnityObjectToClipPos(positionZ + D);
 				triStream.Append(o);
-				o.position = UnityObjectToClipPos(position + B);
+				o.position = UnityObjectToClipPos(positionZ + B);
 				triStream.Append(o);
-				o.position = UnityObjectToClipPos(position + E);
+				o.position = UnityObjectToClipPos(positionZ + E);
 				triStream.Append(o);
-				o.position = UnityObjectToClipPos(position + F);
+				o.position = UnityObjectToClipPos(positionZ + F);
 				triStream.Append(o);
 				triStream.RestartStrip();
-				o.position = UnityObjectToClipPos(position + B);
+				o.position = UnityObjectToClipPos(positionZ + B);
 				triStream.Append(o);
 				o.position = UnityObjectToClipPos(position);
 				triStream.Append(o);
-				o.position = UnityObjectToClipPos(position + F);
+				o.position = UnityObjectToClipPos(positionZ + F);
 				triStream.Append(o);
 				o.position = UnityObjectToClipPos(position + G);
 				triStream.Append(o);
@@ -135,18 +136,18 @@ Shader "Particle"
 				triStream.Append(o);
 				o.position = UnityObjectToClipPos(position + C);
 				triStream.Append(o);
-				o.position = UnityObjectToClipPos(position + E);
+				o.position = UnityObjectToClipPos(positionZ + E);
 				triStream.Append(o);
-				o.position = UnityObjectToClipPos(position + D);
+				o.position = UnityObjectToClipPos(positionZ + D);
 				triStream.Append(o);
 				triStream.RestartStrip();
 				o.position = UnityObjectToClipPos(position + G);
 				triStream.Append(o);
 				o.position = UnityObjectToClipPos(position + H);
 				triStream.Append(o);
-				o.position = UnityObjectToClipPos(position + F);
+				o.position = UnityObjectToClipPos(positionZ + F);
 				triStream.Append(o);
-				o.position = UnityObjectToClipPos(position + E);
+				o.position = UnityObjectToClipPos(positionZ + E);
 				triStream.Append(o);
 				triStream.RestartStrip();
 			}

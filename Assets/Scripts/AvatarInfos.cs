@@ -111,5 +111,14 @@ public class AvatarInfos : MonoBehaviour
                 }
             }
         }
+        else if (valueNN > 0.975)
+        {
+            for (int q = 0; q < CreatedJoint.Length; q++)
+            {
+                if (CreatedJoint[q].activeSelf)
+                {
+                    CreatedJoint[q].SetActive(false);
+                }
+            }
     }
 }
