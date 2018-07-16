@@ -277,7 +277,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 100
+  near clip plane: 0.01
   far clip plane: 4000
   field of view: 60
   orthographic: 0
@@ -341,7 +341,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   matPointCloud: {fileID: 2100000, guid: b25c5885fb1136640b15c8e56082697f, type: 2}
   particles: []
-  colors: []
 --- !u!1 &367775946
 GameObject:
   m_ObjectHideFlags: 0

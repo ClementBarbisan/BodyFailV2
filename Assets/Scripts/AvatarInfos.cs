@@ -77,7 +77,7 @@ public class AvatarInfos : MonoBehaviour
                         printCoordinates.Add("Segmentation Fault : Kernel Error");
                     if (!CreatedJoint[q].activeSelf)
                         CreatedJoint[q].SetActive(true);
-                    CreatedJoint[q].transform.localPosition = new Vector3(newPosition.x * 0.001f, newPosition.y * 0.001f, newPosition.z * 0.001f - 320f);
+                    CreatedJoint[q].transform.localPosition = new Vector3(newPosition.x * 0.001f, newPosition.y * 0.001f, newPosition.z * 0.001f);
                 }
                 else
                 {
