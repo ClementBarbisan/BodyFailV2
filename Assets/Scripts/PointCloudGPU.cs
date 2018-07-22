@@ -4,14 +4,16 @@ using UnityEngine;
 public class PointCloudGPU : MonoBehaviour {
 
     static public PointCloudGPU Instance;
+    public bool file_train = false;
     public Material matPointCloud;
+    public float valueNN = 0;
+    public float valueDisfordance = 0;
     [HideInInspector]
     public Vector3[] particles;
     ComputeBuffer buffer;
     Texture2D texture;
     int width = 0;
     int height = 0;
-    float valueNN = 0;
     Feedback feedback;
     GlitchFx glitch;
 
@@ -19,7 +21,7 @@ public class PointCloudGPU : MonoBehaviour {
     {
         Instance = this;
         NuitrackManager.DepthSensor.OnUpdateEvent += HandleOnDepthSensorUpdateEvent;
-        NuitrackManager.ColorSensor.OnUpdateEvent += HandleOnColorSensorUpdateEvent;
+        //NuitrackManager.ColorSensor.OnUpdateEvent += HandleOnColorSensorUpdateEvent;
     }
 
     // Use this for initialization
@@ -28,17 +30,17 @@ public class PointCloudGPU : MonoBehaviour {
         glitch = FindObjectOfType<GlitchFx>();
 	}
 
-    void HandleOnColorSensorUpdateEvent(nuitrack.ColorFrame frame)
-    {
-        if (texture == null)
-        {
-            nuitrack.OutputMode ouput = NuitrackManager.ColorSensor.GetOutputMode();
-            texture = new Texture2D(ouput.XRes, ouput.YRes, TextureFormat.RGB24, false);
-            matPointCloud.SetTexture("_MainTex", texture);
-        }
-        texture.LoadRawTextureData(frame.Data);
-        texture.Apply();
-    }
+    //void HandleOnColorSensorUpdateEvent(nuitrack.ColorFrame frame)
+    //{
+    //    if (texture == null)
+    //    {
+    //        nuitrack.OutputMode ouput = NuitrackManager.ColorSensor.GetOutputMode();
+    //        texture = new Texture2D(ouput.XRes, ouput.YRes, TextureFormat.RGB24, false);
+    //        matPointCloud.SetTexture("_MainTex", texture);
+    //    }
+    //    texture.LoadRawTextureData(frame.Data);
+    //    texture.Apply();
+    //}
 
 
         // Update is called once per frame
@@ -64,7 +66,7 @@ public class PointCloudGPU : MonoBehaviour {
     private void Update()
     {
         valueNN = matPointCloud.GetFloat("_Value");
-        if (Input.GetKey(KeyCode.U))
+        if (Input.GetKey(KeyCode.U) || valueDisfordance > 0.4f)
         {
             matPointCloud.SetFloat("_Value", Mathf.Clamp01(valueNN + 0.001f + Mathf.Pow(valueNN, 3)));
         }
@@ -76,7 +78,7 @@ public class PointCloudGPU : MonoBehaviour {
 
     void OnRenderObject()
     {
-        if (valueNN < 0.975)
+        if (valueNN < 0.975 && !file_train)
         {
             if (!feedback.enabled)
                 feedback.enabled = true;

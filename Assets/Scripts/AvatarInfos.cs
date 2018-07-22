@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System;
 using FANNCSharp.Float;
 using UnityEngine.UI;
+using System.IO;
 
 [AddComponentMenu("Nuitrack/Example/TranslationAvatar")]
 [RequireComponent(typeof(AudioSource))]
@@ -25,10 +26,23 @@ public class AvatarInfos : MonoBehaviour
     GameObject[] CreatedJoint;
     float valueNN = 0;
     List<String> printCoordinates;
+    List<float[]> coordinatesSave;
+    List<int> coordinatesSettings;
+    bool normal = false;
+    bool disfordant = false;
+    NeuralNet neuralNet;
 
     void Start()
     {
-
+        if (PointCloudGPU.Instance.file_train)
+        {
+            coordinatesSave = new List<float[]>();
+            coordinatesSettings = new List<int>();
+        }
+        else
+        {
+            neuralNet = new NeuralNet(Application.streamingAssetsPath + "/fann_neural_net.txt");
+        }
         CreatedJoint = new GameObject[typeJoint.Length];
         for (int q = 0; q < typeJoint.Length; q++)
         {
@@ -46,7 +60,7 @@ public class AvatarInfos : MonoBehaviour
     //        float phase = 0;
     //        for (int i = 0; i < data.Length; i++)
     //        {
-    //            data[i] = coordinates[i % coordinates.Length] * (Mathf.Sin(phase) / 5 * (1 - valueNN));
+    //            data[i] = coordinates[i % coordinates.Length] * (Mathf.Cos(phase) * 0.5 * (1 - valueNN));
     //            phase += 0.05f;
     //            if (phase >= Mathf.PI * 2)
     //                phase = 0;
@@ -56,10 +70,44 @@ public class AvatarInfos : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.S) && PointCloudGPU.Instance.file_train)
+        {
+            String str = coordinatesSave.Count + " 16  1" + Environment.NewLine;
+            for (int i = 0; i < coordinatesSave.Count; i++)
+            {
+                str += coordinatesSave[i][0] + " " + coordinatesSave[i][1] + " " + coordinatesSave[i][2] + " " + coordinatesSave[i][3] + " " + coordinatesSave[i][4] + " " + coordinatesSave[i][5] + " " + coordinatesSave[i][6] + " " + coordinatesSave[i][7] + " " + coordinatesSave[i][8] + " " + coordinatesSave[i][9] + " " + coordinatesSave[i][10] + " " + coordinatesSave[i][11] + " " + coordinatesSave[i][12] + " " + coordinatesSave[i][13] + " " + coordinatesSave[i][14] + " " + coordinatesSave[i][15] + Environment.NewLine;
+                str += coordinatesSettings[i] + Environment.NewLine;
+            }
+            File.WriteAllText(Application.streamingAssetsPath + "/fann_training.txt", str);
+        }
+        else if (Input.GetKeyDown(KeyCode.S))
+        {
+            const uint num_input = 16 * 3;
+            const uint num_output = 1;
+            const uint num_neurons_hidden = 512;
+            uint[] num_layers = new uint[2] { num_input, num_output };
+            const float desired_error = 0.00005f;
+            const uint max_epochs = 1000000;
+            const uint epochs_between_reports = 500;
+            TrainingData trainingData = new TrainingData(Application.streamingAssetsPath + "/fann_training.txt");
+            trainingData.ScaleInputTrainData(-1, 1);
+            trainingData.ScaleOutputTrainData(0, 1);
+            neuralNet = new NeuralNet(FANNCSharp.NetworkType.SHORTCUT, num_layers);
+            neuralNet.TrainingAlgorithm = FANNCSharp.TrainingAlgorithm.TRAIN_RPROP;
+            neuralNet.SetScalingParams(trainingData, -1, 1, 0, 1);
+            neuralNet.InitWeights(trainingData);
+            neuralNet.LearningRate = 0.7f;
+            neuralNet.CascadetrainOnData(trainingData, max_epochs, epochs_between_reports, desired_error);
+            neuralNet.Save(Application.streamingAssetsPath + "/fann_neural_net.txt");
+        }
         if (CurrentUserTracker.CurrentUser != 0)
         {
             nuitrack.Skeleton skeleton = CurrentUserTracker.CurrentSkeleton;
-
+            
+            if (Input.GetMouseButtonDown(0) && PointCloudGPU.Instance.file_train)
+                normal = true;
+            if (Input.GetMouseButtonDown(1) && PointCloudGPU.Instance.file_train)
+                disfordant = true;
             for (int q = 0; q < typeJoint.Length; q++)
             {
                 nuitrack.Joint joint = skeleton.GetJoint(typeJoint[q]);
@@ -69,7 +117,7 @@ public class AvatarInfos : MonoBehaviour
                 coordinates[q * 3 + 1] = newPosition.y;
                 coordinates[q * 3 + 2] = newPosition.z;
                 valueNN = PointCloudGPU.Instance.matPointCloud.GetFloat("_Value");
-                if (valueNN > 0.975)
+                if (valueNN > 0.975 || PointCloudGPU.Instance.file_train)
                 {
                     if (q % 2 == 0)
                         printCoordinates.Add("Trying to recover...");
@@ -78,6 +126,7 @@ public class AvatarInfos : MonoBehaviour
                     if (!CreatedJoint[q].activeSelf)
                         CreatedJoint[q].SetActive(true);
                     CreatedJoint[q].transform.localPosition = new Vector3(newPosition.x * 0.001f, newPosition.y * 0.001f, newPosition.z * 0.001f);
+
                 }
                 else
                 {
@@ -87,6 +136,22 @@ public class AvatarInfos : MonoBehaviour
                         CreatedJoint[q].SetActive(false);
                     }
                 }
+                if (normal && PointCloudGPU.Instance.file_train)
+                    coordinatesSettings.Add(0);
+                else if (disfordant && PointCloudGPU.Instance.file_train)
+                    coordinatesSettings.Add(1);
+                if (!PointCloudGPU.Instance.file_train)
+                {
+                    PointCloudGPU.Instance.valueDisfordance = neuralNet.Run(coordinates)[0];
+                }
+                if ((normal || disfordant) && PointCloudGPU.Instance.file_train)
+                {
+                    float[] arrayTmp = new float[16 * 3];
+                    coordinates.CopyTo(arrayTmp, 0);
+                    coordinatesSave.Add(arrayTmp);
+                }
+                normal = false;
+                disfordant = false;
                 while (printCoordinates.Count > nbCoordinates)
                     printCoordinates.RemoveAt(0);
             }
@@ -111,7 +176,7 @@ public class AvatarInfos : MonoBehaviour
                 }
             }
         }
-        else if (valueNN > 0.975)
+        else if (valueNN < 0.975)
         {
             for (int q = 0; q < CreatedJoint.Length; q++)
             {

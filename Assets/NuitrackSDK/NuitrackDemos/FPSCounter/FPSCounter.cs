@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class FPSCounter : MonoBehaviour 
 {
@@ -53,7 +54,7 @@ public class FPSCounter : MonoBehaviour
 				avg_fps = frames / timer;
 
 
-				tm.text = /*"avg: " + */"Rendering FPS: " + avg_fps.ToString("0")/*"; min: " + min_fps.ToString("0")*/;
+				tm.text = /*"avg: " + */"Rendering FPS: " + avg_fps.ToString("0")/*"; min: " + min_fps.ToString("0")*/ + Environment.NewLine + "ValueDisfordance = " + PointCloudGPU.Instance.valueDisfordance + "   " + PointCloudGPU.Instance.valueNN;
 
 				frames = 0;
 				min_fps = 0f;

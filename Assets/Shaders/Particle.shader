@@ -6,7 +6,7 @@ Shader "Particle"
 {
 	Properties
 	{
-		_MainTex("Main Texture", 2D) = "white" {}
+		//_MainTex("Main Texture", 2D) = "white" {}
 		_Value("Detect Disruption", Range(0,1)) = 0.0
 	}
 
@@ -39,7 +39,7 @@ Shader "Particle"
 			StructuredBuffer<float3> particleBuffer;
 			StructuredBuffer<int> segmentBuffer;
 			
-			sampler2D _MainTex;
+			//sampler2D _MainTex;
 
 			// Properties variables
 			uniform int _Width;
@@ -168,7 +168,7 @@ Shader "Particle"
 					discard;
 					return (float4(0, 0, 0, 0));
 				}
-				return (float4(1.0f, 1.0f, 1.0f, 1.0f) * (1.0f - i.position.z / i.position.w) * CalcLuminance(tex2D(_MainTex, float2(i.instance % _Width / _Width, i.instance / _Width / _Height)).xyz));// *i.keep.y);
+			return (float4(1.0f, 1.0f, 1.0f, 1.0f) * (1.0f - i.position.z / i.position.w)); // *CalcLuminance(tex2D(_MainTex, float2(i.instance % _Width / _Width, i.instance / _Width / _Height)).xyz));// *i.keep.y);
 			}
 			
 			ENDCG
