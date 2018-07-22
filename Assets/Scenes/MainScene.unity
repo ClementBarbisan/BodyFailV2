@@ -935,10 +935,18 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11458970, guid: e999ace05c586574fa1b964016f28531, type: 2}
       propertyPath: maxAngle
-      value: 100
+      value: 120
       objectReference: {fileID: 0}
     - target: {fileID: 11458970, guid: e999ace05c586574fa1b964016f28531, type: 2}
       propertyPath: calibrationType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11458970, guid: e999ace05c586574fa1b964016f28531, type: 2}
+      propertyPath: maxSqrDifference
+      value: 100000
+      objectReference: {fileID: 0}
+    - target: {fileID: 11457632, guid: e999ace05c586574fa1b964016f28531, type: 2}
+      propertyPath: trackFloorHeight
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []

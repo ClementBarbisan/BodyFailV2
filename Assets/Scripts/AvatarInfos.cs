@@ -96,7 +96,7 @@ public class AvatarInfos : MonoBehaviour
             neuralNet.TrainingAlgorithm = FANNCSharp.TrainingAlgorithm.TRAIN_RPROP;
             neuralNet.SetScalingParams(trainingData, -1, 1, 0, 1);
             neuralNet.InitWeights(trainingData);
-            neuralNet.LearningRate = 0.7f;
+            neuralNet.LearningRate = 0.5f;
             neuralNet.CascadetrainOnData(trainingData, max_epochs, epochs_between_reports, desired_error);
             neuralNet.Save(Application.streamingAssetsPath + "/fann_neural_net.txt");
         }
