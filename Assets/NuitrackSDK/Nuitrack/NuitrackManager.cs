@@ -102,7 +102,8 @@ public class NuitrackManager : MonoBehaviour
 	    }
 
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
-        Application.targetFrameRate = 60;
+        Cursor.visible = false;
+        //Application.targetFrameRate = 30;
 
         //	Debug.Log ("NuitrackStart");
 
