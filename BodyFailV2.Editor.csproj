@@ -159,9 +159,9 @@
     <None Include="Assets\Shaders\StandardGeometry.cginc" />
     <None Include="Assets\Shaders\StandardGeometry.shader" />
     <None Include="Assets\StreamingAssets\fann_neural_net.txt" />
-    <None Include="Assets\StreamingAssets\fann_neural_net_cascade.txt" />
-    <None Include="Assets\StreamingAssets\fann_neural_net_incremental.txt" />
+    <None Include="Assets\StreamingAssets\fann_neural_net_cascade_rprop.txt" />
     <None Include="Assets\StreamingAssets\fann_training.txt" />
+    <None Include="Assets\StreamingAssets\fann_training_out-scale.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />
