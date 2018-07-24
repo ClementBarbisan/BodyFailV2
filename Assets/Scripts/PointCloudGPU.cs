@@ -4,6 +4,7 @@ using UnityEngine;
 public class PointCloudGPU : MonoBehaviour {
 
     static public PointCloudGPU Instance;
+    public float bugTime = 5f;
     public bool trainFile = false;
     public Material matPointCloud;
     public float valueNN = 0;
@@ -16,6 +17,9 @@ public class PointCloudGPU : MonoBehaviour {
     int height = 0;
     Feedback feedback;
     GlitchFx glitch;
+    float multiplier = -1f;
+    bool bug = false;
+    float elapsedTime = 0;
 
     private void Awake()
     {
@@ -66,14 +70,31 @@ public class PointCloudGPU : MonoBehaviour {
     private void Update()
     {
         valueNN = matPointCloud.GetFloat("_Value");
+        if (valueNN > 0.975f)
+        {
+            if (!bug)
+                bug = true;
+            elapsedTime += Time.deltaTime;
+            if (elapsedTime > bugTime)
+            {
+                matPointCloud.SetFloat("_Value", 0);
+                valueNN = 0;
+                multiplier = 0;
+                valueDisfordance = 0;
+            }
+            else
+                return;
+        }
         if (Input.GetKey(KeyCode.U) || valueDisfordance > 0.75f)
         {
-            matPointCloud.SetFloat("_Value", Mathf.Clamp01(valueNN + 0.001f + Mathf.Pow(valueNN, 4)));
+            multiplier = Mathf.Clamp(multiplier + 0.001f + Mathf.Pow(multiplier, 4), 0f, 0.5f);
         }
         else
         {
-            matPointCloud.SetFloat("_Value", Mathf.Clamp01(valueNN - 0.001f - Mathf.Pow(valueNN / 4, 2)));
+            multiplier = Mathf.Clamp(multiplier - 0.001f + Mathf.Pow(multiplier, 4), -0.5f, 0f);
         }
+       
+        matPointCloud.SetFloat("_Value", Mathf.Clamp01(valueNN + Time.deltaTime * multiplier));
     }
 
     void OnRenderObject()
