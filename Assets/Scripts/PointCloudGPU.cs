@@ -24,12 +24,12 @@ public class PointCloudGPU : MonoBehaviour {
     private void Awake()
     {
         Instance = this;
-        NuitrackManager.DepthSensor.OnUpdateEvent += HandleOnDepthSensorUpdateEvent;
-        //NuitrackManager.ColorSensor.OnUpdateEvent += HandleOnColorSensorUpdateEvent;
     }
 
     // Use this for initialization
     void Start () {
+        NuitrackManager.DepthSensor.OnUpdateEvent += HandleOnDepthSensorUpdateEvent;
+        //NuitrackManager.ColorSensor.OnUpdateEvent += HandleOnColorSensorUpdateEvent;
         feedback = FindObjectOfType<Feedback>();
         glitch = FindObjectOfType<GlitchFx>();
 	}
@@ -70,7 +70,7 @@ public class PointCloudGPU : MonoBehaviour {
     private void Update()
     {
         valueNN = matPointCloud.GetFloat("_Value");
-        if (valueNN > 0.975f)
+        if (valueNN > 0.975f || bug)
         {
             if (!bug)
                 bug = true;
@@ -81,6 +81,8 @@ public class PointCloudGPU : MonoBehaviour {
                 valueNN = 0;
                 multiplier = 0;
                 valueDisfordance = 0;
+                bug = false;
+                elapsedTime = 0;
             }
             else
                 return;
@@ -93,7 +95,6 @@ public class PointCloudGPU : MonoBehaviour {
         {
             multiplier = Mathf.Clamp(multiplier - 0.001f + Mathf.Pow(multiplier, 4), -0.5f, 0f);
         }
-       
         matPointCloud.SetFloat("_Value", Mathf.Clamp01(valueNN + Time.deltaTime * multiplier));
     }
 

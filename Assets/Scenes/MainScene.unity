@@ -339,6 +339,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c723502634e24a44baacfbe0a7e284d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bugTime: 5
   trainFile: 0
   matPointCloud: {fileID: 2100000, guid: b25c5885fb1136640b15c8e56082697f, type: 2}
   valueNN: 0

@@ -53,20 +53,20 @@ public class AvatarInfos : MonoBehaviour
         printCoordinates = new List<string>();
     }
 
-    //private void OnAudioFilterRead(float[] data, int channels)
-    //{
-    //    if (CurrentUserTracker.CurrentUser != 0)
-    //    {
-    //        float phase = 0;
-    //        for (int i = 0; i < data.Length; i++)
-    //        {
-    //            data[i] = coordinates[i % coordinates.Length] * (Mathf.Cos(phase) * 0.5 * (1 - valueNN));
-    //            phase += 0.05f;
-    //            if (phase >= Mathf.PI * 2)
-    //                phase = 0;
-    //        }
-    //    }
-    //}
+    private void OnAudioFilterRead(float[] data, int channels)
+    {
+        if (CurrentUserTracker.CurrentUser != 0 && valueNN < 0.975f)
+        {
+            float phase = 0;
+            for (int i = 0; i < data.Length; i++)
+            {
+                data[i] = coordinates[i % coordinates.Length] / (5000 * Mathf.Pow((1 - valueNN), 4)) * (Mathf.Sin(phase) * (1 - valueNN));
+                phase += 0.05f;
+                if (phase >= Mathf.PI * 2)
+                    phase = 0;
+            }
+        }
+    }
 
     void Update()
     {
