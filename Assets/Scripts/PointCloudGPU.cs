@@ -66,13 +66,13 @@ public class PointCloudGPU : MonoBehaviour {
     private void Update()
     {
         valueNN = matPointCloud.GetFloat("_Value");
-        if (Input.GetKey(KeyCode.U) || valueDisfordance > 0.4f)
+        if (Input.GetKey(KeyCode.U) || valueDisfordance > 0.75f)
         {
-            matPointCloud.SetFloat("_Value", Mathf.Clamp01(valueNN + 0.001f + Mathf.Pow(valueNN, 3)));
+            matPointCloud.SetFloat("_Value", Mathf.Clamp01(valueNN + 0.001f + Mathf.Pow(valueNN, 4)));
         }
         else
         {
-            matPointCloud.SetFloat("_Value", Mathf.Clamp01(valueNN - 0.001f - Mathf.Pow(valueNN / 2, 2)));
+            matPointCloud.SetFloat("_Value", Mathf.Clamp01(valueNN - 0.001f - Mathf.Pow(valueNN / 4, 2)));
         }
     }
 

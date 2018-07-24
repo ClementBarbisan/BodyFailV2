@@ -84,7 +84,6 @@ public class AvatarInfos : MonoBehaviour
         {
             const uint num_input = 16 * 3;
             const uint num_output = 1;
-            const uint num_neurons_hidden = 512;
             uint[] num_layers = new uint[2] { num_input, num_output };
             const float desired_error = 0.00005f;
             const uint max_epochs = 1000000;
