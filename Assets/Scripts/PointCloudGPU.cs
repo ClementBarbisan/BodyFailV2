@@ -4,7 +4,7 @@ using UnityEngine;
 public class PointCloudGPU : MonoBehaviour {
 
     static public PointCloudGPU Instance;
-    public bool file_train = false;
+    public bool trainFile = false;
     public Material matPointCloud;
     public float valueNN = 0;
     public float valueDisfordance = 0;
@@ -78,7 +78,7 @@ public class PointCloudGPU : MonoBehaviour {
 
     void OnRenderObject()
     {
-        if (valueNN < 0.975 && !file_train)
+        if (valueNN < 0.975 && !trainFile)
         {
             if (!feedback.enabled)
                 feedback.enabled = true;

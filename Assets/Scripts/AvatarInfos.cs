@@ -34,7 +34,7 @@ public class AvatarInfos : MonoBehaviour
 
     void Start()
     {
-        if (PointCloudGPU.Instance.file_train)
+        if (PointCloudGPU.Instance.trainFile)
         {
             coordinatesSave = new List<float[]>();
             coordinatesSettings = new List<int>();
@@ -70,12 +70,12 @@ public class AvatarInfos : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.S) && PointCloudGPU.Instance.file_train)
+        if (Input.GetKeyDown(KeyCode.S) && PointCloudGPU.Instance.trainFile)
         {
-            String str = coordinatesSave.Count + " 16  1" + Environment.NewLine;
+            String str = coordinatesSave.Count + " 48  1" + Environment.NewLine;
             for (int i = 0; i < coordinatesSave.Count; i++)
             {
-                str += coordinatesSave[i][0] + " " + coordinatesSave[i][1] + " " + coordinatesSave[i][2] + " " + coordinatesSave[i][3] + " " + coordinatesSave[i][4] + " " + coordinatesSave[i][5] + " " + coordinatesSave[i][6] + " " + coordinatesSave[i][7] + " " + coordinatesSave[i][8] + " " + coordinatesSave[i][9] + " " + coordinatesSave[i][10] + " " + coordinatesSave[i][11] + " " + coordinatesSave[i][12] + " " + coordinatesSave[i][13] + " " + coordinatesSave[i][14] + " " + coordinatesSave[i][15] + Environment.NewLine;
+                str += coordinatesSave[i][0] + " " + coordinatesSave[i][1] + " " + coordinatesSave[i][2] + " " + coordinatesSave[i][3] + " " + coordinatesSave[i][4] + " " + coordinatesSave[i][5] + " " + coordinatesSave[i][6] + " " + coordinatesSave[i][7] + " " + coordinatesSave[i][8] + " " + coordinatesSave[i][9] + " " + coordinatesSave[i][10] + " " + coordinatesSave[i][11] + " " + coordinatesSave[i][12] + " " + coordinatesSave[i][13] + " " + coordinatesSave[i][14] + " " + coordinatesSave[i][15] + " " + coordinatesSave[i][16] + " " + coordinatesSave[i][17] + " " + coordinatesSave[i][18] + " " + coordinatesSave[i][19] + " " + coordinatesSave[i][20] + " " + coordinatesSave[i][21] + " " + coordinatesSave[i][22] + " " + coordinatesSave[i][23] + " " + coordinatesSave[i][24] + " " + coordinatesSave[i][25] + " " + coordinatesSave[i][26] + " " + coordinatesSave[i][27] + " " + coordinatesSave[i][28] + " " + coordinatesSave[i][29] + " " + coordinatesSave[i][30] + " " + coordinatesSave[i][31] + " " + coordinatesSave[i][32] + " " + coordinatesSave[i][33] + " " + coordinatesSave[i][34] + " " + coordinatesSave[i][35] + " " + coordinatesSave[i][36] + " " + coordinatesSave[i][37] + " " + coordinatesSave[i][38] + " " + coordinatesSave[i][39] + " " + coordinatesSave[i][40] + " " + coordinatesSave[i][41] + " " + coordinatesSave[i][42] + " " + coordinatesSave[i][43] + " " + coordinatesSave[i][44] + " " + coordinatesSave[i][45] + " " + coordinatesSave[i][46] + " " + coordinatesSave[i][47] + Environment.NewLine;
                 str += coordinatesSettings[i] + Environment.NewLine;
             }
             File.WriteAllText(Application.streamingAssetsPath + "/fann_training.txt", str);
@@ -90,13 +90,10 @@ public class AvatarInfos : MonoBehaviour
             const uint max_epochs = 1000000;
             const uint epochs_between_reports = 500;
             TrainingData trainingData = new TrainingData(Application.streamingAssetsPath + "/fann_training.txt");
-            trainingData.ScaleInputTrainData(-1, 1);
-            trainingData.ScaleOutputTrainData(0, 1);
             neuralNet = new NeuralNet(FANNCSharp.NetworkType.SHORTCUT, num_layers);
             neuralNet.TrainingAlgorithm = FANNCSharp.TrainingAlgorithm.TRAIN_RPROP;
             neuralNet.SetScalingParams(trainingData, -1, 1, 0, 1);
             neuralNet.InitWeights(trainingData);
-            neuralNet.LearningRate = 0.5f;
             neuralNet.CascadetrainOnData(trainingData, max_epochs, epochs_between_reports, desired_error);
             neuralNet.Save(Application.streamingAssetsPath + "/fann_neural_net.txt");
         }
@@ -104,9 +101,9 @@ public class AvatarInfos : MonoBehaviour
         {
             nuitrack.Skeleton skeleton = CurrentUserTracker.CurrentSkeleton;
             
-            if (Input.GetMouseButtonDown(0) && PointCloudGPU.Instance.file_train)
+            if (Input.GetMouseButtonDown(0) && PointCloudGPU.Instance.trainFile)
                 normal = true;
-            if (Input.GetMouseButtonDown(1) && PointCloudGPU.Instance.file_train)
+            if (Input.GetMouseButtonDown(1) && PointCloudGPU.Instance.trainFile)
                 disfordant = true;
             for (int q = 0; q < typeJoint.Length; q++)
             {
@@ -117,7 +114,7 @@ public class AvatarInfos : MonoBehaviour
                 coordinates[q * 3 + 1] = newPosition.y;
                 coordinates[q * 3 + 2] = newPosition.z;
                 valueNN = PointCloudGPU.Instance.matPointCloud.GetFloat("_Value");
-                if (valueNN > 0.975 || PointCloudGPU.Instance.file_train)
+                if (valueNN > 0.975 || PointCloudGPU.Instance.trainFile)
                 {
                     if (q % 2 == 0)
                         printCoordinates.Add("Trying to recover...");
@@ -136,15 +133,15 @@ public class AvatarInfos : MonoBehaviour
                         CreatedJoint[q].SetActive(false);
                     }
                 }
-                if (normal && PointCloudGPU.Instance.file_train)
+                if (normal && PointCloudGPU.Instance.trainFile)
                     coordinatesSettings.Add(0);
-                else if (disfordant && PointCloudGPU.Instance.file_train)
+                else if (disfordant && PointCloudGPU.Instance.trainFile)
                     coordinatesSettings.Add(1);
-                if (!PointCloudGPU.Instance.file_train)
+                if (!PointCloudGPU.Instance.trainFile)
                 {
                     PointCloudGPU.Instance.valueDisfordance = neuralNet.Run(coordinates)[0];
                 }
-                if ((normal || disfordant) && PointCloudGPU.Instance.file_train)
+                if ((normal || disfordant) && PointCloudGPU.Instance.trainFile)
                 {
                     float[] arrayTmp = new float[16 * 3];
                     coordinates.CopyTo(arrayTmp, 0);
