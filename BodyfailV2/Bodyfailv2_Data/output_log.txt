@@ -28,7 +28,7 @@ Platform assembly: D:\BodyFailV2\BodyfailV2\Bodyfailv2_Data\Managed\System.dll (
 <RI> Input initialized.
 desktop: 1280x1024 59Hz; virtual: 2560x1024 at -1280,0
 <RI> Initialized touch support.
-UnloadTime: 1.154051 ms
+UnloadTime: 1.152820 ms
 Init OK
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
@@ -38,49 +38,49 @@ Run OK
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
 Setting up 2 worker threads for Enlighten.
-  Thread -> id: 4958 -> priority: 1 
-  Thread -> id: 5104 -> priority: 1 
-Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: -11
+  Thread -> id: 9784 -> priority: 1 
+  Thread -> id: 9788 -> priority: 1 
+Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: 77
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
-Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: 42
+Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: 47
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
-Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: -15
+Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: 60
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
-Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: 21
+Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: 33
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
-Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: 17
+Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: 44
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
-Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: 62
+Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: 15
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
-Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: -76
+Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: 70
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
-Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: 51
+Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: -3
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
-Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: 50
+Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: 61
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
-Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: 35
+Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: 27
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
-Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: 90
+Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: 34
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
@@ -88,19 +88,31 @@ Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: -1
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
-Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: 1
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
-Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: 50
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
-Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: 26
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
 Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: 32
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: 55
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: 47
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: -126
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: -131
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: 34
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Gravity vector: (0.000, 0.000, 0.000); AngleX: -180; AngleY: 58
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
