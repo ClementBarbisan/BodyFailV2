@@ -29,7 +29,7 @@ Material:
     m_Floats:
     - _HighSpeedValue: 12
     - _Rotation: 10
-    - _Value: 0.81207436
+    - _Value: 0
     - _colorSwitch: 60
     m_Colors:
     - _Color: {r: 0.7058823, g: 0.21280275, b: 0.21280275, a: 1}

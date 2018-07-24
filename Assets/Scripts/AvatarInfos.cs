@@ -60,7 +60,7 @@ public class AvatarInfos : MonoBehaviour
             float phase = 0;
             for (int i = 0; i < data.Length; i++)
             {
-                data[i] = coordinates[i % coordinates.Length] / (5000 * Mathf.Pow((1 - valueNN), 4)) * (Mathf.Sin(phase) * (1 - valueNN));
+                data[i] = coordinates[i % coordinates.Length] / (10000 * Mathf.Pow((1 - valueNN), 4)) * (Mathf.Sin(phase) * (1 - valueNN));
                 phase += 0.05f;
                 if (phase >= Mathf.PI * 2)
                     phase = 0;
