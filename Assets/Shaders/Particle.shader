@@ -91,17 +91,18 @@ Shader "Particle"
 				o.keep.y = p[0].keep.y;
 				float4 position = float4(p[0].position.x + rand(float2(p[0].position.z, o.instance) - 0.5f) * 1000.0f * _Value, p[0].position.y + rand(float2(p[0].position.x, o.instance) - 0.5f) * 1000.0f * _Value, p[0].position.z + rand(float2(p[0].position.y, o.instance) - 0.5f) * 1000.0f * _Value, p[0].position.w);
 				float4 positionZ = float4(p[0].position.x + rand(float2(o.instance, p[0].position.y) - 0.5f) * 1000.0f * _Value, p[0].position.y + rand(float2(o.instance, p[0].position.z) - 0.5f) * 1000.0f * _Value, p[0].position.z + rand(float2(o.instance, p[0].position.x) - 0.5f) * 1000.0f * _Value, p[0].position.w);
-				float size = 5 + clamp(rand(float2(o.instance, _Time.y)) * 100.0f * _Value, 0, 100);
+				float size = 5 + clamp(rand(float2(o.instance, _Time.y)) * 200.0f * _Value, 0, 100);
 				if (p[0].keep.x == 1)
 					size = clamp(rand(float2(o.instance, _Time.y)) * 100.0f * _Value, 5, 100);
-				float4 B = float4(size * (5 * _Value + 1), 0, 0, 0);
-				float4 C = float4(0, 0, -size, 0);
-				float4 D = float4(size * (5 * _Value + 1), 0, -size, 0);
-				float4 E = float4(size * (5 * _Value + 1), -size, -size, 0);
-				float4 F = float4(size * (5 * _Value + 1), -size, 0, 0);
-				float4 G = float4(0, -size, 0, 0);
-				float4 H = float4(0, -size, -size, 0);
-				o.position = UnityObjectToClipPos(position);
+				float4 A = float4(-size / 2 * (5 * _Value + 1), size / 2, size / 2, 0);
+				float4 B = float4(size / 2 * (5 * _Value + 1), size / 2, size / 2, 0);
+				float4 C = float4(-size / 2 * (5 * _Value + 1), size / 2, -size / 2, 0);
+				float4 D = float4(size / 2 * (5 * _Value + 1), size / 2, -size / 2, 0);
+				float4 E = float4(size / 2 * (5 * _Value + 1), -size / 2, -size / 2, 0);
+				float4 F = float4(size / 2 * (5 * _Value + 1), -size / 2, size / 2, 0);
+				float4 G = float4(-size / 2 * (5 * _Value + 1), -size / 2, size / 2, 0);
+				float4 H = float4(-size / 2 * (5 * _Value + 1), -size / 2, -size / 2, 0);
+				o.position = UnityObjectToClipPos(position + A);
 				o.uv = float2(0, 0);
 				triStream.Append(o);
 				o.position = UnityObjectToClipPos(positionZ + B);
@@ -130,7 +131,7 @@ Shader "Particle"
 				o.position = UnityObjectToClipPos(positionZ + B);
 				o.uv = float2(0, 0);
 				triStream.Append(o);
-				o.position = UnityObjectToClipPos(position);
+				o.position = UnityObjectToClipPos(position + A);
 				o.uv = float2(0, 1);
 				triStream.Append(o);
 				o.position = UnityObjectToClipPos(positionZ + F);
@@ -143,7 +144,7 @@ Shader "Particle"
 				o.position = UnityObjectToClipPos(position + G);
 				o.uv = float2(0, 0);
 				triStream.Append(o);
-				o.position = UnityObjectToClipPos(position);
+				o.position = UnityObjectToClipPos(position + A);
 				o.uv = float2(0, 1);
 				triStream.Append(o);
 				o.position = UnityObjectToClipPos(position + H);
