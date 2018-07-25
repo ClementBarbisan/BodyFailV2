@@ -54,7 +54,7 @@ public class GlitchFx : MonoBehaviour
     // Simple random color.
     static Color RandomColor()
     {
-        return new Color(Random.value / 5, Random.value, Random.value / 5, Random.value);
+        return new Color(Random.value, Random.value, Random.value, Random.value);
     }
 
     // Initialize the temporary object if it needs.
