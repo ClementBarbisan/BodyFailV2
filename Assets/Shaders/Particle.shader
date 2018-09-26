@@ -6,7 +6,7 @@ Shader "Particle"
 {
 	Properties
 	{
-		//_MainTex("Main Texture", 2D) = "white" {}
+		_MainTex("Main Texture", 2D) = "white" {}
 		_Value("Detect Disruption", Range(0,1)) = 0.0
 	}
 
@@ -40,11 +40,13 @@ Shader "Particle"
 			StructuredBuffer<float3> particleBuffer;
 			StructuredBuffer<int> segmentBuffer;
 			
-			//sampler2D _MainTex;
+			sampler2D _MainTex;
 
 			// Properties variables
 			uniform int _Width;
+			uniform int _WidthTex;
 			uniform int _Height;
+			uniform int _HeightTex;
 			uniform float _MinZ;
 			uniform float _MaxZ;
 			uniform float _Value;
@@ -61,10 +63,10 @@ Shader "Particle"
 			{
 				PS_INPUT o = (PS_INPUT)0;
 				// Position
-				o.position = float4(sin(particleBuffer[instance_id].y * instance_id * _Time.y) * cos(particleBuffer[instance_id].x * instance_id * _Time.y), sin(particleBuffer[instance_id].z * instance_id * _Time.y) * sin(particleBuffer[instance_id].y * instance_id * _Time.y), sin(particleBuffer[instance_id].x * instance_id * _Time.y) * cos(particleBuffer[instance_id].z * instance_id * _Time.y), 1.0f) * 100 * _Value + float4(particleBuffer[instance_id].x, particleBuffer[instance_id].y, particleBuffer[instance_id].z, 1.0f);
+				o.position = float4(sin(particleBuffer[instance_id].y * instance_id * _Time.y) * cos(particleBuffer[instance_id].x * instance_id * _Time.y), sin(particleBuffer[instance_id].z * instance_id * _Time.y) * sin(particleBuffer[instance_id].y * instance_id * _Time.y), sin(particleBuffer[instance_id].x * instance_id * _Time.y) * cos(particleBuffer[instance_id].z * instance_id * _Time.y), 1.0f) * 100 * (_Value + 0.01) + float4(particleBuffer[instance_id].x, particleBuffer[instance_id].y, particleBuffer[instance_id].z, 1.0f);
 				o.instance = int(instance_id);
 				//o.keep.y = pow(1.0 - (o.position.z - _MinZ) / (_MaxZ - _MinZ), 2);
-				if (segmentBuffer[instance_id] == 0 || o.position.z == 0 || ((instance_id / _Width) % 20 != 0 && segmentBuffer[instance_id - 1] == 1 && segmentBuffer[instance_id + 1] == 1 && segmentBuffer[instance_id - _Width] == 1 && segmentBuffer[instance_id + _Width] == 1))
+				if (segmentBuffer[instance_id] == 0 || o.position.z == 0 || instance_id % 5 != 0)//((instance_id / _Width) % (20) != 0 && segmentBuffer[instance_id - 1] == 1 && segmentBuffer[instance_id + 1] == 1 && segmentBuffer[instance_id - _Width] == 1 && segmentBuffer[instance_id + _Width] == 1))
 				{
 					o.keep.x = 0;
 				}
@@ -89,9 +91,9 @@ Shader "Particle"
 				}
 				o.keep.x = 1;
 				o.keep.y = p[0].keep.y;
-				float4 position = float4(p[0].position.x + rand(float2(p[0].position.z, o.instance) - 0.5f) * 1000.0f * _Value, p[0].position.y + rand(float2(p[0].position.x, o.instance) - 0.5f) * 1000.0f * _Value, p[0].position.z + rand(float2(p[0].position.y, o.instance) - 0.5f) * 1000.0f * _Value, p[0].position.w);
-				float4 positionZ = float4(p[0].position.x + rand(float2(o.instance, p[0].position.y) - 0.5f) * 1000.0f * _Value, p[0].position.y + rand(float2(o.instance, p[0].position.z) - 0.5f) * 1000.0f * _Value, p[0].position.z + rand(float2(o.instance, p[0].position.x) - 0.5f) * 1000.0f * _Value, p[0].position.w);
-				float size = 5 + clamp(rand(float2(o.instance, _Time.y)) * 200.0f * _Value, 0, 100);
+				float4 position = float4(p[0].position.x + rand(float2(p[0].position.z, o.instance) - 0.5f) * 1000.0f * (_Value + 0.01), p[0].position.y + rand(float2(p[0].position.x, o.instance) - 0.5f) * 1000.0f * (_Value + 0.01), p[0].position.z + rand(float2(p[0].position.y, o.instance) - 0.5f) * 1000.0f * (_Value + 0.01), p[0].position.w);
+				float4 positionZ = float4(p[0].position.x + rand(float2(o.instance, p[0].position.y) - 0.5f) * 1000.0f * (_Value + 0.01), p[0].position.y + rand(float2(o.instance, p[0].position.z) - 0.5f) * 1000.0f * (_Value + 0.01), p[0].position.z + rand(float2(o.instance, p[0].position.x) - 0.5f) * 1000.0f * (_Value + 0.01), p[0].position.w);
+				float size = 5 + clamp(rand(float2(o.instance, _Time.y)) * 200.0f * (_Value + 0.01), 0, 100);
 				if (p[0].keep.x == 1)
 					size = clamp(rand(float2(o.instance, _Time.y)) * 100.0f * _Value, 5, 100);
 				float4 A = float4(-size / 2 * (5 * _Value + 1), size / 2, size / 2, 0);
@@ -199,7 +201,8 @@ Shader "Particle"
 				half2 edge2 = min(smoothstep(0, fw * 2, i.uv),
 					smoothstep(0, fw * 2, 1 - i.uv));
 				half edge = 1 - min(edge2.x, edge2.y);
-				return (float4(0.5f, 0.5f, 0.5f, 1.0f) * (1.0f - i.position.z / i.position.w) + edge * float4(1.0, 1.0, 1.0, 1.0)); // *CalcLuminance(tex2D(_MainTex, float2(i.instance % _Width / _Width, i.instance / _Width / _Height)).xyz));// *i.keep.y);
+				//return(tex2D(_MainTex, float2(i.instance % _WidthTex / (_WidthTex * _HeightTex), i.instance / _WidthTex / (_WidthTex * _HeightTex))));
+				return ((float4(0.5f, 0.5f, 0.5f, 1.0f) * (1.0f - i.position.z / i.position.w) + edge * float4(1.0, 1.0, 1.0, 1.0)));// *CalcLuminance(tex2D(_MainTex, float2(i.instance % _Width, i.instance / _Width)).xyz));
 			}
 			
 			ENDCG

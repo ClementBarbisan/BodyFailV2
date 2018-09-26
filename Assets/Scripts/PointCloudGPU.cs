@@ -20,6 +20,7 @@ public class PointCloudGPU : MonoBehaviour {
     float multiplier = -1f;
     bool bug = false;
     float elapsedTime = 0;
+    float initColor = 0;
 
     private void Awake()
     {
@@ -29,25 +30,28 @@ public class PointCloudGPU : MonoBehaviour {
     // Use this for initialization
     void Start () {
         NuitrackManager.DepthSensor.OnUpdateEvent += HandleOnDepthSensorUpdateEvent;
-        //NuitrackManager.ColorSensor.OnUpdateEvent += HandleOnColorSensorUpdateEvent;
+        NuitrackManager.ColorSensor.OnUpdateEvent += HandleOnColorSensorUpdateEvent;
         feedback = FindObjectOfType<Feedback>();
+        initColor = feedback.color.r;
         glitch = FindObjectOfType<GlitchFx>();
 	}
 
-    //void HandleOnColorSensorUpdateEvent(nuitrack.ColorFrame frame)
-    //{
-    //    if (texture == null)
-    //    {
-    //        nuitrack.OutputMode ouput = NuitrackManager.ColorSensor.GetOutputMode();
-    //        texture = new Texture2D(ouput.XRes, ouput.YRes, TextureFormat.RGB24, false);
-    //        matPointCloud.SetTexture("_MainTex", texture);
-    //    }
-    //    texture.LoadRawTextureData(frame.Data);
-    //    texture.Apply();
-    //}
+    void HandleOnColorSensorUpdateEvent(nuitrack.ColorFrame frame)
+    {
+        if (texture == null)
+        {
+            nuitrack.OutputMode ouput = NuitrackManager.ColorSensor.GetOutputMode();
+            texture = new Texture2D(ouput.XRes, ouput.YRes, TextureFormat.RGB24, false);
+            matPointCloud.SetTexture("_MainTex", texture);
+            matPointCloud.SetInt("_WidthTex", ouput.XRes);
+            matPointCloud.SetInt("_HeightTex", ouput.YRes);
+        }
+        texture.LoadRawTextureData(frame.Data);
+        texture.Apply();
+    }
 
 
-        // Update is called once per frame
+    // Update is called once per frame
     void HandleOnDepthSensorUpdateEvent(nuitrack.DepthFrame frame) {
         if (buffer == null)
         {
@@ -93,9 +97,15 @@ public class PointCloudGPU : MonoBehaviour {
         }
         else
         {
-            multiplier = Mathf.Clamp(multiplier - 0.001f + Mathf.Pow(multiplier, 4), -0.5f, 0f);
+            multiplier = Mathf.Clamp(multiplier - 0.001f + Mathf.Pow(multiplier, 6), -0.75f, 0f);
         }
         matPointCloud.SetFloat("_Value", Mathf.Clamp01(valueNN + Time.deltaTime * multiplier));
+        if (feedback.enabled)
+        {
+            //Color newColor = new Color(initColor + Mathf.Clamp01(valueNN + Time.deltaTime * multiplier), initColor + Mathf.Clamp01(valueNN + Time.deltaTime * multiplier), initColor + Mathf.Clamp01(valueNN + Time.deltaTime * multiplier) / 10);
+            feedback.offsetX = Mathf.Clamp01(valueNN) + 0.1f;
+            //feedback.color = newColor;
+        }
     }
 
     void OnRenderObject()
@@ -103,7 +113,10 @@ public class PointCloudGPU : MonoBehaviour {
         if (valueNN < 0.975 && !trainFile)
         {
             if (!feedback.enabled)
+            {
                 feedback.enabled = true;
+
+            }
             if (!glitch.enabled)
                 glitch.enabled = true;
             matPointCloud.SetPass(0);

@@ -215,8 +215,8 @@ GameObject:
   - component: {fileID: 195956913}
   - component: {fileID: 195956910}
   - component: {fileID: 195956911}
-  - component: {fileID: 195956912}
   - component: {fileID: 195956915}
+  - component: {fileID: 195956912}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -253,7 +253,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2927f4208f6748dd9027a947ae4982c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _color: {r: 0.8602941, g: 0.8602941, b: 0.8602941, a: 1}
+  _color: {r: 0.85882354, g: 0.85882354, b: 0.85882354, a: 1}
   _offsetX: 0.1
   _offsetY: 0
   _rotation: 0
@@ -567,11 +567,11 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: 47723d3b930870d40b1b14de1c1d3d72, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -625,7 +625,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
   reverbZoneMixCustomCurve:
     serializedVersion: 2
     m_Curve:

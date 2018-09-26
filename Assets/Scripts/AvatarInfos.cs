@@ -12,6 +12,7 @@ using System;
 using FANNCSharp.Float;
 using UnityEngine.UI;
 using System.IO;
+using System.Collections;
 
 [AddComponentMenu("Nuitrack/Example/TranslationAvatar")]
 [RequireComponent(typeof(AudioSource))]
@@ -26,11 +27,13 @@ public class AvatarInfos : MonoBehaviour
     GameObject[] CreatedJoint;
     float valueNN = 0;
     List<String> printCoordinates;
-    List<float[]> coordinatesSave;
+    [SerializeField]
+    public List<float[]> coordinatesSave;
     List<int> coordinatesSettings;
     bool normal = false;
     bool disfordant = false;
     NeuralNet neuralNet;
+    private bool urlRequest;
 
     void Start()
     {
@@ -60,12 +63,20 @@ public class AvatarInfos : MonoBehaviour
             float phase = 0;
             for (int i = 0; i < data.Length; i++)
             {
-                data[i] = coordinates[i % coordinates.Length] / (10000 * Mathf.Pow((1 - valueNN), 4)) * (Mathf.Sin(phase) * (1 - valueNN));
+                data[i] *= (coordinates[i % coordinates.Length] / (100 * Mathf.Pow((1 - valueNN), 4)) * (Mathf.Sin(1 - valueNN))) / 2;
                 phase += 0.05f;
                 if (phase >= Mathf.PI * 2)
                     phase = 0;
             }
         }
+    }
+
+    IEnumerator RequestUrl(string url)
+    {
+        WWW www = new WWW(url);
+        yield return www;
+        if (www.error != null)
+            Debug.Log(www.error);
     }
 
     void Update()
@@ -104,6 +115,37 @@ public class AvatarInfos : MonoBehaviour
                 normal = true;
             if (Input.GetMouseButtonDown(1) && PointCloudGPU.Instance.trainFile)
                 disfordant = true;
+            if (valueNN > 0.975 && !urlRequest)
+            {
+                string url = "https://bodyfail.com/addSample?";
+                float xMax = 0;
+                float yMax = 0;
+                float zMax = 0;
+                for (int q = 0; q < typeJoint.Length; q++)
+                {
+                    nuitrack.Joint joint = skeleton.GetJoint(typeJoint[q]);
+                    Vector3 newPosition = joint.ToVector3();
+                    if (Mathf.Abs(newPosition.x) > xMax)
+                        xMax = Mathf.Abs(newPosition.x);
+                    if (Mathf.Abs(newPosition.y) > yMax)
+                        yMax = Mathf.Abs(newPosition.y);
+                    if (Mathf.Abs(newPosition.z) > zMax)
+                        zMax = Mathf.Abs(newPosition.z);
+                }
+                for (int q = 0; q < typeJoint.Length; q++) 
+                {
+                    nuitrack.Joint joint = skeleton.GetJoint(typeJoint[q]);
+                    Vector3 newPosition = joint.ToVector3();
+                    if (q < 15)
+                        url += "n" + q + "x=" + (newPosition.x / xMax) + "&n" + q + "y=" + (newPosition.y / yMax) + "&n" + q + "z=" + (newPosition.z / zMax) + "&";
+                    else
+                        url += "n" + q + "x=" + (newPosition.x / xMax) + "&n" + q + "y=" + (newPosition.y / yMax) + "&n" + q + "z=" + (newPosition.z / zMax);
+                }
+                url += "&place=AbuDhabiTest";
+                urlRequest = true;
+                Debug.Log(url);
+                StartCoroutine(RequestUrl(url));
+            }
             for (int q = 0; q < typeJoint.Length; q++)
             {
                 nuitrack.Joint joint = skeleton.GetJoint(typeJoint[q]);
@@ -113,6 +155,7 @@ public class AvatarInfos : MonoBehaviour
                 coordinates[q * 3 + 1] = newPosition.y;
                 coordinates[q * 3 + 2] = newPosition.z;
                 valueNN = PointCloudGPU.Instance.matPointCloud.GetFloat("_Value");
+              
                 if (valueNN > 0.975 || PointCloudGPU.Instance.trainFile)
                 {
                     if (q % 2 == 0)
@@ -126,6 +169,7 @@ public class AvatarInfos : MonoBehaviour
                 }
                 else
                 {
+                    urlRequest = false;
                     printCoordinates.Add(newPosition.ToString());
                     if (CreatedJoint[q].activeSelf)
                     {
@@ -136,7 +180,7 @@ public class AvatarInfos : MonoBehaviour
                     coordinatesSettings.Add(0);
                 else if (disfordant && PointCloudGPU.Instance.trainFile)
                     coordinatesSettings.Add(1);
-                if (!PointCloudGPU.Instance.trainFile)
+                else if (!PointCloudGPU.Instance.trainFile && neuralNet.Run(coordinates).Length > 0)
                 {
                     PointCloudGPU.Instance.valueDisfordance = neuralNet.Run(coordinates)[0];
                 }
