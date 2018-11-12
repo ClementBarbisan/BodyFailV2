@@ -80,8 +80,8 @@
     <Reference Include="FANNCSharp.Float">
       <HintPath>Assets/Plugins/x64/FANNCSharp.Float.dll</HintPath>
     </Reference>
-    <Reference Include="Intel.Realsense">
-      <HintPath>Assets/Plugins/x64/Intel.Realsense.dll</HintPath>
+    <Reference Include="Intel.RealSense">
+      <HintPath>Assets/RealSenseSDK2.0/Plugins/Intel.RealSense.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor">
       <HintPath>D:/Program Files/Unity_5.6.3/Editor/Data/Managed/UnityEditor.dll</HintPath>
@@ -147,15 +147,40 @@
     <Compile Include="Assets\NuitrackSDK\VicoVRCalibrationRGB\Scripts\BackTextureCreator.cs" />
     <Compile Include="Assets\NuitrackSDK\VicoVRCalibrationRGB\Scripts\RGBCalibrationVisualizer.cs" />
     <Compile Include="Assets\NuitrackSDK\VicoVRCalibrationRGB\Scripts\SensorDisconnectChecker.cs" />
+    <Compile Include="Assets\RealSenseSDK2.0\Misc\Utils\BoolToFloat.cs" />
+    <Compile Include="Assets\RealSenseSDK2.0\Misc\Utils\ErrorPopup.cs" />
+    <Compile Include="Assets\RealSenseSDK2.0\Misc\Utils\FloatToStringFormat.cs" />
+    <Compile Include="Assets\RealSenseSDK2.0\Misc\Utils\FloatTween.cs" />
+    <Compile Include="Assets\RealSenseSDK2.0\Misc\Utils\GetMaterialFloat.cs" />
+    <Compile Include="Assets\RealSenseSDK2.0\Misc\Utils\GetMaterialInt.cs" />
+    <Compile Include="Assets\RealSenseSDK2.0\Misc\Utils\MinMaxSlider.cs" />
+    <Compile Include="Assets\RealSenseSDK2.0\Misc\Utils\MoveAlongZ.cs" />
+    <Compile Include="Assets\RealSenseSDK2.0\Misc\Utils\RsDeviceListener.cs" />
+    <Compile Include="Assets\RealSenseSDK2.0\Misc\Utils\RsStreamAvailability.cs" />
+    <Compile Include="Assets\RealSenseSDK2.0\Misc\Utils\SceneLoader.cs" />
+    <Compile Include="Assets\RealSenseSDK2.0\Misc\Utils\StringFloatBinding.cs" />
+    <Compile Include="Assets\RealSenseSDK2.0\Misc\Utils\StringIntBinding.cs" />
     <Compile Include="Assets\RealSenseSDK2.0\Scripts\AlignImages.cs" />
     <Compile Include="Assets\RealSenseSDK2.0\Scripts\DepthScale.cs" />
     <Compile Include="Assets\RealSenseSDK2.0\Scripts\NamedTextureBinding.cs" />
     <Compile Include="Assets\RealSenseSDK2.0\Scripts\PointCloudControl.cs" />
     <Compile Include="Assets\RealSenseSDK2.0\Scripts\PointCloudGenerator.cs" />
+    <Compile Include="Assets\RealSenseSDK2.0\Scripts\ProcessingBlocks\RsAlign.cs" />
+    <Compile Include="Assets\RealSenseSDK2.0\Scripts\ProcessingBlocks\RsColorizer.cs" />
+    <Compile Include="Assets\RealSenseSDK2.0\Scripts\ProcessingBlocks\RsDecimationFilter.cs" />
+    <Compile Include="Assets\RealSenseSDK2.0\Scripts\ProcessingBlocks\RsDepthPrecision.cs" />
+    <Compile Include="Assets\RealSenseSDK2.0\Scripts\ProcessingBlocks\RsHoleFillingFilter.cs" />
+    <Compile Include="Assets\RealSenseSDK2.0\Scripts\ProcessingBlocks\RsPointCloud.cs" />
+    <Compile Include="Assets\RealSenseSDK2.0\Scripts\ProcessingBlocks\RsSpatialFilter.cs" />
+    <Compile Include="Assets\RealSenseSDK2.0\Scripts\ProcessingBlocks\RsTemporalFilter.cs" />
     <Compile Include="Assets\RealSenseSDK2.0\Scripts\RealSenseConfiguration.cs" />
     <Compile Include="Assets\RealSenseSDK2.0\Scripts\RealSenseDevice.cs" />
     <Compile Include="Assets\RealSenseSDK2.0\Scripts\RealSenseDeviceInspector.cs" />
     <Compile Include="Assets\RealSenseSDK2.0\Scripts\RealsenseStreamTexture.cs" />
+    <Compile Include="Assets\RealSenseSDK2.0\Scripts\RsARBackgroundRenderer.cs" />
+    <Compile Include="Assets\RealSenseSDK2.0\Scripts\RsProcessingBlock.cs" />
+    <Compile Include="Assets\RealSenseSDK2.0\Scripts\RsProcessingPipe.cs" />
+    <Compile Include="Assets\RealSenseSDK2.0\Scripts\RsVideoStreamRequest.cs" />
     <Compile Include="Assets\RealSenseSDK2.0\Scripts\TextureProvider.cs" />
     <Compile Include="Assets\Scripts\ActivateDisplay.cs" />
     <Compile Include="Assets\Scripts\AvatarInfos.cs" />
@@ -177,9 +202,16 @@
     <None Include="Assets\NuitrackSDK\Platform Changer\Manifests\GearVR\AndroidManifest_GearVR.xml" />
     <None Include="Assets\NuitrackSDK\VicoVRCalibrationRGB\Materials\Unlit-GS.shader" />
     <None Include="Assets\Plugins\Android\AndroidManifest.xml" />
+    <None Include="Assets\RealSenseSDK2.0\Misc\Utils\Utils.asmdef" />
+    <None Include="Assets\RealSenseSDK2.0\Scripts\RealSense.asmdef" />
+    <None Include="Assets\RealSenseSDK2.0\Shaders\ARBackground.shader" />
     <None Include="Assets\RealSenseSDK2.0\Shaders\BGSeg.shader" />
     <None Include="Assets\RealSenseSDK2.0\Shaders\BW.shader" />
+    <None Include="Assets\RealSenseSDK2.0\Shaders\Custom Skybox.shader" />
     <None Include="Assets\RealSenseSDK2.0\Shaders\Depth.shader" />
+    <None Include="Assets\RealSenseSDK2.0\Shaders\Grayscale.shader" />
+    <None Include="Assets\RealSenseSDK2.0\Shaders\PointCloud.shader" />
+    <None Include="Assets\RealSenseSDK2.0\Shaders\PointCloudGeom.shader" />
     <None Include="Assets\RealSenseSDK2.0\Shaders\RGB.shader" />
     <None Include="Assets\Shaders\Particle.shader" />
     <None Include="Assets\Shaders\Ray.shader" />

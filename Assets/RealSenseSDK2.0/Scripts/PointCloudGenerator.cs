@@ -1,143 +1,167 @@
 ﻿using System;
 using UnityEngine;
 using Intel.RealSense;
-using System.Linq;
+using UnityEngine.Rendering;
+using UnityEngine.Assertions;
+using System.Runtime.InteropServices;
+using System.Threading;
+using System.Collections.Generic;
 
-public class PointCloudGenerator : MonoBehaviour
+[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
+public class RsPointCloudRenderer : MonoBehaviour
 {
-    public bool mirrored;
-    public float pointsSize = 1;
-    public int skipParticles = 2;
-    public ParticleSystem pointCloudParticles;
+    private Mesh mesh;
+    private Texture2D uvmap;
 
-    private ParticleSystem.Particle[] particles = new ParticleSystem.Particle[0];
-    private PointCloud pc = new PointCloud();
-    private Points.Vertex[] vertices;
-    private byte[] lastColorImage;
-    private Align aligner;
+    private RsVideoStreamRequest _videoStreamFilter;
+    private RsVideoStreamRequest _currVideoStreamFilter;
 
-    // Use this for initialization
+    private Vector3[] vertices;
+    private GCHandle handle;
+    private IntPtr verticesPtr;
+    private int frameSize;
+    private IntPtr frameData;
+
+    private readonly AutoResetEvent e = new AutoResetEvent(false);
+
     void Start()
     {
-        aligner = new Align(Intel.RealSense.Stream.Color);
-        if(RealSenseDevice.Instance.ActiveProfile.Streams.FirstOrDefault(x => x.Stream == Stream.Depth) == null)
-        {
-            Debug.Log("Can't create point cloud, depthstream must be enabled");
-            return;
-        }
-        if (RealSenseDevice.Instance.ActiveProfile.Streams.FirstOrDefault(x => x.Stream == Stream.Color) != null)
-        {
-            RealSenseDevice.Instance.onNewSampleSet += OnFrames;
-        }
-        else
-        {
-            RealSenseDevice.Instance.onNewSample += OnFrame;
-        }
+        _videoStreamFilter = new RsVideoStreamRequest();
+        _currVideoStreamFilter = _videoStreamFilter.Clone();
+        RsDevice.Instance.OnNewSampleSet += OnFrames;
+        RsDevice.Instance.OnStop += Dispose;
     }
 
-    private void OnFrame(Frame frame)
+    private void ResetMesh(RsVideoStreamRequest vsr)
     {
-        if (frame.Profile.Stream != Stream.Depth)
+        int width = vsr.Width;
+        int height = vsr.Height;
+        if (width == 0 || height == 0)
             return;
-        var depthFrame = frame as DepthFrame;
-        if (!UpdateParticleParams(depthFrame.Width, depthFrame.Height))
+        Dispose();
+        Assert.IsTrue(SystemInfo.SupportsTextureFormat(TextureFormat.RGFloat));
+        uvmap = new Texture2D(width, height, TextureFormat.RGFloat, false, true)
         {
-            Debug.Log("Unable to craete point cloud");
-            return;
+            wrapMode = TextureWrapMode.Clamp,
+            filterMode = FilterMode.Point,
+        };
+        GetComponent<MeshRenderer>().sharedMaterial.SetTexture("_UVMap", uvmap);
+
+        if (mesh != null)
+            mesh.Clear();
+        else
+            mesh = new Mesh()
+            {
+                indexFormat = IndexFormat.UInt32,
+            };
+
+        vertices = new Vector3[width * height];
+        handle = GCHandle.Alloc(vertices, GCHandleType.Pinned);
+        verticesPtr = handle.AddrOfPinnedObject();
+
+        var indices = new int[vertices.Length];
+        for (int i = 0; i < vertices.Length; i++)
+            indices[i] = i;
+
+        mesh.MarkDynamic();
+        mesh.vertices = vertices;
+
+        var uvs = new Vector2[width * height];
+        Array.Clear(uvs, 0, uvs.Length);
+        for (int j = 0; j < height; j++)
+        {
+            for (int i = 0; i < width; i++)
+            {
+                uvs[i + j * width].x = i / (float)width;
+                uvs[i + j * width].y = j / (float)height;
+            }
         }
 
-        using (var points = pc.Calculate(depthFrame))
+        mesh.uv = uvs;
+
+        mesh.SetIndices(indices, MeshTopology.Points, 0, false);
+        mesh.bounds = new Bounds(Vector3.zero, Vector3.one * 10f);
+
+        GetComponent<MeshFilter>().sharedMesh = mesh;
+        _currVideoStreamFilter = vsr.Clone();
+    }
+
+    void OnDestroy()
+    {
+        Dispose();
+
+        if(mesh != null)
+            Destroy(null);
+    }
+
+    private void Dispose()
+    {
+        e.Reset();
+
+        if (handle.IsAllocated)
+            handle.Free();
+
+        if (frameData != IntPtr.Zero)
         {
-            setParticals(points, null);
+            Marshal.FreeHGlobal(frameData);
+            frameData = IntPtr.Zero;
         }
     }
 
-    //object l = new object();
+    private Points TryGetPoints(FrameSet frameset)
+    {
+        foreach (var f in frameset)
+        {
+            if (f is Points)
+                return f as Points;
+            f.Dispose();
+        }
+        return null;
+    }
+
     private void OnFrames(FrameSet frames)
     {
-        using (var aligned = aligner.Process(frames))
+        using (var points = TryGetPoints(frames))
         {
-            using (var colorFrame = aligned.ColorFrame)
-            using (var depthFrame = aligned.DepthFrame)
+            if (points == null)
+                return;
+
+            using (var depth = frames.DepthFrame)
             {
-                if (depthFrame == null)
+                if (_currVideoStreamFilter.Width != depth.Width || _currVideoStreamFilter.Height != depth.Height)
                 {
-                    Debug.Log("No depth frame in frameset, can't create point cloud");
+                    _videoStreamFilter.Width = depth.Width;
+                    _videoStreamFilter.Height = depth.Height;
                     return;
                 }
-
-                if (!UpdateParticleParams(depthFrame.Width, depthFrame.Height))
-                {
-                    Debug.Log("Unable to craete point cloud");
-                    return;
-                }
-
-                using (var points = pc.Calculate(depthFrame))
-                {
-                    setParticals(points, colorFrame);
-                }
             }
+
+            memcpy(verticesPtr, points.VertexData, points.Count * 3 * sizeof(float));
+
+            frameSize = points.Count * 2 * sizeof(float);
+            if (frameData == IntPtr.Zero)
+                frameData = Marshal.AllocHGlobal(frameSize);
+            memcpy(frameData, points.TextureData, frameSize);
+
+            e.Set();
         }
     }
 
-    private void setParticals(Points points, VideoFrame colorFrame)
+    protected void Update()
     {
-        if (points == null)
-            throw new Exception("Frame in queue is not a points frame");
+        if (!_videoStreamFilter.Equals(_currVideoStreamFilter))
+            ResetMesh(_videoStreamFilter);
 
-        if (colorFrame != null)
+        if (e.WaitOne(0))
         {
-            if (lastColorImage == null)
-            {
-                int colorFrameSize = colorFrame.Height * colorFrame.Stride;
-                lastColorImage = new byte[colorFrameSize];
-            }
-            colorFrame.CopyTo(lastColorImage);
-        }
+            uvmap.LoadRawTextureData(frameData, frameSize);
+            uvmap.Apply();
 
-        vertices = vertices ?? new Points.Vertex[points.Count];
-        points.CopyTo(vertices);
-
-        Debug.Assert(vertices.Length == particles.Length);
-        int mirror = mirrored ? -1 : 1;
-        for (int index = 0; index < vertices.Length; index += skipParticles)
-        {
-            var v = vertices[index];
-            if (v.z > 0)
-            {
-                particles[index].position = new Vector3(v.x * mirror, v.y, v.z);
-                particles[index].startSize = v.z * pointsSize * 0.02f;
-                if (lastColorImage != null)
-                    particles[index].startColor = new Color32(lastColorImage[index * 3], lastColorImage[index * 3 + 1], lastColorImage[index * 3 + 2], 255);
-                else
-                {
-                    byte z = (byte)(v.z / 2f * 255);
-                    particles[index].startColor = new Color32(z, z, z, 255);
-                }
-            }
-            else //Required since we reuse the array
-            {
-                particles[index].position = Vector3.zero;
-                particles[index].startSize = 0;
-                particles[index].startColor = Color.black;
-            }
+            mesh.vertices = vertices;
+            mesh.UploadMeshData(false);
         }
     }
-
-    private bool UpdateParticleParams(int width, int height)
-    {
-        var numParticles = (width * height);
-        if (particles.Length != numParticles)
-        {
-            particles = new ParticleSystem.Particle[numParticles];
-        }
-
-        return true;
-    }
-
-    void Update()
-    {
-        //Either way, update particles
-        pointCloudParticles.SetParticles(particles, particles.Length);
-    }
+    
+    [DllImport("msvcrt.dll", EntryPoint = "memcpy", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
+    internal static extern IntPtr memcpy(IntPtr dest, IntPtr src, int count);
 }

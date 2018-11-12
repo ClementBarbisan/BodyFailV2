@@ -30,7 +30,7 @@ public class PointCloudGPU : MonoBehaviour {
     // Use this for initialization
     void Start () {
         NuitrackManager.DepthSensor.OnUpdateEvent += HandleOnDepthSensorUpdateEvent;
-        NuitrackManager.ColorSensor.OnUpdateEvent += HandleOnColorSensorUpdateEvent;
+       // NuitrackManager.ColorSensor.OnUpdateEvent += HandleOnColorSensorUpdateEvent;
         feedback = FindObjectOfType<Feedback>();
         initColor = feedback.color.r;
         glitch = FindObjectOfType<GlitchFx>();
