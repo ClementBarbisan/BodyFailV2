@@ -15,7 +15,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace>
     </RootNamespace>
-    <ProjectGuid>{648D26E9-C773-448C-66AC-CA8E5A676BA7}</ProjectGuid>
+    <ProjectGuid>{ADF57DCA-72BC-82C0-FCB5-58DBE06F9C70}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -144,6 +144,7 @@
     <None Include="Assets\RealSenseSDK2.0\Shaders\RGB.shader" />
     <None Include="Assets\StreamingAssets\fann_neural_net.txt" />
     <None Include="Assets\RealSenseSDK2.0\Shaders\Grayscale.shader" />
+    <None Include="Assets\RealSenseSDK2.0\Shaders\UnlitTransparentShader.shader" />
     <None Include="Assets\StreamingAssets\fann_neural_net_incremental.txt" />
     <None Include="Assets\NuitrackSDK\NuitrackDemos\Shaders\DiffuseVertexColored.shader" />
     <None Include="Assets\NuitrackSDK\VicoVRCalibrationRGB\Materials\Unlit-GS.shader" />
@@ -157,19 +158,19 @@
     <None Include="Assets\StreamingAssets\fann_training_out-scale.txt" />
     <None Include="Assets\StreamingAssets\fann_training.txt" />
     <Reference Include="Unity.TextMeshPro.Editor">
-      <HintPath>E:/BodyFailV21/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+      <HintPath>E:/BodyFailV2/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.PackageManagerUI.Editor">
-      <HintPath>E:/BodyFailV21/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
+      <HintPath>E:/BodyFailV2/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.CollabProxy.Editor">
-      <HintPath>E:/BodyFailV21/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
+      <HintPath>E:/BodyFailV2/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-      <HintPath>E:/BodyFailV21/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+      <HintPath>E:/BodyFailV2/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Analytics.DataPrivacy">
-      <HintPath>E:/BodyFailV21/Library/ScriptAssemblies/Unity.Analytics.DataPrivacy.dll</HintPath>
+      <HintPath>E:/BodyFailV2/Library/ScriptAssemblies/Unity.Analytics.DataPrivacy.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AIModule">
       <HintPath>E:/Program Files/2018.4.23f1/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>
@@ -373,16 +374,16 @@
       <HintPath>E:/Program Files/2018.4.23f1/Editor/Data/UnityExtensions/Unity/UnitySpatialTracking/RuntimeEditor/UnityEngine.SpatialTracking.dll</HintPath>
     </Reference>
     <Reference Include="nuitrack.net">
-      <HintPath>E:/BodyFailV21/Assets/NuitrackSDK/Nuitrack/NuitrackAssembly/nuitrack.net.dll</HintPath>
+      <HintPath>E:/BodyFailV2/Assets/NuitrackSDK/Nuitrack/NuitrackAssembly/nuitrack.net.dll</HintPath>
     </Reference>
     <Reference Include="FANNCSharp.Float">
-      <HintPath>E:/BodyFailV21/Assets/Plugins/x64/FANNCSharp.Float.dll</HintPath>
+      <HintPath>E:/BodyFailV2/Assets/Plugins/x64/FANNCSharp.Float.dll</HintPath>
     </Reference>
     <Reference Include="Intel.RealSense">
-      <HintPath>E:/BodyFailV21/Assets/RealSenseSDK2.0/Plugins/Intel.RealSense.dll</HintPath>
+      <HintPath>E:/BodyFailV2/Assets/RealSenseSDK2.0/Plugins/Intel.RealSense.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Analytics.StandardEvents">
-      <HintPath>E:/BodyFailV21/Library/PackageCache/com.unity.analytics@3.2.3/AnalyticsStandardEvents/Unity.Analytics.StandardEvents.dll</HintPath>
+      <HintPath>E:/BodyFailV2/Library/PackageCache/com.unity.analytics@3.2.3/AnalyticsStandardEvents/Unity.Analytics.StandardEvents.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>E:/Program Files/2018.4.23f1/Editor/Data/MonoBleedingEdge/lib/mono/unity/mscorlib.dll</HintPath>
@@ -414,11 +415,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Utils.csproj">
-      <Project>{74AD006F-A662-E713-32B9-A202C5CF6EA6}</Project>
+      <Project>{B5E86876-11DC-7382-0765-FA249F4990D2}</Project>
       <Name>Utils</Name>
     </ProjectReference>
     <ProjectReference Include="RealSense.csproj">
-      <Project>{3A91E68D-FEDF-79EF-797E-C07C6EDA77A3}</Project>
+      <Project>{39FA85BA-B86A-9965-23CD-7C1910CE57CF}</Project>
       <Name>RealSense</Name>
     </ProjectReference>
   </ItemGroup>

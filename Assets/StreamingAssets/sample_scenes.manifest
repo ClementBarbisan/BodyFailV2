@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 4047948713
+CRC: 1094038802
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: c8183b741746d961184fd12077cb718e
+    Hash: 957cd2b0628106c71537793848a8c38b
   TypeTreeHash:
     serializedVersion: 2
     Hash: 31d6cfe0d16ae931b73c59d7e0c089c0
@@ -17,6 +17,7 @@ Assets:
 - Assets/RealSenseSDK2.0/Scenes/Samples/TexturesDepthAndInfrared.unity
 - Assets/RealSenseSDK2.0/Scenes/Samples/PointCloudProcessingBlocks.unity
 - Assets/RealSenseSDK2.0/Scenes/Samples/BackgroundSegmentation.unity
+- Assets/RealSenseSDK2.0/Scenes/Samples/SLAM.unity
 - Assets/RealSenseSDK2.0/Scenes/Samples/ARBackground.unity
 Dependencies:
-- C:/git/librealsense/build-x64/wrappers/unity/Assets/StreamingAssets/sample_assets
+- D:/librealsense/wrappers/unity/Assets/StreamingAssets/sample_assets
