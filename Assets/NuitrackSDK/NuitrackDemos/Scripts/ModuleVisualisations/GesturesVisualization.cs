@@ -1,43 +1,34 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Text;
 using System;
+using nuitrack;
 
-public class GesturesVisualization : MonoBehaviour 
+public class GesturesVisualization : MonoBehaviour
 {
-	ExceptionsLogger exceptionsLogger;
-	NuitrackModules nuitrackModules;
-	nuitrack.GestureData gesturesData = null;
+    ExceptionsLogger exceptionsLogger;
+    NuitrackModules nuitrackModules;
+    GestureData gesturesData = null;
 
-	void Start () 
-	{
-		exceptionsLogger = FindObjectOfType<ExceptionsLogger>();
-		nuitrackModules = FindObjectOfType<NuitrackModules>();
-	}
-	
-	void Update () 
-	{
-		if (nuitrackModules.GesturesData != null)
-		{
-			if (gesturesData != nuitrackModules.GesturesData)
-			{
-				gesturesData = nuitrackModules.GesturesData;
-				ProcessGesturesData(gesturesData);
-			}
-		}
-	}
+    private void OnEnable()
+    {
+        NuitrackManager.onNewGesture += OnNewGesture;
+    }
 
-	void ProcessGesturesData(nuitrack.GestureData data)
-	{
-		if (data.NumGestures > 0)
-		{
-			for (int i = 0; i < data.Gestures.Length; i++)
-			{
-				string newEntry = 
-					"User " + data.Gestures[i].UserID + ": " + 
-					Enum.GetName(typeof (nuitrack.GestureType), (int)data.Gestures[i].Type);
-				exceptionsLogger.AddEntry(newEntry);
-			}
-		}
-	}
+    private void OnNewGesture(Gesture gesture)
+    {
+        string newEntry =
+            "User " + gesture.UserID + ": " +
+            Enum.GetName(typeof(nuitrack.GestureType), (int)gesture.Type);
+        exceptionsLogger.AddEntry(newEntry);
+    }
+
+    private void OnDisable()
+    {
+        NuitrackManager.onNewGesture -= OnNewGesture;
+    }
+
+    void Start()
+    {
+        exceptionsLogger = FindObjectOfType<ExceptionsLogger>();
+        nuitrackModules = FindObjectOfType<NuitrackModules>();
+    }
 }

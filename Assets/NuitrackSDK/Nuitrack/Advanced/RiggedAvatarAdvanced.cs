@@ -78,7 +78,7 @@ public class RiggedAvatarAdvanced : MonoBehaviour
         newPivotOffset.x = 0;
 
         basePivotOffset = newPivotOffset;
-        Debug.Log("Сдвиг");
+        Debug.Log("Offset");
         //if (Application.isEditor)
         //    jointsRigged[nuitrack.JointType.Waist].bone.position = basePivotOffset;
     }

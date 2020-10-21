@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CamRotation : MonoBehaviour {
-
+public class CamRotation : MonoBehaviour
+{
     static bool versionChecked = false;
     public static bool cameraJointVersion = false;
 
@@ -11,13 +11,13 @@ public class CamRotation : MonoBehaviour {
 
     [SerializeField] Transform headBase;
     [SerializeField] Transform yCorrection;
-    [SerializeField]Transform vrCamera;
+    [SerializeField] Transform vrCamera;
 
     [Header("GearVR Camera settings")]
     [SerializeField] Transform gearvrCamera;
 
-	[Header("IOS Camera settings")]
-	[SerializeField]SensorRotation sensorRotation;
+    [Header("IOS Camera settings")]
+    [SerializeField] SensorRotation sensorRotation;
 
     void NativeRecenter(Quaternion rot)
     {
@@ -33,23 +33,27 @@ public class CamRotation : MonoBehaviour {
         }
     }
 
-	void Start(){
-		if (GameVersion.currentPlatform == Platform.IOS) {
-			sensorRotation.enabled = true;
-			Debug.Log ("sensor rotation on");
-		}
-	}
+    void Start()
+    {
+        if (GameVersion.currentPlatform == Platform.IOS)
+        {
+            sensorRotation.enabled = true;
+            Debug.Log("sensor rotation on");
+        }
+    }
 
     void OnDestroy()
     {
-        if(cameraJointVersion) FindObjectOfType<TPoseCalibration>().onSuccess -= NativeRecenter;
+        if (cameraJointVersion) FindObjectOfType<TPoseCalibration>().onSuccess -= NativeRecenter;
     }
 
-	void OnGUI(){
-//		GUI.Label(new Rect(0,0, 200,200), cameraJointVersion +" "+ CurrentUserTracker.CurrentSkeleton.GetJoint(nuitrack.JointType.None).ToQuaternion());
-	}
+    void OnGUI()
+    {
+        //GUI.Label(new Rect(0,0, 200,200), cameraJointVersion +" "+ CurrentUserTracker.CurrentSkeleton.GetJoint(nuitrack.JointType.None).ToQuaternion());
+    }
 
-    void Update () {
+    void Update()
+    {
 
         if (CurrentUserTracker.CurrentUser == 0)
             return;
@@ -59,12 +63,12 @@ public class CamRotation : MonoBehaviour {
         {
             nuitrack.Joint curCamJoint = CurrentUserTracker.CurrentSkeleton.GetJoint(nuitrack.JointType.None);
 
-//			Debug.Log ("Real:" + curCamJoint.Real.X + " " + curCamJoint.Real.Y + " " + curCamJoint.Real.Z + " **** conf:" + curCamJoint.Confidence); //on ios 
+            //Debug.Log ("Real:" + curCamJoint.Real.X + " " + curCamJoint.Real.Y + " " + curCamJoint.Real.Z + " **** conf:" + curCamJoint.Confidence); //on ios 
 
-			Vector3 camVec = Vector3.zero;
+            Vector3 camVec = Vector3.zero;
 
-			if(curCamJoint.Confidence != 0)
-				camVec = new Vector3(curCamJoint.Orient.Matrix[1], curCamJoint.Orient.Matrix[4], curCamJoint.Orient.Matrix[7]);
+            if (curCamJoint.Confidence != 0)
+                camVec = new Vector3(curCamJoint.Orient.Matrix[1], curCamJoint.Orient.Matrix[4], curCamJoint.Orient.Matrix[7]);
 
             if (camVec.magnitude > 0.9) //The norm should be equal to 1.
             {
@@ -85,7 +89,7 @@ public class CamRotation : MonoBehaviour {
                 FindObjectOfType<TPoseCalibration>().onSuccess += NativeRecenter;
             }
 
-//			Debug.Log("cameraJointVersion: " + cameraJointVersion + CurrentUserTracker.CurrentSkeleton.GetJoint(nuitrack.JointType.None).ToQuaternion());
+            //Debug.Log("cameraJointVersion: " + cameraJointVersion + CurrentUserTracker.CurrentSkeleton.GetJoint(nuitrack.JointType.None).ToQuaternion());
 
             firstCheck = true;
         }
@@ -93,11 +97,11 @@ public class CamRotation : MonoBehaviour {
         if (cameraJointVersion)
         {
             //Vector3 cameraPosition = 0.001f * (TPoseCalibration.SensorOrientation * CurrentUserTracker.CurrentSkeleton.GetJoint(nuitrack.JointType.None).ToVector3());
-        #if UNITY_IOS
+#if UNITY_IOS
             Quaternion cameraRotation = Quaternion.identity;
-        #else
+#else
             Quaternion cameraRotation = TPoseCalibration.SensorOrientation * CurrentUserTracker.CurrentSkeleton.GetJoint(nuitrack.JointType.None).ToQuaternion();
-        #endif
+#endif
 
             //transform.position = 0.001f * (TPoseCalibration.SensorOrientation * CurrentUserTracker.CurrentSkeleton.GetJoint(nuitrack.JointType.None).ToVector3());
 
@@ -107,8 +111,8 @@ public class CamRotation : MonoBehaviour {
                 vrCamera.eulerAngles = cameraRotation.eulerAngles;
             }
 
-			if (GameVersion.currentPlatform == Platform.GearVR)
-			{
+            if (GameVersion.currentPlatform == Platform.GearVR)
+            {
                 //headBase.position = cameraPosition;
 
                 Vector3 gazeDirection = gearvrCamera.forward;
@@ -116,7 +120,7 @@ public class CamRotation : MonoBehaviour {
 
                 Quaternion currentRotation = Quaternion.Euler(0f, Mathf.Atan2(gazeDirHead.x, gazeDirHead.z) * Mathf.Rad2Deg, 0f);
 
-                Vector3 vicovrDirection = cameraRotation * Vector3.forward; // из п.5
+                Vector3 vicovrDirection = cameraRotation * Vector3.forward;
                 Quaternion yPartRotation = Quaternion.Euler(0f, Mathf.Atan2(vicovrDirection.x, vicovrDirection.z) * Mathf.Rad2Deg, 0f);
 
                 Quaternion correction = yPartRotation * Quaternion.Inverse(currentRotation);
@@ -131,10 +135,10 @@ public class CamRotation : MonoBehaviour {
             }
         }
 
-		if (GameVersion.currentPlatform == Platform.IOS) //or can use if(curcamJoint.Confidence == 0)
-		{
-			transform.localRotation = sensorRotation.Rotation;
-//			Debug.Log ("Ios camera rotation");
-		}
-	}
+        if (GameVersion.currentPlatform == Platform.IOS) //or can use if(curcamJoint.Confidence == 0)
+        {
+            transform.localRotation = sensorRotation.Rotation;
+            //Debug.Log ("Ios camera rotation");
+        }
+    }
 }

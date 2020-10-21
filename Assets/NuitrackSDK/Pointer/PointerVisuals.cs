@@ -1,20 +1,19 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class PointerVisuals : MonoBehaviour {
-    
-    
+public class PointerVisuals : MonoBehaviour
+{
     [Header("Controller Visuals")]
     [Header("Stick")]
-    [SerializeField]Transform stick; //x z
-    [SerializeField]float maxAngleStick = 16;
+    [SerializeField] Transform stick; //x z
+    [SerializeField] float maxAngleStick = 16;
     float baseZStick = -90;
 
     [Header("Buttons")]
-    [SerializeField]Transform menuButton;
-    [SerializeField]Transform homeButton;
-    [SerializeField]Transform buttonA;
-    [SerializeField]Transform buttonB;
+    [SerializeField] Transform menuButton;
+    [SerializeField] Transform homeButton;
+    [SerializeField] Transform buttonA;
+    [SerializeField] Transform buttonB;
 
     Dictionary<int, Transform> buttons = new Dictionary<int, Transform>();
 

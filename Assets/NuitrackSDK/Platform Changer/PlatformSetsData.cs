@@ -6,7 +6,7 @@ public enum Platform
 {
     Default,
     GearVR,
-	IOS,
+    IOS,
     //PicoVR,
 }
 

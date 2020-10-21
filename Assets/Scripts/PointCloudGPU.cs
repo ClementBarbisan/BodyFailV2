@@ -36,19 +36,19 @@ public class PointCloudGPU : MonoBehaviour {
         glitch = FindObjectOfType<GlitchFx>();
 	}
 
-    void HandleOnColorSensorUpdateEvent(nuitrack.ColorFrame frame)
-    {
-        if (texture == null)
-        {
-            nuitrack.OutputMode ouput = NuitrackManager.ColorSensor.GetOutputMode();
-            texture = new Texture2D(ouput.XRes, ouput.YRes, TextureFormat.RGB24, false);
-            matPointCloud.SetTexture("_MainTex", texture);
-            matPointCloud.SetInt("_WidthTex", ouput.XRes);
-            matPointCloud.SetInt("_HeightTex", ouput.YRes);
-        }
-        texture.LoadRawTextureData(frame.Data);
-        texture.Apply();
-    }
+    // void HandleOnColorSensorUpdateEvent(nuitrack.ColorFrame frame)
+    // {
+    //     if (texture == null)
+    //     {
+    //         nuitrack.OutputMode ouput = NuitrackManager.ColorSensor.GetOutputMode();
+    //         texture = new Texture2D(ouput.XRes, ouput.YRes, TextureFormat.RGB24, false);
+    //         matPointCloud.SetTexture("_MainTex", texture);
+    //         matPointCloud.SetInt("_WidthTex", ouput.XRes);
+    //         matPointCloud.SetInt("_HeightTex", ouput.YRes);
+    //     }
+    //     texture.LoadRawTextureData(frame.Data);
+    //     texture.Apply();
+    // }
 
 
     // Update is called once per frame

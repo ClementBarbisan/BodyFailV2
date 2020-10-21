@@ -15,17 +15,17 @@ public static class VVRInput
         None = 0,
         Menu = 1,
         Home = 2,
-        A    = 4,
-        B    = 8,
+        A = 4,
+        B = 8,
         Any = ~None,
-	}
+    }
 
     public static Vector2 GetStickPos()
     {
         float x = 0f;
         float y = 0f;
         nuitrack.PublicNativeImporter.nuitrack_getStickPosition(ref x, ref y);
-        return new Vector2(x,y);
+        return new Vector2(x, y);
     }
 
     public static bool Get(Button virtualMask)
@@ -76,7 +76,7 @@ public static class VVRInput
 
         return up;
     }
-    
+
     public static void Init()
     {
         //buttonsCallback = ButtonsCallback;

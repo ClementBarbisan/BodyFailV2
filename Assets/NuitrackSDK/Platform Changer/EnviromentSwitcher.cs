@@ -9,10 +9,10 @@ enum NeedVicoVR
     No,
 }
 
-public class EnviromentSwitcher : MonoBehaviour {
-
-    [SerializeField]Platform targetPlatform;
-    [SerializeField]GameObject[] showGO = null, hideGO = null;
+public class EnviromentSwitcher : MonoBehaviour
+{
+    [SerializeField] Platform targetPlatform;
+    [SerializeField] GameObject[] showGO = null, hideGO = null;
     //[SerializeField]NeedVicoVR needVicoVR;
 
     private void Awake()

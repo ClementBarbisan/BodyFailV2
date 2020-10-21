@@ -4,7 +4,8 @@ using System.IO;
 using System.Collections.Generic;
 
 [System.Serializable]
-public class PlatformChanger : EditorWindow {
+public class PlatformChanger : EditorWindow
+{
     public PlatformSets[] platformSets;
     public Platform targetPlatform;
 
@@ -79,7 +80,7 @@ public class PlatformChanger : EditorWindow {
 #if UNITY_2017_1_OR_NEWER
             PlayerSettings.applicationIdentifier = GetPlatform().bundleID;
 #else
-            PlayerSettings.applicationIdentifier = GetPlatform().bundleID;
+            PlayerSettings.bundleIdentifier = GetPlatform().bundleID;
 #endif
             PlayerPrefs.SetString("Platform", GetPlatform().platformName.ToString());
             QualitySettings.antiAliasing = 2;
@@ -101,7 +102,7 @@ public class PlatformChanger : EditorWindow {
 #if UNITY_2017_1_OR_NEWER
         GUILayout.TextField("Bundle Id: " + PlayerSettings.applicationIdentifier);
 #else
-        GUILayout.TextField("Bundle Id: " + PlayerSettings.applicationIdentifier);
+        GUILayout.TextField("Bundle Id: " + PlayerSettings.bundleIdentifier);
 #endif
         GUILayout.TextField("Name: " + PlayerSettings.productName);
     }

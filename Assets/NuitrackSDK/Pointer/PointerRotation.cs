@@ -1,18 +1,20 @@
 ﻿using UnityEngine;
 
-public class PointerRotation : MonoBehaviour {
-
-	public int hand;
+public class PointerRotation : MonoBehaviour
+{
+    public int hand;
     public Transform target;
 
     public float speed = 0.1F;
-    
-    void Start () {
+
+    void Start()
+    {
 
     }
 
     // Update is called once per frame
-    void LateUpdate () {
+    void LateUpdate()
+    {
         if (CurrentUserTracker.CurrentSkeleton == null)
             return;
 

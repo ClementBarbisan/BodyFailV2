@@ -1,0 +1,27 @@
+﻿#pragma kernel Depth2Texture
+
+RWTexture2D<float4> Result;
+uniform StructuredBuffer<uint> DepthFrame : register(t1);
+
+int textureWidth;
+float contrast = 0.0F;
+
+[numthreads(8,8,1)]
+void Depth2Texture (uint3 id : SV_DispatchThreadID)
+{
+	uint rawIndex = textureWidth * id.y + id.x;
+	uint depthVal = DepthFrame[rawIndex >> 1];
+
+	float contrastVal = 1.0F + contrast;
+	float depth;
+
+	// Shift trick, because in the Shader we read two values (Int16) as one (Int32)
+	if(rawIndex % 2 != 0)
+		depth = float(depthVal >> 16);
+	else
+		depth = float((depthVal << 16) >> 16);
+
+	depth = (((depth / 16384.0F) - 0.5F) * contrastVal) + 0.5F;
+
+	Result[id.xy] = float4(depth, depth, depth, 1.0F);
+}

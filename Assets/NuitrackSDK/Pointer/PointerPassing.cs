@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 
-public class PointerPassing : MonoBehaviour {
-
-	[SerializeField] Transform pointerObject;
+public class PointerPassing : MonoBehaviour
+{
+    [SerializeField] Transform pointerObject;
     [Header("For Rigged model")]
     [SerializeField] Transform leftHand;
-	[SerializeField] Transform rightHand;
+    [SerializeField] Transform rightHand;
     [SerializeField] PointerRotation leftHandRotator;
     [SerializeField] PointerRotation rightHandRotator;
 
@@ -23,7 +23,8 @@ public class PointerPassing : MonoBehaviour {
     public delegate void CalibrationAction(int handID, float progress);
     public static event CalibrationAction OnCalibration;
 
-    void Start () {
+    void Start()
+    {
         VVRInput.Init();
 
         buttonsCallback = ButtonsCallback;
@@ -34,9 +35,9 @@ public class PointerPassing : MonoBehaviour {
         DoBLEScan(Quaternion.identity);
         //FindObjectOfType<TPoseCalibration>().onSuccess += DoBLEScan;
     }
-	
-	void Update () 
-	{
+
+    void Update()
+    {
         if (attachToSkelJoint)
         {
             if (hand % 2 == 0)
@@ -53,14 +54,14 @@ public class PointerPassing : MonoBehaviour {
     }
 
     void ButtonsCallback(int buttonID, int eventID)
-	{
+    {
         if (OnPressed != null)
             OnPressed(buttonID, eventID);
     }
 
     void ControllerCalibrationCallback(int handID, float progress)
-	{
-		//Debug.Log ("CONTROLLER CALIBRATION: " + handID + " " + progress);
+    {
+        //Debug.Log ("CONTROLLER CALIBRATION: " + handID + " " + progress);
 
         if (OnCalibration != null)
             OnCalibration(handID, progress);
@@ -80,8 +81,8 @@ public class PointerPassing : MonoBehaviour {
             hand = handID;
         }
 
-		if (handID % 2 == 0) 
-		{
+        if (handID % 2 == 0)
+        {
             if (!attachToSkelJoint)
             {
                 rightHandRotator.transform.rotation = Quaternion.identity;
@@ -90,9 +91,9 @@ public class PointerPassing : MonoBehaviour {
                 pointerObject.SetParent(rightHand, false);
                 ResetPosition();
             }
-        } 
-		else 
-		{
+        }
+        else
+        {
             if (!attachToSkelJoint)
             {
                 leftHandRotator.transform.rotation = Quaternion.identity;
@@ -102,7 +103,7 @@ public class PointerPassing : MonoBehaviour {
                 ResetPosition();
             }
         }
-	}
+    }
 
     void ResetPosition()
     {

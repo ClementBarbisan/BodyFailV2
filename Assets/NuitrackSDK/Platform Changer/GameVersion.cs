@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameVersion {
-
+public class GameVersion
+{
     public static Platform? currentPlatform = null;
     //public static bool usedVicoVR = false;
 

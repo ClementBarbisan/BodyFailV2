@@ -21,11 +21,11 @@ public class NuitrackAvatar : MonoBehaviour
         for (int i = 0; i < modelJoints.Length; i++)
         {
             modelJoints[i].baseRotOffset = modelJoints[i].bone.rotation;
-            jointsRigged.Add(modelJoints[i].jointType, modelJoints[i]);
+            jointsRigged.Add(modelJoints[i].jointType.TryGetMirrored(), modelJoints[i]);
 
             //Adding base distances between the child bone and the parent bone 
             if (modelJoints[i].parentJointType != nuitrack.JointType.None)
-                AddBoneScale(modelJoints[i].jointType, modelJoints[i].parentJointType);
+                AddBoneScale(modelJoints[i].jointType.TryGetMirrored(), modelJoints[i].parentJointType.TryGetMirrored());
         }
     }
 

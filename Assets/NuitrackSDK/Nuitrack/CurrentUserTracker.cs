@@ -9,16 +9,16 @@ using System.Collections;
 public class CurrentUserTracker : MonoBehaviour
 {
     static int currentUser;
-    public static int CurrentUser  { get { return currentUser; } }
+    public static int CurrentUser { get { return currentUser; } }
 
     static nuitrack.Skeleton currentSkeleton;
-    public static nuitrack.Skeleton CurrentSkeleton {get {return currentSkeleton;}}
+    public static nuitrack.Skeleton CurrentSkeleton { get { return currentSkeleton; } }
 
     static CurrentUserTracker instance;
 
     public static CurrentUserTracker Instance
     {
-        get 
+        get
         {
             if (instance == null)
             {
@@ -36,24 +36,24 @@ public class CurrentUserTracker : MonoBehaviour
         }
     }
 
-    void Start ()
+    void Start()
     {
         DontDestroyOnLoad(this);
         NuitrackManager.onSkeletonTrackerUpdate += NuitrackManager_onSkeletonTrackerUpdate;
     }
 
-    void NuitrackManager_onSkeletonTrackerUpdate (nuitrack.SkeletonData skeletonData)
+    void NuitrackManager_onSkeletonTrackerUpdate(nuitrack.SkeletonData skeletonData)
     {
         if ((skeletonData == null) || (skeletonData.NumUsers == 0))
         {
             currentUser = 0;
             currentSkeleton = null;
-            return; 
+            return;
         }
 
         if (currentUser != 0)
         {
-            currentSkeleton = skeletonData.GetSkeletonByID (currentUser);
+            currentSkeleton = skeletonData.GetSkeletonByID(currentUser);
             currentUser = (currentSkeleton == null) ? 0 : currentUser;
         }
 

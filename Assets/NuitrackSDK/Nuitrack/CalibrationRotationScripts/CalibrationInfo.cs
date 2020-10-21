@@ -1,34 +1,34 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class CalibrationInfo : MonoBehaviour 
+public class CalibrationInfo : MonoBehaviour
 {
     TPoseCalibration calibration;
 
     static Quaternion sensorOrientation = Quaternion.identity;
     static Quaternion sensorOrientationMarker = Quaternion.identity;
-    public static Quaternion SensorOrientation {get {return sensorOrientation;}}
+    public static Quaternion SensorOrientation { get { return sensorOrientation; } }
 
-    [SerializeField]bool useCalibrationSensorOrientation = false;
+    [SerializeField] bool useCalibrationSensorOrientation = false;
 
-    #if NUITRACK_MARKER
+#if NUITRACK_MARKER
     [SerializeField]bool useMarkerSensorOrientation = false;
-    #endif
+#endif
 
     //floor height requires UserTracker module to work at the moment, 
     [Tooltip("Floor height tracking requires enabled UserTracker module (in NuitrackManager component)")]
-    [SerializeField]bool trackFloorHeight = false;
+    [SerializeField] bool trackFloorHeight = false;
     nuitrack.UserFrame userFrame = null;
 
     static float floorHeight = 1f;
-    public static float FloorHeight {get{return floorHeight;}}
-  
+    public static float FloorHeight { get { return floorHeight; } }
+
     public static void SetSensorHeightManually(float newHeight) //may be used when floor is not tracked / UserTracker not enabled
     {
         floorHeight = newHeight;
     }
 
-    void Start () 
+    void Start()
     {
         DontDestroyOnLoad(this);
 
@@ -39,22 +39,22 @@ public class CalibrationInfo : MonoBehaviour
             NuitrackManager.onUserTrackerUpdate += OnUserTrackerUpdate; //needed for floor info
         }
 
-        #if NUITRACK_MARKER
+#if NUITRACK_MARKER
         if (useMarkerSensorOrientation)
         {
             IMUMarkerRotation markerRotation = FindObjectOfType<IMUMarkerRotation>();
             if (markerRotation != null) markerRotation.onMarkerSensorOrientationUpdate += OnMarkerCorrectionEvent;
         }
-        #endif
+#endif
     }
 
-    void OnUserTrackerUpdate (nuitrack.UserFrame frame)
+    void OnUserTrackerUpdate(nuitrack.UserFrame frame)
     {
         userFrame = frame;
     }
 
     //can be used for sensor (angles, floor distance, maybe?) / user calibration (height, lengths)
-    void Calibration_onSuccess (Quaternion rotation)
+    void Calibration_onSuccess(Quaternion rotation)
     {
         //sensor orientation:
         Vector3 torso = CurrentUserTracker.CurrentSkeleton.GetJoint(nuitrack.JointType.Torso).ToVector3();
@@ -65,14 +65,14 @@ public class CalibrationInfo : MonoBehaviour
         //floor height:
         if (trackFloorHeight && (userFrame != null))
         {
-      
+
             Vector3 floor = 0.001f * userFrame.Floor.ToVector3();
             Vector3 normal = userFrame.FloorNormal.ToVector3();
             //Debug.Log("Floor: " + floor.ToString("0.00") + "; normal: " + normal.ToString("0.00"));
             if (normal.sqrMagnitude > 0.01f) //
             {
-            Plane floorPlane = new Plane(normal, floor);
-            floorHeight = floorPlane.GetDistanceToPoint(Vector3.zero);
+                Plane floorPlane = new Plane(normal, floor);
+                floorHeight = floorPlane.GetDistanceToPoint(Vector3.zero);
             }
         }
     }
