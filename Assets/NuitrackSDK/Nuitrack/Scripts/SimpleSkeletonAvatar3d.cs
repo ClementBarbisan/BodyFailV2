@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using NuitrackSDK;
 using UnityEngine;
 
 public class SimpleSkeletonAvatar3d : MonoBehaviour

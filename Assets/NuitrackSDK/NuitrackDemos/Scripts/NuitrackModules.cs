@@ -1,133 +1,175 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System;
 
 #if UNITY_ANDROID && UNITY_2018_1_OR_NEWER && !UNITY_EDITOR
 using UnityEngine.Android;
 #endif
 
-public class NuitrackModules : MonoBehaviour
+using NuitrackSDK.ErrorSolver;
+using NuitrackSDK.Loader;
+
+
+namespace NuitrackSDK.NuitrackDemos
 {
-    [SerializeField] GameObject depthUserVisualizationPrefab;
-    [SerializeField] GameObject depthUserMeshVisualizationPrefab;
-    [SerializeField] GameObject skeletonsVisualizationPrefab;
-    [SerializeField] GameObject gesturesVisualizationPrefab;
-    [SerializeField] GameObject handTrackerVisualizationPrefab;
-    [SerializeField] GameObject issuesProcessorPrefab;
-
-    ExceptionsLogger exceptionsLogger;
-
-    [SerializeField] TextMesh perfomanceInfoText;
-
-    void Awake()
+    public class NuitrackModules : MonoBehaviour
     {
-        exceptionsLogger = GameObject.FindObjectOfType<ExceptionsLogger>();
-        NuitrackInitState state = NuitrackLoader.initState;
-        if (state != NuitrackInitState.INIT_OK)
+        [SerializeField] GameObject depthUserVisualizationPrefab;
+        [SerializeField] GameObject depthUserMeshVisualizationPrefab;
+        [SerializeField] GameObject skeletonsVisualizationPrefab;
+        [SerializeField] GameObject gesturesVisualizationPrefab;
+        [SerializeField] GameObject handTrackerVisualizationPrefab;
+        [SerializeField] GameObject issuesProcessorPrefab;
+
+        ExceptionsLogger exceptionsLogger;
+
+        [SerializeField] TextMesh perfomanceInfoText;
+
+        [SerializeField] GameObject standardCamera, threeViewCamera;
+        [SerializeField] GameObject indirectAvatar, directAvatar, indirectAvatarMan, directAvatarMan;
+
+        [SerializeField] GameObject sensorFrame;
+
+        [SerializeField] Dropdown dropdownModelSwitcher;
+
+        int sensorFrameId = 0;
+        bool licenseIsOver;
+
+        public void SwitchCamera()
         {
-            exceptionsLogger.AddEntry("Nuitrack native libraries initialization error: " + Enum.GetName(typeof(NuitrackInitState), state));
-        }
-    }
-
-    bool prevDepth = false;
-    bool prevColor = false;
-    bool prevUser = false;
-    bool prevSkel = false;
-    bool prevHand = false;
-    bool prevGesture = false;
-
-    bool currentDepth, currentColor, currentUser, currentSkeleton, currentHands, currentGestures;
-
-    public void ChangeModules(bool depthOn, bool colorOn, bool userOn, bool skeletonOn, bool handsOn, bool gesturesOn)
-    {
-        try
-        {
-            InitTrackers(depthOn, colorOn, userOn, skeletonOn, handsOn, gesturesOn);
-            //issuesProcessor = (GameObject)Instantiate(issuesProcessorPrefab);
-        }
-        catch (Exception ex)
-        {
-            exceptionsLogger.AddEntry(ex.ToString());
-        }
-    }
-
-    private void InitTrackers(bool depthOn, bool colorOn, bool userOn, bool skeletonOn, bool handsOn, bool gesturesOn)
-    {
-        if(!NuitrackManager.Instance.nuitrackInitialized)
-            exceptionsLogger.AddEntry(NuitrackManager.Instance.initException.ToString());
-
-        if (prevDepth != depthOn)
-        {
-            prevDepth = depthOn;
-            NuitrackManager.Instance.ChangeModulsState(skeletonOn, handsOn, depthOn, colorOn, gesturesOn, userOn);
+            standardCamera.SetActive(!standardCamera.activeSelf);
+            threeViewCamera.SetActive(!threeViewCamera.activeSelf);
         }
 
-        if (prevColor != colorOn)
+        void Awake()
         {
-            prevColor = colorOn;
-            NuitrackManager.Instance.ChangeModulsState(skeletonOn, handsOn, depthOn, colorOn, gesturesOn, userOn);
+            exceptionsLogger = GameObject.FindObjectOfType<ExceptionsLogger>();
+            NuitrackInitState state = NuitrackManager.Instance.InitState;
+            if (state != NuitrackInitState.INIT_OK && Application.platform == RuntimePlatform.Android)
+            {
+                string error_message = "Nuitrack native libraries initialization error: " + Enum.GetName(typeof(NuitrackInitState), state);
+                exceptionsLogger.AddEntry(NuitrackErrorSolver.CheckError(error_message));
+            }
         }
 
-        if (prevUser != userOn)
+        public void ChangeModules(bool depthOn, bool colorOn, bool userOn, bool skeletonOn, bool handsOn, bool gesturesOn)
         {
-            prevUser = userOn;
-            NuitrackManager.Instance.ChangeModulsState(skeletonOn, handsOn, depthOn, colorOn, gesturesOn, userOn);
+            try
+            {
+                InitTrackers(depthOn, colorOn, userOn, skeletonOn, handsOn, gesturesOn);
+                //issuesProcessor = (GameObject)Instantiate(issuesProcessorPrefab);
+            }
+            catch (Exception ex)
+            {
+                exceptionsLogger.AddEntry(ex.ToString());
+            }
         }
 
-        if (skeletonOn != prevSkel)
+        GameObject root;
+        GameObject skelVis;
+        int skelVisId;
+
+        public void SwitchModelByIndex(int id)
         {
-            prevSkel = skeletonOn;
-            NuitrackManager.Instance.ChangeModulsState(skeletonOn, handsOn, depthOn, colorOn, gesturesOn, userOn);
+            skelVisId = id;
+            if (!root)
+                root = GameObject.Find("Root_1");
+
+            if (root)
+                root.SetActive(skelVisId == 0);
+            skelVis.SetActive(skelVisId == 0);
+            indirectAvatar.SetActive(skelVisId == 1);
+            directAvatar.SetActive(skelVisId == 2);
+            indirectAvatarMan.SetActive(skelVisId == 3);
+            directAvatarMan.SetActive(skelVisId == 4);
         }
 
-        if (prevHand != handsOn)
+        bool currentDepth, currentColor, currentUser, currentSkeleton, currentHands, currentGestures;
+
+        private void InitTrackers(bool depthOn, bool colorOn, bool userOn, bool skeletonOn, bool handsOn, bool gesturesOn)
         {
-            prevHand = handsOn;
-            NuitrackManager.Instance.ChangeModulsState(skeletonOn, handsOn, depthOn, colorOn, gesturesOn, userOn);
+            if (!NuitrackManager.Instance.nuitrackInitialized)
+                exceptionsLogger.AddEntry(NuitrackErrorSolver.CheckError(NuitrackManager.Instance.initException, false) + "\n\n\n" + NuitrackManager.Instance.initException.ToString());
+
+            if (skelVisId == 0)
+            {
+                if (root)
+                    root.SetActive(true);
+                skelVis.SetActive(true);
+            }
+            if (skelVisId == 1)
+                indirectAvatar.SetActive(skeletonOn);
+            if (skelVisId == 2)
+                directAvatar.SetActive(skeletonOn);
+            if (skelVisId == 3)
+                indirectAvatarMan.SetActive(skeletonOn);
+            if (skelVisId == 4)
+                directAvatarMan.SetActive(skeletonOn);
+            NuitrackManager.Instance.ChangeModulesState(skeletonOn, handsOn, depthOn, colorOn, gesturesOn, userOn);
         }
 
-        if (prevGesture != gesturesOn)
+        public void InitModules()
         {
-            prevGesture = gesturesOn;
-            NuitrackManager.Instance.ChangeModulsState(skeletonOn, handsOn, depthOn, colorOn, gesturesOn, userOn);
+            if (!NuitrackManager.Instance.nuitrackInitialized)
+                return;
+
+            try
+            {
+                Instantiate(issuesProcessorPrefab);
+                Instantiate(depthUserVisualizationPrefab);
+                Instantiate(depthUserMeshVisualizationPrefab);
+                skelVis = Instantiate(skeletonsVisualizationPrefab);
+                Instantiate(handTrackerVisualizationPrefab);
+                Instantiate(gesturesVisualizationPrefab);
+            }
+            catch (Exception ex)
+            {
+                exceptionsLogger.AddEntry(ex.ToString());
+            }
         }
-    }
 
-    public void InitModules()
-    {
-        if (!NuitrackManager.Instance.nuitrackInitialized)
-            return;
-
-        try
+        void Update()
         {
-            Instantiate(issuesProcessorPrefab);
-            Instantiate(depthUserVisualizationPrefab);
-            Instantiate(depthUserMeshVisualizationPrefab);
-            Instantiate(skeletonsVisualizationPrefab);
-            Instantiate(handTrackerVisualizationPrefab);
-            Instantiate(gesturesVisualizationPrefab);
+            try
+            {
+                string processingTimesInfo = "";
+                if ((NuitrackManager.UserTracker != null) && (NuitrackManager.UserTracker.GetProcessingTime() > 1f)) processingTimesInfo += "User FPS: " + (1000f / NuitrackManager.UserTracker.GetProcessingTime()).ToString("0") + "\n";
+                if ((NuitrackManager.SkeletonTracker != null) && (NuitrackManager.SkeletonTracker.GetProcessingTime() > 1f)) processingTimesInfo += "Skeleton FPS: " + (1000f / NuitrackManager.SkeletonTracker.GetProcessingTime()).ToString("0") + "\n";
+                if ((NuitrackManager.HandTracker != null) && (NuitrackManager.HandTracker.GetProcessingTime() > 1f)) processingTimesInfo += "Hand FPS: " + (1000f / NuitrackManager.HandTracker.GetProcessingTime()).ToString("0") + "\n";
+
+                perfomanceInfoText.text = processingTimesInfo;
+
+                nuitrack.Nuitrack.Update();
+            }
+            catch (Exception ex)
+            {
+                if (!licenseIsOver)
+                {
+                    licenseIsOver = true;
+                    exceptionsLogger.AddEntry(NuitrackErrorSolver.CheckError(ex, false, false));
+                }
+            }
         }
-        catch (Exception ex)
+
+        public void SwitchSensorFrame()
         {
-            exceptionsLogger.AddEntry(ex.ToString());
+            sensorFrameId++;
+            if (sensorFrameId > 1)
+                sensorFrameId = 0;
+
+            if (sensorFrameId == 1)
+            {
+                sensorFrame.SetActive(true);
+            }
+            else if (sensorFrameId == 0)
+            {
+                sensorFrame.SetActive(false);
+            }
         }
-    }
 
-    void Update()
-    {
-        try
+        public void SwitchNuitrackAi()
         {
-            string processingTimesInfo = "";
-            if ((NuitrackManager.UserTracker != null) && (NuitrackManager.UserTracker.GetProcessingTime() > 1f)) processingTimesInfo += "User FPS: " + (1000f / NuitrackManager.UserTracker.GetProcessingTime()).ToString("0") + "\n";
-            if ((NuitrackManager.SkeletonTracker != null) && (NuitrackManager.SkeletonTracker.GetProcessingTime() > 1f)) processingTimesInfo += "Skeleton FPS: " + (1000f / NuitrackManager.SkeletonTracker.GetProcessingTime()).ToString("0") + "\n";
-            if ((NuitrackManager.HandTracker != null) && (NuitrackManager.HandTracker.GetProcessingTime() > 1f)) processingTimesInfo += "Hand FPS: " + (1000f / NuitrackManager.HandTracker.GetProcessingTime()).ToString("0") + "\n";
-
-            perfomanceInfoText.text = processingTimesInfo;
-
-            nuitrack.Nuitrack.Update();
-        }
-        catch (Exception ex)
-        {
-            exceptionsLogger.AddEntry(ex.ToString());
+            NuitrackManager.Instance.EnableNuitrackAI(!NuitrackManager.Instance.UseNuitrackAi);
         }
     }
 }

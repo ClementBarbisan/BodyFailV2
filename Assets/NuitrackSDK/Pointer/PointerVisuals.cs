@@ -1,76 +1,55 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class PointerVisuals : MonoBehaviour
+namespace NuitrackSDK.Pointer
 {
-    [Header("Controller Visuals")]
-    [Header("Stick")]
-    [SerializeField] Transform stick; //x z
-    [SerializeField] float maxAngleStick = 16;
-    float baseZStick = -90;
-
-    [Header("Buttons")]
-    [SerializeField] Transform menuButton;
-    [SerializeField] Transform homeButton;
-    [SerializeField] Transform buttonA;
-    [SerializeField] Transform buttonB;
-
-    Dictionary<int, Transform> buttons = new Dictionary<int, Transform>();
-
-    void OnEnable()
+    public class PointerVisuals : MonoBehaviour
     {
-        PointerPassing.OnPressed += ButtonPressed;
+        [Header("Controller Visuals")]
+        [Header("Stick")]
+        [SerializeField] Transform stick; //x z
+        [SerializeField] float maxAngleStick = 16;
+        float baseZStick = -90;
 
-        buttons.Add(1, menuButton);
-        buttons.Add(2, homeButton);
-        buttons.Add(4, buttonA);
-        buttons.Add(8, buttonB);
-    }
+        [Header("Buttons")]
+        [SerializeField] Transform menuButton;
+        [SerializeField] Transform homeButton;
+        [SerializeField] Transform buttonA;
+        [SerializeField] Transform buttonB;
 
-    void OnDisable()
-    {
-        PointerPassing.OnPressed -= ButtonPressed;
-    }
+        Dictionary<int, Transform> buttons = new Dictionary<int, Transform>();
 
-    private void ButtonPressed(int buttonID, int eventID)
-    {
-        Transform button;
+        void OnEnable()
+        {
+            PointerPassing.OnPressed += ButtonPressed;
 
-        buttons.TryGetValue(buttonID, out button);
+            buttons.Add(1, menuButton);
+            buttons.Add(2, homeButton);
+            buttons.Add(4, buttonA);
+            buttons.Add(8, buttonB);
+        }
 
-        if (eventID == 2)
-            button.localScale = Vector3.one;
-        else
-            button.localScale = Vector3.zero;
-    }
+        void OnDisable()
+        {
+            PointerPassing.OnPressed -= ButtonPressed;
+        }
 
-    private void Update()
-    {
-        //if (VVRInput.GetDown(VVRInput.Button.A))
-        //{
-        //    transform.localScale *= 1.1f;
-        //    Debug.Log("Press A");
-        //}
+        private void ButtonPressed(int buttonID, int eventID)
+        {
+            Transform button;
 
-        //if (VVRInput.GetUp(VVRInput.Button.B))
-        //{
-        //    transform.localScale /= 1.1f;
-        //    Debug.Log("Press B");
-        //}
+            buttons.TryGetValue(buttonID, out button);
 
-        //if (VVRInput.Get(VVRInput.Button.Menu))
-        //{
-        //    transform.localScale *= 1.01f;
-        //    Debug.Log("Press Menu");
-        //}
+            if (eventID == 2)
+                button.localScale = Vector3.one;
+            else
+                button.localScale = Vector3.zero;
+        }
 
-        //if (VVRInput.Get(VVRInput.Button.Home))
-        //{
-        //    transform.localScale /= 1.01f;
-        //    Debug.Log("Press Home");
-        //}
-
-        Vector2 stickPos = VVRInput.GetStickPos();
-        stick.localEulerAngles = new Vector3(stickPos.x * maxAngleStick, 0, baseZStick + stickPos.y * maxAngleStick);
+        private void Update()
+        {
+            Vector2 stickPos = VVRInput.GetStickPos();
+            stick.localEulerAngles = new Vector3(stickPos.x * maxAngleStick, 0, baseZStick + stickPos.y * maxAngleStick);
+        }
     }
 }

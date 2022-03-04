@@ -1,34 +1,32 @@
 ﻿using UnityEngine;
 using System;
-using nuitrack;
 
-public class GesturesVisualization : MonoBehaviour
+
+namespace NuitrackSDK.NuitrackDemos
 {
-    ExceptionsLogger exceptionsLogger;
-    NuitrackModules nuitrackModules;
-    GestureData gesturesData = null;
-
-    private void OnEnable()
+    public class GesturesVisualization : MonoBehaviour
     {
-        NuitrackManager.onNewGesture += OnNewGesture;
-    }
+        ExceptionsLogger exceptionsLogger;
 
-    private void OnNewGesture(Gesture gesture)
-    {
-        string newEntry =
-            "User " + gesture.UserID + ": " +
-            Enum.GetName(typeof(nuitrack.GestureType), (int)gesture.Type);
-        exceptionsLogger.AddEntry(newEntry);
-    }
+       void Update()
+        {
+            foreach (UserData user in NuitrackManager.Users)
+            {
+                if (user != null && user.GestureType != null)
+                {
+                    nuitrack.GestureType gesture = user.GestureType.Value;
 
-    private void OnDisable()
-    {
-        NuitrackManager.onNewGesture -= OnNewGesture;
-    }
+                    string newEntry =
+                        "User " + user.ID + ": " +
+                        Enum.GetName(typeof(nuitrack.GestureType), (int)gesture);
+                    exceptionsLogger.AddEntry(newEntry);
+                }
+            }
+        }
 
-    void Start()
-    {
-        exceptionsLogger = FindObjectOfType<ExceptionsLogger>();
-        nuitrackModules = FindObjectOfType<NuitrackModules>();
+        void Start()
+        {
+            exceptionsLogger = FindObjectOfType<ExceptionsLogger>();
+        }
     }
 }

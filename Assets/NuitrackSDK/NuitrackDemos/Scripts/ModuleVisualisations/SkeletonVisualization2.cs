@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using NuitrackSDK.NuitrackDemos;
 
 public class SkeletonVisualization2 : MonoBehaviour
 {

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using NuitrackSDK;
 using UnityEngine;
 
 public class CamRotation : MonoBehaviour

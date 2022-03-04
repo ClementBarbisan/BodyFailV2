@@ -1,12 +1,10 @@
-﻿Shader "Custom/DepthSegmentationCustom"
+﻿Shader "NuitrackSDK/NuitrackDemos/DepthSegmentationCustom"
 {
 	Properties
 	{
-		_MainTexture ("Texture", 2D) = "white" {}
 		_DepthTex ("Depth texture", 2D) = "white" {}
 		_SegmentationTex("Segmentation texture", 2D) = "white" {}
 		_RGBTex("RGB texture", 2D) = "white" {}
-		_ScaleMult("Scale multiplier", Float) = 0.001
 		_Greyness("Grayness", Float) = 0.5
 		_Cutoff ("Alpha cutoff", Range(0,1)) = 0.2
 		_SegmZeroColor("Segmentation zero color", Color) = (1,1,1,1)
@@ -56,28 +54,29 @@
 				fixed4 diff : COLOR0;
 			};
 
-			float _ScaleMult;
 			float _Greyness;
 			sampler2D _DepthTex;
 			sampler2D _SegmentationTex;
-			float4 _SegmentationTex_TexelSize;
-			sampler2D _MainTexture;
 			sampler2D _RGBTex;
 			fixed _Cutoff;
 			float4 _SegmZeroColor;
 			int _ShowBorders;
+			float _maxSensorDepth;
 
 			v2f vert (appdata v)
 			{
 				v2f o;
 
+				float2 uvPos = float2(v.uv.x, 1 - v.uv.y);
+
 				float3 off = _Offsets[round(v.index.x)]; //offset for current vertex
 				float4 depthCol = tex2Dlod(_DepthTex, float4(v.depthPos, 0, 0));
 
 				//real positions of pixel:
-				float z = depthCol.r * _ScaleMult * 16384; // should be enough, as depth is ushort in C#
+				float midDepth = 1 - (depthCol.r + depthCol.g + depthCol.b) / 3;
+				float z = midDepth * _maxSensorDepth;
 				float x =  z * (v.depthPos.x - 0.5) / fX;
-				float y = -z * (v.depthPos.y - 0.5) / fY;
+				float y = -z * ((1 - v.depthPos.y) - 0.5) / fY;
 
 				float4 newVertexPos = float4(x, y, z, 1) + float4(off, 0) * z;
 
@@ -95,13 +94,13 @@
 
 				o.vertex = UnityObjectToClipPos(newVertexPos);
 				o.uv2 = v.depthPos;
-				o.uv = v.uv;
+				o.uv = uvPos;
 				return o;
 			}
 			
-			fixed4 frag (v2f i) : SV_Target
+			fixed4 frag(v2f i) : SV_Target
 			{
-				fixed4 col = tex2D(_MainTexture, i.uv) * tex2D(_RGBTex, i.uv2) * i.diff;
+				fixed4 col = tex2D(_RGBTex, i.uv2) * i.diff;
 				fixed4 colCenter = tex2D(_SegmentationTex, i.uv2);
 				float zeroLength = length(tex2D(_SegmentationTex, i.uv2) - _SegmZeroColor);
 

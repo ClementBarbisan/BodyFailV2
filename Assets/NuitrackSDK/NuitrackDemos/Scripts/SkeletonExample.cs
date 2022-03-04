@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using NuitrackSDK.Loader;
+using NuitrackSDK.NuitrackDemos;
 
 public class SkeletonExample : MonoBehaviour
 {

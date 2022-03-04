@@ -1,15 +1,17 @@
 ﻿using UnityEngine;
-using System.Collections;
 
-public class EmergencyExit : MonoBehaviour
+namespace NuitrackSDK.NuitrackDemos
 {
-    void Awake()
+    public class EmergencyExit : MonoBehaviour
     {
-        DontDestroyOnLoad(gameObject);
-    }
+        void Awake()
+        {
+            DontDestroyOnLoad(gameObject);
+        }
 
-    void Update()
-    {
-        if (Input.GetKey(KeyCode.Escape)) Application.Quit();
+        void Update()
+        {
+            if (Input.GetKey(KeyCode.Escape)) Application.Quit();
+        }
     }
 }

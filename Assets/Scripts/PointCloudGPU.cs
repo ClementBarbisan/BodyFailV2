@@ -1,4 +1,5 @@
 ﻿using Kino;
+using NuitrackSDK;
 using UnityEngine;
 
 public class PointCloudGPU : MonoBehaviour {
@@ -34,7 +35,8 @@ public class PointCloudGPU : MonoBehaviour {
         feedback = FindObjectOfType<Feedback>();
         initColor = feedback.color.r;
         glitch = FindObjectOfType<GlitchFx>();
-	}
+        Cursor.visible = false;
+    }
 
     // void HandleOnColorSensorUpdateEvent(nuitrack.ColorFrame frame)
     // {
@@ -55,6 +57,7 @@ public class PointCloudGPU : MonoBehaviour {
     void HandleOnDepthSensorUpdateEvent(nuitrack.DepthFrame frame) {
         if (buffer == null)
         {
+            Debug.Log("Initialize compute buffer");
             particles = new Vector3[frame.Cols * frame.Rows];
             buffer = new ComputeBuffer(frame.Cols * frame.Rows, 12);
             width = frame.Cols;
@@ -120,7 +123,7 @@ public class PointCloudGPU : MonoBehaviour {
             if (!glitch.enabled)
                 glitch.enabled = true;
             matPointCloud.SetPass(0);
-            Graphics.DrawProcedural(MeshTopology.Points, 1, width * height);
+            Graphics.DrawProceduralNow(MeshTopology.Points, 1, width * height);
         }
         else 
         {

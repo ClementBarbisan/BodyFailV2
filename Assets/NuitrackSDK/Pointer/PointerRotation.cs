@@ -1,36 +1,34 @@
 ﻿using UnityEngine;
 
-public class PointerRotation : MonoBehaviour
+namespace NuitrackSDK.Pointer
 {
-    public int hand;
-    public Transform target;
-
-    public float speed = 0.1F;
-
-    void Start()
+    public class PointerRotation : MonoBehaviour
     {
+        public int hand;
+        public Transform target;
 
-    }
+        public float speed = 0.1F;
 
-    // Update is called once per frame
-    void LateUpdate()
-    {
-        if (CurrentUserTracker.CurrentSkeleton == null)
-            return;
-
-        hand = PointerPassing.hand;
-
-        //transform.rotation = Quaternion.identity;
-
-        if (hand % 2 == 0)
+        // Update is called once per frame
+        void LateUpdate()
         {
-            Quaternion targetRot = CurrentUserTracker.CurrentSkeleton.GetJoint(nuitrack.JointType.RightHand).ToQuaternion();
-            transform.rotation = Quaternion.Lerp(transform.rotation, new Quaternion(targetRot.x * -1, targetRot.y * 1, targetRot.z * -1, targetRot.w * 1), speed * Time.deltaTime);
-        }
-        else
-        {
-            Quaternion targetRot = CurrentUserTracker.CurrentSkeleton.GetJoint(nuitrack.JointType.LeftHand).ToQuaternion();
-            transform.rotation = Quaternion.Lerp(transform.rotation, new Quaternion(targetRot.x * -1, targetRot.y * 1, targetRot.z * -1, targetRot.w * 1), speed * Time.deltaTime);
+            if (NuitrackManager.Users.Current == null && NuitrackManager.Users.Current.Skeleton == null)
+                return;
+
+            hand = PointerPassing.hand;
+
+            UserData.SkeletonData skeleton = NuitrackManager.Users.Current.Skeleton;
+
+            if (hand % 2 == 0)
+            {
+                Quaternion targetRot = skeleton.GetJoint(nuitrack.JointType.RightHand).Rotation;
+                transform.rotation = Quaternion.Lerp(transform.rotation, new Quaternion(targetRot.x * -1, targetRot.y * 1, targetRot.z * -1, targetRot.w * 1), speed * Time.deltaTime);
+            }
+            else
+            {
+                Quaternion targetRot = skeleton.GetJoint(nuitrack.JointType.LeftHand).Rotation;
+                transform.rotation = Quaternion.Lerp(transform.rotation, new Quaternion(targetRot.x * -1, targetRot.y * 1, targetRot.z * -1, targetRot.w * 1), speed * Time.deltaTime);
+            }
         }
     }
 }

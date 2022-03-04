@@ -1,115 +1,70 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 using System.Collections.Generic;
 
-public class HandTrackerVisualization : MonoBehaviour
+namespace NuitrackSDK.NuitrackDemos
 {
-    nuitrack.HandTrackerData handTrackerData = null;
-    [SerializeField] Transform handsContainer;
-    [SerializeField] GameObject handUIPrefab;
-    [SerializeField] float sizeNormal = 0, sizeClick = 0;
-    [SerializeField] Color leftColor = Color.white, rightColor = Color.red;
-    Dictionary<int, Image[]> hands;
-
-    void Start()
+    public class HandTrackerVisualization : MonoBehaviour
     {
-        hands = new Dictionary<int, Image[]>();
-    }
+        [SerializeField] Transform handsContainer;
+        [SerializeField] GameObject handUIPrefab;
+        [SerializeField] float sizeNormal = 0, sizeClick = 0;
+        [SerializeField] Color leftColor = Color.white, rightColor = Color.red;
 
-    void Update()
-    {
-        if (NuitrackManager.HandTrackerData != null)
-        {
-            handTrackerData = NuitrackManager.HandTrackerData;
-            ProcessHands(handTrackerData);
-        }
-        else
-        {
-            HideHands();
-        }
-    }
+        Dictionary<int, List<Image>> hands = new Dictionary<int, List<Image>>();
 
-    void HideHands()
-    {
-        foreach (KeyValuePair<int, Image[]> kvp in hands)
+        void Update()
         {
-            hands[kvp.Key][0].enabled = false;
-            hands[kvp.Key][1].enabled = false;
-        }
-    }
-
-    void ProcessHands(nuitrack.HandTrackerData data)
-    {
-        if (data.NumUsers > 0)
-        {
-            for (int i = 0; i < data.UsersHands.Length; i++)
+            foreach (KeyValuePair<int, List<Image>> kvp in hands)
             {
-                int userId = data.UsersHands[i].UserId;
-
-                if (!hands.ContainsKey(userId))
+                if (NuitrackManager.Users.GetUser(kvp.Key) == null)
                 {
-                    hands.Add(userId, new Image[2]);
-                    GameObject leftHand = (GameObject)Instantiate(handUIPrefab);
-                    GameObject rightHand = (GameObject)Instantiate(handUIPrefab);
-
-                    leftHand.transform.SetParent(handsContainer, false);
-                    rightHand.transform.SetParent(handsContainer, false);
-
-                    hands[userId][0] = leftHand.GetComponent<Image>();
-                    hands[userId][1] = rightHand.GetComponent<Image>();
-
-                    hands[userId][0].enabled = false;
-                    hands[userId][1].enabled = false;
-                    hands[userId][0].color = leftColor;
-                    hands[userId][1].color = rightColor;
+                    foreach (Image img in hands[kvp.Key])
+                        img.enabled = false;
                 }
             }
 
-            foreach (KeyValuePair<int, Image[]> kvp in hands)
+            foreach (UserData userData in NuitrackManager.Users)
             {
-                nuitrack.UserHands userHands = data.GetUserHandsByID(kvp.Key);
-                if (userHands == null)
-                {
-                    hands[kvp.Key][0].enabled = false;
-                    hands[kvp.Key][1].enabled = false;
-                }
-                else
-                {
-                    if ((userHands.LeftHand == null) || (userHands.LeftHand.Value.X == -1f))
-                    {
-                        hands[kvp.Key][0].enabled = false;
-                    }
-                    else
-                    {
-                        hands[kvp.Key][0].enabled = true;
-                        Vector2 pos = new Vector2(userHands.LeftHand.Value.X, 1f - userHands.LeftHand.Value.Y);
-                        hands[kvp.Key][0].rectTransform.anchorMin = pos;
-                        hands[kvp.Key][0].rectTransform.anchorMax = pos;
-                        hands[kvp.Key][0].rectTransform.sizeDelta = userHands.LeftHand.Value.Click ? new Vector2(sizeClick, sizeClick) : new Vector2(sizeNormal, sizeNormal);
-                    }
+                if (!hands.ContainsKey(userData.ID))
+                    CreateHands(userData.ID);
 
-                    if ((userHands.RightHand == null) || (userHands.RightHand.Value.X == -1f))
-                    {
-                        hands[kvp.Key][1].enabled = false;
-                    }
-                    else
-                    {
-                        hands[kvp.Key][1].enabled = true;
-                        Vector2 pos = new Vector2(userHands.RightHand.Value.X, 1f - userHands.RightHand.Value.Y);
-                        hands[kvp.Key][1].rectTransform.anchorMin = pos;
-                        hands[kvp.Key][1].rectTransform.anchorMax = pos;
-                        hands[kvp.Key][1].rectTransform.sizeDelta = userHands.RightHand.Value.Click ? new Vector2(sizeClick, sizeClick) : new Vector2(sizeNormal, sizeNormal);
-                    }
-                }
+                ControllHand(userData.ID, 0, userData.LeftHand);
+                ControllHand(userData.ID, 1, userData.RightHand);
             }
         }
-        else
+
+        void CreateHands(int userID)
         {
-            foreach (KeyValuePair<int, Image[]> kvp in hands)
+            hands.Add(userID, new List<Image>());
+            CreateHand(userID, leftColor);
+            CreateHand(userID, rightColor);
+        }
+
+        void CreateHand(int userID, Color color)
+        {
+            Image image = Instantiate(handUIPrefab).GetComponent<Image>();
+
+            image.transform.SetParent(handsContainer, false);        
+            image.enabled = false;
+            image.color = color;
+
+            hands[userID].Add(image);
+        }
+
+        void ControllHand(int userID, int sideID, UserData.Hand hand)
+        {
+            if (hand == null)
+                hands[userID][sideID].enabled = false;
+            else
             {
-                kvp.Value[0].enabled = false;
-                kvp.Value[1].enabled = false;
+                hands[userID][sideID].enabled = true;
+
+                Vector2 pos = hand.Proj;
+
+                hands[userID][sideID].rectTransform.anchorMin = pos;
+                hands[userID][sideID].rectTransform.anchorMax = pos;
+                hands[userID][sideID].rectTransform.sizeDelta = hand.Click ? new Vector2(sizeClick, sizeClick) : new Vector2(sizeNormal, sizeNormal);
             }
         }
     }

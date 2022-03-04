@@ -1,126 +1,130 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 
-public class ModulesUI : MonoBehaviour
+namespace NuitrackSDK.NuitrackDemos
 {
-    [SerializeField] bool depthOn = true;
-    [SerializeField] bool colorOn = true;
-    [SerializeField] bool userOn = true;
-    [SerializeField] bool skeletonOn = true;
-    [SerializeField] bool handsOn = true;
-    [SerializeField] bool gesturesOn = true;
-    [SerializeField] bool bordersOn = true;
-
-    [SerializeField] GameObject settingsContainer;
-
-    [SerializeField]
-    Toggle
-        tDepth = null,
-        tColor = null,
-        tUser = null,
-        tSkeleton = null,
-        tHands = null,
-        tGestures = null,
-        tDepthMesh = null,
-        tBackground = null;
-
-    NuitrackModules nuitrackModules;
-
-    public void ToggleSettings()
+    public class ModulesUI : MonoBehaviour
     {
-        settingsContainer.SetActive(!settingsContainer.activeSelf);
-    }
+        [SerializeField] bool depthOn = true;
+        [SerializeField] bool colorOn = true;
+        [SerializeField] bool userOn = true;
+        [SerializeField] bool skeletonOn = true;
+        [SerializeField] bool handsOn = true;
+        [SerializeField] bool gesturesOn = true;
+        [SerializeField] bool bordersOn = true;
 
-    void Start()
-    {
-        Screen.sleepTimeout = SleepTimeout.NeverSleep;
-        settingsContainer.SetActive(false);
-        nuitrackModules = FindObjectOfType<NuitrackModules>();
+        [SerializeField] GameObject settingsContainer;
+        [SerializeField] GameObject nuitrackAiButton;
 
-        depthOn = tDepth.isOn;
-        colorOn = tColor.isOn;
-        userOn = tUser.isOn;
-        skeletonOn = tSkeleton.isOn;
-        handsOn = tHands.isOn;
-        gesturesOn = tGestures.isOn;
+        [SerializeField]
+        Toggle
+            tDepth = null,
+            tColor = null,
+            tUser = null,
+            tSkeleton = null,
+            tHands = null,
+            tGestures = null,
+            tDepthMesh = null,
+            tBackground = null;
 
-        nuitrackModules.InitModules();
-        nuitrackModules.ChangeModules(depthOn, colorOn, userOn, skeletonOn, handsOn, gesturesOn);
+        NuitrackModules nuitrackModules;
 
-        SwitchDepthVisualisation(tDepthMesh.isOn);
-        SwitchBackground(tBackground.isOn);
-    }
+        public void ToggleSettings()
+        {
+            settingsContainer.SetActive(!settingsContainer.activeSelf);
+        }
 
-    Color[] backgroundColors = new Color[] { new Color(1f, 1f, 1f, 1f), new Color(1f, 1f, 1f, 0f) };
-    int currentBGColor = 0;
+        void Start()
+        {
+            nuitrackAiButton.SetActive(Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.LinuxPlayer || Application.isEditor);
 
-    public void SwitchDepthVisualisation(bool meshEnabled)
-    {
-        UserTrackerVisualization utv = FindObjectOfType<UserTrackerVisualization>();
-        if (utv != null) utv.SetActive(!meshEnabled);
+            Screen.sleepTimeout = SleepTimeout.NeverSleep;
+            settingsContainer.SetActive(false);
+            nuitrackModules = FindObjectOfType<NuitrackModules>();
 
-        UserTrackerVisMesh utvm = FindObjectOfType<UserTrackerVisMesh>();
-        if (utvm != null) utvm.SetActive(meshEnabled);
+            depthOn = tDepth.isOn;
+            colorOn = tColor.isOn;
+            userOn = tUser.isOn;
+            skeletonOn = tSkeleton.isOn;
+            handsOn = tHands.isOn;
+            gesturesOn = tGestures.isOn;
 
-        SwitchBackground(tBackground.isOn);
-    }
+            nuitrackModules.InitModules();
+            nuitrackModules.ChangeModules(depthOn, colorOn, userOn, skeletonOn, handsOn, gesturesOn);
 
-    public void SwitchBackground(bool bgEnabled)
-    {
-        currentBGColor = bgEnabled ? 0 : 1;
-        //currentBGColor = (currentBGColor + 1) % backgroundColors.Length;
-        UserTrackerVisualization utv = FindObjectOfType<UserTrackerVisualization>();
-        if (utv != null) utv.SetShaderProperties(backgroundColors[currentBGColor], bordersOn);
+            SwitchDepthVisualisation(tDepthMesh.isOn);
+            SwitchBackground(tBackground.isOn);
+        }
 
-        UserTrackerVisMesh utvm = FindObjectOfType<UserTrackerVisMesh>();
-        if (utvm != null) utvm.SetShaderProperties((currentBGColor == 0), bordersOn);
-    }
+        bool showBackground = true;
 
-    public void SwitchBorders()
-    {
-        bordersOn = !bordersOn;
-        UserTrackerVisualization utv = FindObjectOfType<UserTrackerVisualization>();
-        if (utv != null) utv.SetShaderProperties(backgroundColors[currentBGColor], bordersOn);
+        public void SwitchDepthVisualisation(bool meshEnabled)
+        {
+            UserTrackerVisualization utv = FindObjectOfType<UserTrackerVisualization>();
+            if (utv != null) utv.SetActive(!meshEnabled);
 
-        UserTrackerVisMesh utvm = FindObjectOfType<UserTrackerVisMesh>();
-        if (utvm != null) utvm.SetShaderProperties((currentBGColor == 0), bordersOn);
+            UserTrackerVisMesh utvm = FindObjectOfType<UserTrackerVisMesh>();
+            if (utvm != null) utvm.SetActive(meshEnabled);
 
-    }
+            SwitchBackground(tBackground.isOn);
+        }
 
-    public void DepthToggle()
-    {
-        depthOn = tDepth.isOn;
-        nuitrackModules.ChangeModules(depthOn, colorOn, userOn, skeletonOn, handsOn, gesturesOn);
-    }
+        public void SwitchBackground(bool bgEnabled)
+        {
+            showBackground = bgEnabled;
+            //currentBGColor = (currentBGColor + 1) % backgroundColors.Length;
+            UserTrackerVisualization utv = FindObjectOfType<UserTrackerVisualization>();
+            if (utv != null) utv.SetShaderProperties(showBackground, bordersOn);
 
-    public void ColorToggle()
-    {
-        colorOn = tColor.isOn;
-        nuitrackModules.ChangeModules(depthOn, colorOn, userOn, skeletonOn, handsOn, gesturesOn);
-    }
+            UserTrackerVisMesh utvm = FindObjectOfType<UserTrackerVisMesh>();
+            if (utvm != null) utvm.SetShaderProperties(showBackground, bordersOn);
+        }
 
-    public void UserToggle()
-    {
-        userOn = tUser.isOn;
-        nuitrackModules.ChangeModules(depthOn, colorOn, userOn, skeletonOn, handsOn, gesturesOn);
-    }
+        public void SwitchBorders()
+        {
+            bordersOn = !bordersOn;
+            UserTrackerVisualization utv = FindObjectOfType<UserTrackerVisualization>();
+            if (utv != null) utv.SetShaderProperties(showBackground, bordersOn);
 
-    public void SkeletonToggle()
-    {
-        skeletonOn = tSkeleton.isOn;
-        nuitrackModules.ChangeModules(depthOn, colorOn, userOn, skeletonOn, handsOn, gesturesOn);
-    }
+            UserTrackerVisMesh utvm = FindObjectOfType<UserTrackerVisMesh>();
+            if (utvm != null) utvm.SetShaderProperties(showBackground, bordersOn);
 
-    public void HandsToggle()
-    {
-        handsOn = tHands.isOn;
-        nuitrackModules.ChangeModules(depthOn, colorOn, userOn, skeletonOn, handsOn, gesturesOn);
-    }
+        }
 
-    public void GesturesToggle()
-    {
-        gesturesOn = tGestures.isOn;
-        nuitrackModules.ChangeModules(depthOn, colorOn, userOn, skeletonOn, handsOn, gesturesOn);
+        public void DepthToggle()
+        {
+            depthOn = tDepth.isOn;
+            nuitrackModules.ChangeModules(depthOn, colorOn, userOn, skeletonOn, handsOn, gesturesOn);
+        }
+
+        public void ColorToggle()
+        {
+            colorOn = tColor.isOn;
+            nuitrackModules.ChangeModules(depthOn, colorOn, userOn, skeletonOn, handsOn, gesturesOn);
+        }
+
+        public void UserToggle()
+        {
+            userOn = tUser.isOn;
+            nuitrackModules.ChangeModules(depthOn, colorOn, userOn, skeletonOn, handsOn, gesturesOn);
+        }
+
+        public void SkeletonToggle()
+        {
+            skeletonOn = tSkeleton.isOn;
+            nuitrackModules.ChangeModules(depthOn, colorOn, userOn, skeletonOn, handsOn, gesturesOn);
+        }
+
+        public void HandsToggle()
+        {
+            handsOn = tHands.isOn;
+            nuitrackModules.ChangeModules(depthOn, colorOn, userOn, skeletonOn, handsOn, gesturesOn);
+        }
+
+        public void GesturesToggle()
+        {
+            gesturesOn = tGestures.isOn;
+            nuitrackModules.ChangeModules(depthOn, colorOn, userOn, skeletonOn, handsOn, gesturesOn);
+        }
     }
 }

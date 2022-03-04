@@ -1,67 +1,59 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-[System.Serializable]
-class PressureBone
+
+namespace NuitrackSDK
 {
-    public Transform bone = null;
-    public Vector3 minAngle = Vector3.zero, maxAngle = Vector3.one;
-}
-
-public class HandPressure : MonoBehaviour
-{
-    [SerializeField]
-    [Range(0, 1)]
-    float pressure;
-    float pressSpeed = 20;
-    [SerializeField] PressureBone[] bones;
-    [SerializeField] bool rightHand = true;
-    nuitrack.HandContent hand;
-
-    float minPressure = .5f, maxPressure = 1.0f;
-
-    void Start()
+    [System.Serializable]
+    class PressureBone
     {
-
+        public Transform bone = null;
+        public Vector3 minAngle = Vector3.zero, maxAngle = Vector3.one;
     }
 
-    void Update()
+    public class HandPressure : MonoBehaviour
     {
-        //Debug.Log(NuitrackManager.СurrentHands);
+        [SerializeField]
+        [Range(0, 1)]
+        float pressure;
+        float pressSpeed = 20;
+        [SerializeField] PressureBone[] bones;
+        [SerializeField] bool rightHand = true;
 
-        if (Application.platform != RuntimePlatform.WindowsEditor)
+        float minPressure = .5f, maxPressure = 1.0f;
+
+        void Update()
         {
-            if (NuitrackManager.СurrentHands != null)
+            if (Application.platform != RuntimePlatform.WindowsEditor)
             {
-                if (rightHand)
-                {
-                    if (NuitrackManager.СurrentHands.RightHand != null)
-                    {
-                        hand = (nuitrack.HandContent)NuitrackManager.СurrentHands.RightHand;
+                UserData user = NuitrackManager.Users.Current;
 
-                        pressure = Mathf.Lerp(pressure, hand.Pressure / 100.0f, pressSpeed * Time.deltaTime);
-                    }
-                }
-                else
+                if (user != null)
                 {
-                    if (NuitrackManager.СurrentHands.LeftHand != null)
+                    if (rightHand)
                     {
-                        hand = (nuitrack.HandContent)NuitrackManager.СurrentHands.LeftHand;
-                        pressure = Mathf.Lerp(pressure, hand.Pressure / 100.0f, pressSpeed * Time.deltaTime);
+                        if (user.RightHand != null)
+                            pressure = Mathf.Lerp(pressure, user.RightHand.Pressure / 100.0f, pressSpeed * Time.deltaTime);
+                    }
+                    else
+                    {
+                        if (user.LeftHand != null)
+                            pressure = Mathf.Lerp(pressure, user.LeftHand.Pressure / 100.0f, pressSpeed * Time.deltaTime);
                     }
                 }
             }
-        }
 
-        //pressure = Mathf.InverseLerp(minPressure, maxPressure, pressure);
+            //pressure = Mathf.InverseLerp(minPressure, maxPressure, pressure);
 
-        if (pressure > maxPressure) maxPressure = pressure;
-        if (pressure < minPressure) minPressure = pressure;
+            if (pressure > maxPressure)
+                maxPressure = pressure;
 
-        for (int i = 0; i < bones.Length; i++)
-        {
-            bones[i].bone.localEulerAngles = Vector3.Lerp(bones[i].minAngle, bones[i].maxAngle, Mathf.InverseLerp(minPressure, maxPressure, pressure));
+            if (pressure < minPressure)
+                minPressure = pressure;
+
+            for (int i = 0; i < bones.Length; i++)
+            {
+                bones[i].bone.localEulerAngles = Vector3.Lerp(bones[i].minAngle, bones[i].maxAngle, Mathf.InverseLerp(minPressure, maxPressure, pressure));
+            }
         }
     }
 }

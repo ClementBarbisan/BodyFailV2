@@ -13,6 +13,7 @@ using FANNCSharp.Float;
 using UnityEngine.UI;
 using System.IO;
 using System.Collections;
+using NuitrackSDK;
 
 [AddComponentMenu("Nuitrack/Example/TranslationAvatar")]
 [RequireComponent(typeof(AudioSource))]

@@ -1,5 +1,4 @@
-﻿using UnityEngine.VR;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
 public class SensorRotation : MonoBehaviour 

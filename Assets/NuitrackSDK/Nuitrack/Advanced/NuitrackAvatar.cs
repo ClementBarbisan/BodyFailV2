@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using NuitrackSDK;
+using NuitrackSDK.Calibration;
 
 public class NuitrackAvatar : MonoBehaviour
 {

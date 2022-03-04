@@ -6,7 +6,6 @@ Shader "Particle"
 {
 	Properties
 	{
-		_MainTex("Main Texture", 2D) = "white" {}
 		_Value("Detect Disruption", Range(0,1)) = 0.0
 	}
 
@@ -25,7 +24,7 @@ Shader "Particle"
 			#pragma geometry geom
 			#pragma fragment frag
 			#pragma multi_compile_instancing multi_compile_prepassfinal noshadowmask nodynlightmap nodirlightmap nolightmap
-			#include "UnityCG.cginc"
+			#include "StandardGeometry.cginc"
 
 			// Pixel shader input
 			struct PS_INPUT
@@ -40,7 +39,6 @@ Shader "Particle"
 		StructuredBuffer<float3> particleBuffer;
 		StructuredBuffer<int> segmentBuffer;
 
-		sampler2D _MainTex;
 
 		// Properties variables
 		uniform int _Width;
@@ -63,10 +61,11 @@ Shader "Particle"
 		{
 			PS_INPUT o = (PS_INPUT)0;
 			// Position
-			o.position = float4(sin(particleBuffer[instance_id].y * instance_id * _Time.y) * cos(particleBuffer[instance_id].x * instance_id * _Time.y), sin(particleBuffer[instance_id].z * instance_id * _Time.y) * sin(particleBuffer[instance_id].y * instance_id * _Time.y), sin(particleBuffer[instance_id].x * instance_id * _Time.y) * cos(particleBuffer[instance_id].z * instance_id * _Time.y), 1.0f) * 100 * (_Value + 0.01) + float4(particleBuffer[instance_id].x, particleBuffer[instance_id].y, particleBuffer[instance_id].z, 1.0f);
+			o.position = float4(particleBuffer[instance_id].x, particleBuffer[instance_id].y, particleBuffer[instance_id].z, 1.0f);
 			o.instance = int(instance_id);
+			o.position.z += sin(_Time.y) * 10.0f;
 			//o.keep.y = pow(1.0 - (o.position.z - _MinZ) / (_MaxZ - _MinZ), 2);
-			if (segmentBuffer[instance_id] == 0 || o.position.z == 0 || instance_id % 5 != 0)//((instance_id / _Width) % (20) != 0 && segmentBuffer[instance_id - 1] == 1 && segmentBuffer[instance_id + 1] == 1 && segmentBuffer[instance_id - _Width] == 1 && segmentBuffer[instance_id + _Width] == 1))
+			if (segmentBuffer[instance_id] == 0 || (int)(o.position.z) % 15 != 0 || instance_id % 2 != 0)//((instance_id / _Width) % (20) != 0 && segmentBuffer[instance_id - 1] == 1 && segmentBuffer[instance_id + 1] == 1 && segmentBuffer[instance_id - _Width] == 1 && segmentBuffer[instance_id + _Width] == 1))
 			{
 				o.keep.x = 0;
 			}
@@ -91,11 +90,11 @@ Shader "Particle"
 			}
 			o.keep.x = 1;
 			o.keep.y = p[0].keep.y;
-			float4 position = float4(p[0].position.x + rand(float2(p[0].position.z, o.instance) - 0.5f) * 1000.0f * (_Value + 0.01), p[0].position.y + rand(float2(p[0].position.x, o.instance) - 0.5f) * 1000.0f * (_Value + 0.01), p[0].position.z + rand(float2(p[0].position.y, o.instance) - 0.5f) * 1000.0f * (_Value + 0.01), p[0].position.w);
+			float4 position = float4(p[0].position.x + 0.5f * 1000.0f * (_Value + 0.01), p[0].position.y + 0.5f * 1000.0f * (_Value + 0.01), p[0].position.z + 0.5f * 1000.0f * (_Value + 0.01), p[0].position.w);
 			float4 positionZ = float4(p[0].position.x + rand(float2(o.instance, p[0].position.y) - 0.5f) * 1000.0f * (_Value + 0.01), p[0].position.y + rand(float2(o.instance, p[0].position.z) - 0.5f) * 1000.0f * (_Value + 0.01), p[0].position.z + rand(float2(o.instance, p[0].position.x) - 0.5f) * 1000.0f * (_Value + 0.01), p[0].position.w);
 			float size = 5 + clamp(rand(float2(o.instance, _Time.y)) * 200.0f * (_Value + 0.01), 0, 100);
 			if (p[0].keep.x == 1)
-				size = clamp(rand(float2(o.instance, _Time.y)) * 100.0f * _Value, 5, 100);
+				size = clamp(rand(float2(o.instance, _Time.y)) * 100.0f * _Value, 2.5, 100);
 			float4 A = float4(-size / 2 * (5 * _Value + 1), size / 2, size / 2, 0);
 			float4 B = float4(size / 2 * (5 * _Value + 1), size / 2, size / 2, 0);
 			float4 C = float4(-size / 2 * (5 * _Value + 1), size / 2, -size / 2, 0);
@@ -107,36 +106,36 @@ Shader "Particle"
 			o.position = UnityObjectToClipPos(position + A);
 			o.uv = float2(0, 0);
 			triStream.Append(o);
-			o.position = UnityObjectToClipPos(positionZ + B);
+			o.position = UnityObjectToClipPos(position + B);
 			o.uv = float2(0, 1);
 			triStream.Append(o);
 			o.position = UnityObjectToClipPos(position + C);
 			o.uv = float2(1, 0);
 			triStream.Append(o);
-			o.position = UnityObjectToClipPos(positionZ + D);
+			o.position = UnityObjectToClipPos(position + D);
 			o.uv = float2(1, 1);
 			triStream.Append(o);
 			triStream.RestartStrip();
-			o.position = UnityObjectToClipPos(positionZ + D);
+			o.position = UnityObjectToClipPos(position + D);
 			o.uv = float2(0, 0);
 			triStream.Append(o);
-			o.position = UnityObjectToClipPos(positionZ + B);
+			o.position = UnityObjectToClipPos(position + B);
 			o.uv = float2(0, 1);
 			triStream.Append(o);
-			o.position = UnityObjectToClipPos(positionZ + E);
+			o.position = UnityObjectToClipPos(position + E);
 			o.uv = float2(1, 0);
 			triStream.Append(o);
-			o.position = UnityObjectToClipPos(positionZ + F);
+			o.position = UnityObjectToClipPos(position + F);
 			o.uv = float2(1, 1);
 			triStream.Append(o);
 			triStream.RestartStrip();
-			o.position = UnityObjectToClipPos(positionZ + B);
+			o.position = UnityObjectToClipPos(position + B);
 			o.uv = float2(0, 0);
 			triStream.Append(o);
 			o.position = UnityObjectToClipPos(position + A);
 			o.uv = float2(0, 1);
 			triStream.Append(o);
-			o.position = UnityObjectToClipPos(positionZ + F);
+			o.position = UnityObjectToClipPos(position + F);
 			o.uv = float2(1, 0);
 			triStream.Append(o);
 			o.position = UnityObjectToClipPos(position + G);
@@ -162,10 +161,10 @@ Shader "Particle"
 			o.position = UnityObjectToClipPos(position + C);
 			o.uv = float2(0, 1);
 			triStream.Append(o);
-			o.position = UnityObjectToClipPos(positionZ + E);
+			o.position = UnityObjectToClipPos(position + E);
 			o.uv = float2(1, 0);
 			triStream.Append(o);
-			o.position = UnityObjectToClipPos(positionZ + D);
+			o.position = UnityObjectToClipPos(position + D);
 			o.uv = float2(1, 1);
 			triStream.Append(o);
 			triStream.RestartStrip();
@@ -175,10 +174,10 @@ Shader "Particle"
 			o.position = UnityObjectToClipPos(position + H);
 			o.uv = float2(0, 1);
 			triStream.Append(o);
-			o.position = UnityObjectToClipPos(positionZ + F);
+			o.position = UnityObjectToClipPos(position + F);
 			o.uv = float2(1, 0);
 			triStream.Append(o);
-			o.position = UnityObjectToClipPos(positionZ + E);
+			o.position = UnityObjectToClipPos(position + E);
 			o.uv = float2(1, 1);
 			triStream.Append(o);
 			triStream.RestartStrip();
@@ -201,47 +200,24 @@ Shader "Particle"
 			half2 edge2 = min(smoothstep(0, fw * 2, i.uv),
 				smoothstep(0, fw * 2, 1 - i.uv));
 			half edge = 1 - min(edge2.x, edge2.y);
-			//return(tex2D(_MainTex, float2(i.instance % _WidthTex / (_WidthTex * _HeightTex), i.instance / _WidthTex / (_WidthTex * _HeightTex))));
-			return ((float4(0.5f, 0.5f, 0.5f, 1.0f) * (1.0f - i.position.z / i.position.w) + edge * float4(1.0, 1.0, 1.0, 1.0)));// *CalcLuminance(tex2D(_MainTex, float2(i.instance % _Width, i.instance / _Width)).xyz));
+			return ((float4(1.0f, 1.0f, 1.0f, 1.0f) * (1.0f - i.position.z / i.position.w)));
 		}
 
 		ENDCG
-			}
-				CGPROGRAM
-				// Physically based Standard lighting model, and enable shadows on all light types
-#pragma surface surf Standard fullforwardshadows
-
-				// Use shader model 3.0 target, to get nicer looking lighting
-#pragma target 3.0
-
-				sampler2D _MainTex;
-
-			struct Input {
-				float2 uv_MainTex;
-			};
-
-			half _Glossiness;
-			half _Metallic;
-			fixed4 _Color;
-
-			// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
-			// See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
-			// #pragma instancing_options assumeuniformscaling
-			UNITY_INSTANCING_BUFFER_START(Props)
-				// put more per-instance properties here
-				UNITY_INSTANCING_BUFFER_END(Props)
-
-				void surf(Input IN, inout SurfaceOutputStandard o) {
-				// Albedo comes from a texture tinted by color
-				fixed4 c = tex2D(_MainTex, IN.uv_MainTex) * _Color;
-				o.Albedo = c.rgb;
-				// Metallic and smoothness come from slider variables
-				o.Metallic = _Metallic;
-				o.Smoothness = _Glossiness;
-				o.Alpha = c.a;
-			}
-			ENDCG
-		
+		}
+		Pass
+        {
+            Tags { "LightMode"="ShadowCaster" }
+            CGPROGRAM
+            #pragma target 4.0
+            #pragma vertex Vertex
+            #pragma geometry Geometry
+            #pragma fragment Fragment
+            #pragma multi_compile_shadowcaster noshadowmask nodynlightmap nodirlightmap nolightmap
+            #define UNITY_PASS_SHADOWCASTER
+            #include "StandardGeometry.cginc"
+            ENDCG
+        }
 	}
 
 	Fallback Off

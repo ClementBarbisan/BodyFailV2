@@ -44,3 +44,6 @@ Assets/Alva Noto & Ryuichi Sakamoto - Insen [Full Album].mp3
 Test.zip
 *.mp3
 .idea/
+Logs/
+Assets/NuitrackSDK/Documentation/
+Assets/NuitrackSDK/Tutorials/

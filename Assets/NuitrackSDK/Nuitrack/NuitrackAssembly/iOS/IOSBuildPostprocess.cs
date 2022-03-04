@@ -21,9 +21,11 @@ public static class IOSBuildPostprocess
             PBXProject pbxProject = new PBXProject();
             pbxProject.ReadFromFile(projectPath);
 
-            string target = pbxProject.TargetGuidByName("Unity-iPhone");
+            string target = pbxProject.GetUnityMainTargetGuid();
+            string targetFramework = pbxProject.GetUnityFrameworkTargetGuid();
 
             pbxProject.SetBuildProperty(target, "ENABLE_BITCODE", "NO");
+            pbxProject.SetBuildProperty(targetFramework, "ENABLE_BITCODE", "NO");
 
             pbxProject.WriteToFile (projectPath);
 

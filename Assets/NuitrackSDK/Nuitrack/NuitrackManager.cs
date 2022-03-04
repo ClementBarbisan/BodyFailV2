@@ -1,7 +1,14 @@
-﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+
+using System;
+using System.IO;
+using System.Collections;
 using System.Threading;
+
+using NuitrackSDK;
+using NuitrackSDK.ErrorSolver;
+using NuitrackSDK.Loader;
 
 #if UNITY_ANDROID && UNITY_2018_1_OR_NEWER && !UNITY_EDITOR
 using UnityEngine.Android;
@@ -17,13 +24,22 @@ enum WifiConnect
     none, VicoVR, TVico,
 }
 
+[HelpURL("https://github.com/3DiVi/nuitrack-sdk/blob/master/doc/")]
 public class NuitrackManager : MonoBehaviour
 {
+    public enum RotationDegree
+    {
+        Normal = 0,
+        _90 = 90,
+        _180 = 180,
+        _270 = 270
+    }
+
     bool _threadRunning;
     Thread _thread;
 
     public NuitrackInitState InitState { get { return NuitrackLoader.initState; } }
-    [SerializeField]
+    [SerializeField, NuitrackSDKInspector]
     bool
     depthModuleOn = true,
     colorModuleOn = true,
@@ -32,52 +48,106 @@ public class NuitrackManager : MonoBehaviour
     gesturesRecognizerModuleOn = true,
     handsTrackerModuleOn = true;
 
+    bool nuitrackError = false;
+    public LicenseInfo LicenseInfo
+    {
+        get;
+        private set;
+    } = new LicenseInfo();
+
+    [Space]
+
+    [SerializeField, NuitrackSDKInspector] bool runInBackground = false;
+    
     [Tooltip("Only skeleton. PC, Unity Editor, MacOS and IOS")]
-    [SerializeField] WifiConnect wifiConnect = WifiConnect.none;
-    [SerializeField] bool runInBackground = false;
-    [SerializeField] bool asyncInit = false;
+    [SerializeField, NuitrackSDKInspector] WifiConnect wifiConnect = WifiConnect.none;
+   
+    [Tooltip("ONLY PC! Nuitrack AI is the new version of Nuitrack skeleton tracking middleware")]
+    [SerializeField, NuitrackSDKInspector] bool useNuitrackAi = false;
+    
+    [Tooltip("Track and get information about faces with Nuitrack (position, angle of rotation, box, emotions, age, gender).")]
+    [SerializeField, NuitrackSDKInspector] bool useFaceTracking = false;
+
+    [Tooltip("Depth map doesn't accurately match an RGB image. Turn on this to align them")]
+    [SerializeField, NuitrackSDKInspector] bool depth2ColorRegistration = false;
+
+    [Tooltip("Mirror sensor data")]
+    [SerializeField, NuitrackSDKInspector] bool mirror = false;
+
+    [Tooltip ("If you have the sensor installed vertically or upside down, you can level this. Sensor rotation is not available for mirror mode.")]
+    [SerializeField, NuitrackSDKInspector] RotationDegree sensorRotation = RotationDegree.Normal;
+
+    [SerializeField, NuitrackSDKInspector] bool useFileRecord;
+    [SerializeField, NuitrackSDKInspector] string pathToFileRecord;
+
+    [Tooltip("Asynchronous initialization, allows you to turn on the nuitrack more smoothly. In this case, you need to ensure that all components that use this script will start only after its initialization.")]
+    [SerializeField, NuitrackSDKInspector] bool asyncInit = false;
+
+    [SerializeField, NuitrackSDKInspector] InitEvent initEvent;
 
     public static bool sensorConnected = false;
+    public static nuitrack.DepthSensor DepthSensor { get; private set; }
+    public static nuitrack.ColorSensor ColorSensor { get; private set; }
+    public static nuitrack.UserTracker UserTracker { get; private set; }
+    public static nuitrack.SkeletonTracker SkeletonTracker { get; private set; }
+    public static nuitrack.GestureRecognizer GestureRecognizer { get; private set; }
+    public static nuitrack.HandTracker HandTracker { get; private set; }
+    public static nuitrack.DepthFrame DepthFrame { get; private set; }
+    public static nuitrack.ColorFrame ColorFrame { get; private set; }
+    public static nuitrack.UserFrame UserFrame { get; private set; }
 
-    static nuitrack.DepthSensor depthSensor;
-    public static nuitrack.DepthSensor DepthSensor { get { return depthSensor; } }
-    static nuitrack.ColorSensor colorSensor;
-    public static nuitrack.ColorSensor ColorSensor { get { return colorSensor; } }
-    static nuitrack.UserTracker userTracker;
-    public static nuitrack.UserTracker UserTracker { get { return userTracker; } }
-    static nuitrack.SkeletonTracker skeletonTracker;
-    public static nuitrack.SkeletonTracker SkeletonTracker { get { return skeletonTracker; } }
-    static nuitrack.GestureRecognizer gestureRecognizer;
-    public static nuitrack.GestureRecognizer GestureRecognizer { get { return gestureRecognizer; } }
-    static nuitrack.HandTracker handTracker;
-    public static nuitrack.HandTracker HandTracker { get { return handTracker; } }
+    static nuitrack.SkeletonData skeletonData = null;
 
-    static nuitrack.DepthFrame depthFrame;
-    public static nuitrack.DepthFrame DepthFrame { get { return depthFrame; } }
-    static nuitrack.ColorFrame colorFrame;
-    public static nuitrack.ColorFrame ColorFrame { get { return colorFrame; } }
-    static nuitrack.UserFrame userFrame;
-    public static nuitrack.UserFrame UserFrame { get { return userFrame; } }
-    static nuitrack.SkeletonData skeletonData;
-    public static nuitrack.SkeletonData SkeletonData { get { return skeletonData; } }
-    static nuitrack.HandTrackerData handTrackerData;
-    public static nuitrack.HandTrackerData HandTrackerData { get { return handTrackerData; } }
+    [Obsolete("Use NuitrackManager.Users.GetUser(userID).Skeleton or NuitrackManager.Users.Current.Selection", false)]
+    public static nuitrack.SkeletonData SkeletonData
+    {
+        get
+        {
+            return skeletonData;
+        }
+    }
+
+    static nuitrack.HandTrackerData handTrackerData = null;
+
+    [Obsolete("Use NuitrackManager.Users.GetUser(userID).RightHand (or LeftHand) or NuitrackManager.Users.Current.RightHand (or LeftHand)", false)]
+    public static nuitrack.HandTrackerData HandTrackerData
+    {
+        get
+        {
+            return handTrackerData;
+        }
+    }
 
     public static event nuitrack.DepthSensor.OnUpdate onDepthUpdate;
     public static event nuitrack.ColorSensor.OnUpdate onColorUpdate;
     public static event nuitrack.UserTracker.OnUpdate onUserTrackerUpdate;
+
+    [Obsolete ("Use NuitrackManager.Users.GetUser(userID).Skeleton or NuitrackManager.Users.Current.Selection", false)]
     public static event nuitrack.SkeletonTracker.OnSkeletonUpdate onSkeletonTrackerUpdate;
+
+    [Obsolete("Use NuitrackManager.Users.GetUser(userID).RightHand (or LeftHand) or NuitrackManager.Users.Current.RightHand (or LeftHand)", false)]
     public static event nuitrack.HandTracker.OnUpdate onHandsTrackerUpdate;
 
     public delegate void OnNewGestureHandler(nuitrack.Gesture gesture);
+
+    [Obsolete("Use NuitrackManager.Users.GetUser(userID).GestureType or NuitrackManager.Users.Current.GestureType", false)]
     public static event OnNewGestureHandler onNewGesture;
 
-    static nuitrack.UserHands currentHands;
-    public static nuitrack.UserHands СurrentHands { get { return currentHands; } }
+    static nuitrack.UserHands currentHands = null;
+
+    [Obsolete("Use NuitrackManager.Users.Current.RightHand (or LeftHand)", false)]
+    public static nuitrack.UserHands СurrentHands
+    {
+        get
+        {
+            return currentHands;
+        }
+    }
+
+    nuitrack.GestureData gestureData = null;
 
     static NuitrackManager instance;
     NuitrackInitState initState = NuitrackInitState.INIT_NUITRACK_MANAGER_NOT_INSTALLED;
-    [SerializeField] InitEvent initEvent;
 
     bool prevSkel = false;
     bool prevHand = false;
@@ -92,17 +162,52 @@ public class NuitrackManager : MonoBehaviour
 
     [HideInInspector] public System.Exception initException;
 
-    void ThreadedWork()
+    public bool UseFaceTracking
+    {
+        get
+        {
+            return useFaceTracking;
+        }
+    }
+
+    public bool UseNuitrackAi
+    {
+        get
+        {
+            return useNuitrackAi;
+        }
+    }
+
+
+    public static Plane? Floor
+    {
+        get; private set;
+    } = null;
+
+    public static Users Users
+    {
+        get;
+    } = new Users();
+
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+    static int GetAndroidAPILevel()
+    {
+        using (var version = new AndroidJavaClass("android.os.Build$VERSION"))
+        {
+            return version.GetStatic<int>("SDK_INT");
+        }
+    }
+#endif
+
+    void WorkingThread()
     {
         _threadRunning = true;
 
         while (_threadRunning)
         {
-            initState = NuitrackLoader.InitNuitrackLibraries();
-
             NuitrackInit();
         }
-        _threadRunning = false;
     }
 
     public static NuitrackManager Instance
@@ -125,56 +230,109 @@ public class NuitrackManager : MonoBehaviour
         }
     }
 
+    private bool IsNuitrackLibrariesInitialized()
+    {
+        if (initState == NuitrackInitState.INIT_OK || wifiConnect != WifiConnect.none)
+            return true;
+        return false;
+    }
+
     void Awake()
     {
-#if UNITY_ANDROID && UNITY_2018_1_OR_NEWER && !UNITY_EDITOR
+        if (Instance.gameObject != gameObject)
+        {
+            DestroyImmediate(Instance.gameObject);
+            instance = this;
+        }
 
-        if (!Permission.HasUserAuthorizedPermission(Permission.ExternalStorageWrite))
-            Permission.RequestUserPermission(Permission.ExternalStorageWrite);
-
-        if (!Permission.HasUserAuthorizedPermission(Permission.ExternalStorageRead))
-            Permission.RequestUserPermission(Permission.ExternalStorageRead);
-
-        if (!Permission.HasUserAuthorizedPermission(Permission.CoarseLocation))
-            Permission.RequestUserPermission(Permission.CoarseLocation);
-
+#if UNITY_ANDROID && !UNITY_EDITOR
+        StartCoroutine(AndroidStart());
+#else
+        FirstStart();
 #endif
+    }
 
+    void FirstStart()
+    {
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
 
         Application.targetFrameRate = 60;
         Application.runInBackground = runInBackground;
-        //Debug.Log ("NuitrackStart");
+
+        initState = NuitrackLoader.InitNuitrackLibraries();
 
         if (asyncInit)
         {
             StartCoroutine(InitEventStart());
-
             if (!_threadRunning)
             {
-                _thread = new Thread(ThreadedWork);
+                _thread = new Thread(WorkingThread);
                 _thread.Start();
             }
         }
         else
         {
-            initState = NuitrackLoader.InitNuitrackLibraries();
-
             if (initEvent != null)
             {
                 initEvent.Invoke(initState);
             }
+
 #if UNITY_ANDROID && !UNITY_EDITOR
-    if (initState == NuitrackInitState.INIT_OK)
+            if (IsNuitrackLibrariesInitialized())
 #endif
             NuitrackInit();
         }
     }
 
-    public void ChangeModulsState(bool skel, bool hand, bool depth, bool color, bool gest, bool user)
+    IEnumerator AndroidStart()
     {
-        //Debug.Log ("" + skel + hand + depth + gest + user);
-        if (skeletonTracker == null)
+#if UNITY_ANDROID && UNITY_2018_1_OR_NEWER && !UNITY_EDITOR
+
+        while (!Permission.HasUserAuthorizedPermission(Permission.ExternalStorageWrite))
+        {
+            Permission.RequestUserPermission(Permission.ExternalStorageWrite);
+            yield return null;
+        }
+
+        while (!Permission.HasUserAuthorizedPermission(Permission.ExternalStorageRead))
+        {
+            Permission.RequestUserPermission(Permission.ExternalStorageRead);
+            yield return null;
+        }
+
+        while (!Permission.HasUserAuthorizedPermission(Permission.CoarseLocation))
+        {
+            Permission.RequestUserPermission(Permission.CoarseLocation);
+            yield return null;
+        }
+
+        if (GetAndroidAPILevel() > 26) // camera permissions required for Android newer than Oreo 8
+        {
+            while (!Permission.HasUserAuthorizedPermission(Permission.Camera))
+            {
+                Permission.RequestUserPermission(Permission.Camera);
+                yield return null;
+            }
+        }
+
+        yield return null;
+#endif
+
+        FirstStart();
+
+        yield return null;
+    }
+
+    public void ChangeModulesState(bool skel, bool hand, bool depth, bool color, bool gest, bool user)
+    {
+        skeletonTrackerModuleOn = skel;
+        handsTrackerModuleOn = hand;
+        depthModuleOn = depth;
+        colorModuleOn = color;
+        gesturesRecognizerModuleOn = gest;
+        userTrackerModuleOn = user;
+
+        if (SkeletonTracker == null)
             return;
         if (prevSkel != skel)
         {
@@ -182,56 +340,57 @@ public class NuitrackManager : MonoBehaviour
             prevSkel = skel;
             if (skel)
             {
-                skeletonTracker.OnSkeletonUpdateEvent += HandleOnSkeletonUpdateEvent;
+                SkeletonTracker.OnSkeletonUpdateEvent += HandleOnSkeletonUpdateEvent;
             }
             else
             {
-                skeletonTracker.OnSkeletonUpdateEvent -= HandleOnSkeletonUpdateEvent;
+                SkeletonTracker.OnSkeletonUpdateEvent -= HandleOnSkeletonUpdateEvent;
             }
         }
+
         if (prevHand != hand)
         {
             handTrackerData = null;
             prevHand = hand;
             if (hand)
-                handTracker.OnUpdateEvent += HandleOnHandsUpdateEvent;
+                HandTracker.OnUpdateEvent += HandleOnHandsUpdateEvent;
             else
-                handTracker.OnUpdateEvent -= HandleOnHandsUpdateEvent;
+                HandTracker.OnUpdateEvent -= HandleOnHandsUpdateEvent;
         }
         if (prevGest != gest)
         {
             prevGest = gest;
             if (gest)
-                gestureRecognizer.OnNewGesturesEvent += OnNewGestures;
+                GestureRecognizer.OnNewGesturesEvent += OnNewGestures;
             else
-                gestureRecognizer.OnNewGesturesEvent -= OnNewGestures;
+                GestureRecognizer.OnNewGesturesEvent -= OnNewGestures;
         }
         if (prevDepth != depth)
         {
-            depthFrame = null;
+            DepthFrame = null;
             prevDepth = depth;
             if (depth)
-                depthSensor.OnUpdateEvent += HandleOnDepthSensorUpdateEvent;
+                DepthSensor.OnUpdateEvent += HandleOnDepthSensorUpdateEvent;
             else
-                depthSensor.OnUpdateEvent -= HandleOnDepthSensorUpdateEvent;
+                DepthSensor.OnUpdateEvent -= HandleOnDepthSensorUpdateEvent;
         }
         if (prevColor != color)
         {
-            colorFrame = null;
+            ColorFrame = null;
             prevColor = color;
             if (color)
-                colorSensor.OnUpdateEvent += HandleOnColorSensorUpdateEvent;
+                ColorSensor.OnUpdateEvent += HandleOnColorSensorUpdateEvent;
             else
-                colorSensor.OnUpdateEvent -= HandleOnColorSensorUpdateEvent;
+                ColorSensor.OnUpdateEvent -= HandleOnColorSensorUpdateEvent;
         }
         if (prevUser != user)
         {
-            userFrame = null;
+            UserFrame = null;
             prevUser = user;
             if (user)
-                userTracker.OnUpdateEvent += HandleOnUserTrackerUpdateEvent;
+                UserTracker.OnUpdateEvent += HandleOnUserTrackerUpdateEvent;
             else
-                userTracker.OnUpdateEvent -= HandleOnUserTrackerUpdateEvent;
+                UserTracker.OnUpdateEvent -= HandleOnUserTrackerUpdateEvent;
         }
     }
 
@@ -239,10 +398,19 @@ public class NuitrackManager : MonoBehaviour
     {
         try
         {
+
+#if UNITY_EDITOR
+            if (!NuitrackSDKEditor.ErrorSolver.TBBReplacer.Ready)
+            {
+                UnityEditor.EditorApplication.isPlaying = false;
+                NuitrackSDKEditor.ErrorSolver.TBBReplacer.Start();
+                return;
+            }
+#endif
+
             if (nuitrackInitialized)
                 return;
-            //Debug.Log("Application.runInBackground " + Application.runInBackground);
-            //CloseUserGen(); //just in case
+
             if (wifiConnect == WifiConnect.VicoVR)
             {
                 nuitrack.Nuitrack.Init("", nuitrack.Nuitrack.NuitrackMode.DEBUG);
@@ -250,30 +418,111 @@ public class NuitrackManager : MonoBehaviour
             }
             else if (wifiConnect == WifiConnect.TVico)
             {
+                Debug.Log("If something doesn't work, then read this (Wireless case section): github.com/3DiVi/nuitrack-sdk/blob/master/doc/TVico_User_Guide.md#wireless-case");
                 nuitrack.Nuitrack.Init("", nuitrack.Nuitrack.NuitrackMode.DEBUG);
                 nuitrack.Nuitrack.SetConfigValue("Settings.IPAddress", "192.168.43.1");
             }
             else
+            {
                 nuitrack.Nuitrack.Init();
 
-            Debug.Log("Init OK");
+                if (useFileRecord && (Application.platform == RuntimePlatform.WindowsPlayer || Application.isEditor))
+                {
+                    string path = pathToFileRecord.Replace('\\', '/');
+                    try
+                    {
+                        FileInfo fileInfo = new FileInfo(path);
+                        if(fileInfo.Exists && fileInfo.Extension != string.Empty)
+                        { 
+                            if (fileInfo.Extension == ".oni")
+                                nuitrack.Nuitrack.SetConfigValue("OpenNIModule.FileRecord", path);
+                            else
+                                nuitrack.Nuitrack.SetConfigValue("Realsense2Module.FileRecord", path);
+                        }
+                        else
+                            Debug.LogError(string.Format("Check the path to the recording file! File path: {0}", path));
+                    }
+                    catch (System.Exception)
+                    {
+                        Debug.LogError("File " + path + "  Cannot be loaded!");
+                    }
 
-            depthSensor = nuitrack.DepthSensor.Create();
+                }
 
-            colorSensor = nuitrack.ColorSensor.Create();
+                if (depth2ColorRegistration)
+                {
+                    nuitrack.Nuitrack.SetConfigValue("DepthProvider.Depth2ColorRegistration", "true");
+                }
 
-            userTracker = nuitrack.UserTracker.Create();
+                if (useNuitrackAi)
+                {
+                    if (Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.LinuxPlayer || Application.isEditor)
+                    {
+                        nuitrack.Nuitrack.SetConfigValue("DepthProvider.Depth2ColorRegistration", "true");
+                        nuitrack.Nuitrack.SetConfigValue("Skeletonization.Type", "CNN_HPE");
+                    }
+                    else
+                    {
+                        Debug.LogWarning("NuitrackAI doesn't support this platform: " + Application.platform + ". https://github.com/3DiVi/nuitrack-sdk/blob/master/doc/Nuitrack_AI.md");
+                    }
+                }
 
-            skeletonTracker = nuitrack.SkeletonTracker.Create();
+                if (useFaceTracking)
+                {
+                    nuitrack.Nuitrack.SetConfigValue("DepthProvider.Depth2ColorRegistration", "true");
+                    nuitrack.Nuitrack.SetConfigValue("Faces.ToUse", "true");
+                }
 
-            gestureRecognizer = nuitrack.GestureRecognizer.Create();
+                if (mirror)
+                    nuitrack.Nuitrack.SetConfigValue("DepthProvider.Mirror", "true");
+                else
+                    nuitrack.Nuitrack.SetConfigValue("DepthProvider.RotateAngle", ((int)sensorRotation).ToString());
 
-            handTracker = nuitrack.HandTracker.Create();
+                string devicesInfo = "";
+                if(nuitrack.Nuitrack.GetDeviceList().Count > 0)
+                {
+                    for (int i = 0; i < nuitrack.Nuitrack.GetDeviceList().Count; i++)
+                    {
+                        nuitrack.device.NuitrackDevice device = nuitrack.Nuitrack.GetDeviceList()[i];
+                        string sensorName = device.GetInfo(nuitrack.device.DeviceInfoType.DEVICE_NAME);
+                        if (i == 0)
+                        {
+                            LicenseInfo.Trial = device.GetActivationStatus() == nuitrack.device.ActivationStatus.TRIAL;
+                            LicenseInfo.SensorName = sensorName;
+                        }
+
+                        devicesInfo += "\nDevice " + i + " [Sensor Name: " + sensorName + ", License: " + device.GetActivationStatus() + "] ";
+                    }
+                }
+                
+                //licenseInfo = JsonUtility.FromJson<LicenseInfo>(nuitrack.Nuitrack.GetDeviceList());
+
+                Debug.Log(
+                    "Nuitrack Start Info:\n" +
+                    "Skeletonization Type: " + nuitrack.Nuitrack.GetConfigValue("Skeletonization.Type") + "\n" +
+                    "Faces using: " + nuitrack.Nuitrack.GetConfigValue("Faces.ToUse") + devicesInfo);
+            }
+
+            nuitrack.Nuitrack.UpdateConfig();
+
+            Debug.Log("Nuitrack Init OK");
+
+            DepthSensor = nuitrack.DepthSensor.Create();
+
+            ColorSensor = nuitrack.ColorSensor.Create();
+
+            UserTracker = nuitrack.UserTracker.Create();
+
+            SkeletonTracker = nuitrack.SkeletonTracker.Create();
+
+            GestureRecognizer = nuitrack.GestureRecognizer.Create();
+
+            HandTracker = nuitrack.HandTracker.Create();
 
             nuitrack.Nuitrack.Run();
-            Debug.Log("Run OK");
+            Debug.Log("Nuitrack Run OK");
 
-            ChangeModulsState(
+            ChangeModulesState(
                 skeletonTrackerModuleOn,
                 handsTrackerModuleOn,
                 depthModuleOn,
@@ -283,59 +532,101 @@ public class NuitrackManager : MonoBehaviour
             );
 
             nuitrackInitialized = true;
+            _threadRunning = false;
         }
         catch (System.Exception ex)
         {
             initException = ex;
-            Debug.LogError(ex.ToString());
+            NuitrackErrorSolver.CheckError(ex);
         }
     }
 
     void HandleOnDepthSensorUpdateEvent(nuitrack.DepthFrame frame)
     {
-        if (depthFrame != null)
-            depthFrame.Dispose();
-        depthFrame = (nuitrack.DepthFrame)frame.Clone();
-        //Debug.Log("Depth Update");
-        onDepthUpdate?.Invoke(depthFrame);
+        if (DepthFrame != null)
+            DepthFrame.Dispose();
+        DepthFrame = (nuitrack.DepthFrame)frame.Clone();
+
+        try
+        {
+            onDepthUpdate?.Invoke(DepthFrame);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogException(ex);
+        }
     }
 
     void HandleOnColorSensorUpdateEvent(nuitrack.ColorFrame frame)
     {
-        if (colorFrame != null)
-            colorFrame.Dispose();
-        colorFrame = (nuitrack.ColorFrame)frame.Clone();
-        //Debug.Log("Color Update");
-        onColorUpdate?.Invoke(colorFrame);
+        if (ColorFrame != null)
+            ColorFrame.Dispose();
+        ColorFrame = (nuitrack.ColorFrame)frame.Clone();
+
+        try
+        {
+            onColorUpdate?.Invoke(ColorFrame);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogException(ex);
+        }
     }
 
     void HandleOnUserTrackerUpdateEvent(nuitrack.UserFrame frame)
     {
-        if (userFrame != null)
-            userFrame.Dispose();
-        userFrame = (nuitrack.UserFrame)frame.Clone();
-        onUserTrackerUpdate?.Invoke(userFrame);
+        if (UserFrame != null)
+            UserFrame.Dispose();
+        UserFrame = (nuitrack.UserFrame)frame.Clone();
+
+        try
+        {
+            onUserTrackerUpdate?.Invoke(UserFrame);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogException(ex);
+        }
+
+        Floor = new Plane(UserFrame.FloorNormal.ToVector3().normalized, UserFrame.Floor.ToVector3() * 0.001f);
     }
 
     void HandleOnSkeletonUpdateEvent(nuitrack.SkeletonData _skeletonData)
     {
         if (skeletonData != null)
             skeletonData.Dispose();
+
         skeletonData = (nuitrack.SkeletonData)_skeletonData.Clone();
-        //Debug.Log("Skeleton Update ");
         sensorConnected = true;
-        onSkeletonTrackerUpdate?.Invoke(skeletonData);
+        try
+        {
+            onSkeletonTrackerUpdate?.Invoke(skeletonData);
+        }
+        catch(Exception ex)
+        {
+            Debug.LogException(ex);
+        }
     }
 
-    private void OnNewGestures(nuitrack.GestureData gestures)
+    void OnNewGestures(nuitrack.GestureData gestures)
     {
+        if (gestureData != null)
+            gestureData.Dispose();
+
+        gestureData = (nuitrack.GestureData)gestures.Clone();
+
         if (gestures.NumGestures > 0)
         {
             if (onNewGesture != null)
             {
-                for (int i = 0; i < gestures.Gestures.Length; i++)
+                try
                 {
-                    onNewGesture(gestures.Gestures[i]);
+                    for (int i = 0; i < gestures.Gestures.Length; i++)
+                        onNewGesture(gestures.Gestures[i]);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogException(ex);
                 }
             }
         }
@@ -345,24 +636,29 @@ public class NuitrackManager : MonoBehaviour
     {
         if (handTrackerData != null)
             handTrackerData.Dispose();
-        handTrackerData = (nuitrack.HandTrackerData)_handTrackerData.Clone();
-        onHandsTrackerUpdate?.Invoke(handTrackerData);
 
-        //Debug.Log ("Grabbed hands");
-        if (handTrackerData == null) return;
-        if (CurrentUserTracker.CurrentUser != 0)
+        handTrackerData = (nuitrack.HandTrackerData)_handTrackerData.Clone();
+
+        try
         {
-            currentHands = handTrackerData.GetUserHandsByID(CurrentUserTracker.CurrentUser);
+            onHandsTrackerUpdate?.Invoke(handTrackerData);
         }
+        catch (Exception ex)
+        {
+            Debug.LogException(ex);
+        }
+
+        if (handTrackerData == null)
+            return;
+
+        if (Users.CurrentUserID != 0)
+            currentHands = handTrackerData.GetUserHandsByID(Users.CurrentUserID);
         else
-        {
             currentHands = null;
-        }
     }
 
     void OnApplicationPause(bool pauseStatus)
     {
-        //Debug.Log("pauseStatus " + pauseStatus);
         if (pauseStatus)
         {
             StopNuitrack();
@@ -376,6 +672,8 @@ public class NuitrackManager : MonoBehaviour
 
     IEnumerator RestartNuitrack()
     {
+        yield return null;
+
         while (pauseState)
         {
             StartNuitrack();
@@ -387,11 +685,16 @@ public class NuitrackManager : MonoBehaviour
 
     public void StartNuitrack()
     {
+        nuitrackError = false;
+#if UNITY_ANDROID && !UNITY_EDITOR
+        if (!IsNuitrackLibrariesInitialized())
+            return;
+#endif
         if (asyncInit)
         {
             if (!_threadRunning)
             {
-                _thread = new Thread(ThreadedWork);
+                _thread = new Thread(WorkingThread);
                 _thread.Start();
             }
         }
@@ -403,14 +706,17 @@ public class NuitrackManager : MonoBehaviour
 
     public void StopNuitrack()
     {
-        ChangeModulsState(
-            false,
-            false,
-            false,
-            false,
-            false,
-            false
-        );
+#if UNITY_ANDROID && !UNITY_EDITOR
+        if (!IsNuitrackLibrariesInitialized())
+            return;
+#endif
+        prevSkel = false;
+        prevHand = false;
+        prevGest = false;
+        prevDepth = false;
+        prevColor = false;
+        prevUser = false;
+
         CloseUserGen();
     }
 
@@ -429,36 +735,43 @@ public class NuitrackManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            Application.Quit();
-        }
-
 #if UNITY_ANDROID && !UNITY_EDITOR
-        if (NuitrackLoader.initState == NuitrackInitState.INIT_OK)
+        if (IsNuitrackLibrariesInitialized())
 #endif
-        if (!pauseState)
+        if (nuitrackError)
+            return;
+
+        if (!pauseState || (asyncInit && _threadRunning))
         {
             try
             {
+                Users.UpdateData(skeletonData, handTrackerData, gestureData, NuitrackJson);
+
+                if (gestureData != null)
+                {
+                    gestureData.Dispose();
+                    gestureData = null;
+                }
+
                 nuitrack.Nuitrack.Update();
             }
             catch (System.Exception ex)
             {
-                Debug.LogError(ex.ToString());
+                NuitrackErrorSolver.CheckError(ex, true, false);
+                if (ex.ToString().Contains("LicenseNotAcquiredException"))
+                {
+                    nuitrackError = true;
+                }
             }
         }
     }
 
     public void DepthModuleClose()
     {
-        //Debug.Log ("changeModuls: start");
-        //if (!depthModuleOn)
-        //    return;
         depthModuleOn = false;
         userTrackerModuleOn = false;
         colorModuleOn = false;
-        ChangeModulsState(
+        ChangeModulesState(
             skeletonTrackerModuleOn,
             handsTrackerModuleOn,
             depthModuleOn,
@@ -466,18 +779,15 @@ public class NuitrackManager : MonoBehaviour
             gesturesRecognizerModuleOn,
             userTrackerModuleOn
         );
-        //Debug.Log ("changeModuls: end");
     }
 
     public void DepthModuleStart()
     {
-        //if (depthModuleOn)
-        //    return;
         depthModuleOn = true;
         userTrackerModuleOn = true;
         colorModuleOn = true;
         Debug.Log("DepthModuleStart");
-        ChangeModulsState(
+        ChangeModulesState(
             skeletonTrackerModuleOn,
             handsTrackerModuleOn,
             depthModuleOn,
@@ -485,34 +795,77 @@ public class NuitrackManager : MonoBehaviour
             gesturesRecognizerModuleOn,
             userTrackerModuleOn
         );
+    }
+
+    public void EnableNuitrackAI(bool use)
+    {
+        StopNuitrack();
+        useNuitrackAi = use;
+        StartNuitrack();
+    }
+
+    public static nuitrack.JsonInfo NuitrackJson 
+    { 
+        get
+        {
+            try
+            {
+                if (nuitrack.Nuitrack.GetVersion() <= 3509)
+                {
+                    Debug.LogError("For face tracking use newer Nuitrack Runtime version. https://github.com/3DiVi/nuitrack-sdk/tree/master/Platforms");
+                }
+                else
+                {
+                    string json = nuitrack.Nuitrack.GetInstancesJson();
+                    return NuitrackUtils.FromJson<nuitrack.JsonInfo>(json);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                NuitrackErrorSolver.CheckError(ex);
+            }
+
+            return null;
+        }
     }
 
     public void CloseUserGen()
     {
         try
         {
-            if (depthSensor != null) depthSensor.OnUpdateEvent -= HandleOnDepthSensorUpdateEvent;
-            if (colorSensor != null) colorSensor.OnUpdateEvent -= HandleOnColorSensorUpdateEvent;
-            if (userTracker != null) userTracker.OnUpdateEvent -= HandleOnUserTrackerUpdateEvent;
-            if (skeletonTracker != null) skeletonTracker.OnSkeletonUpdateEvent -= HandleOnSkeletonUpdateEvent;
-            if (gestureRecognizer != null) gestureRecognizer.OnNewGesturesEvent -= OnNewGestures;
-            if (handTracker != null) handTracker.OnUpdateEvent -= HandleOnHandsUpdateEvent;
+            if (DepthSensor != null) 
+                DepthSensor.OnUpdateEvent -= HandleOnDepthSensorUpdateEvent;
 
-            depthFrame = null;
-            colorFrame = null;
-            userFrame = null;
+            if (ColorSensor != null) 
+                ColorSensor.OnUpdateEvent -= HandleOnColorSensorUpdateEvent;
+
+            if (UserTracker != null) 
+                UserTracker.OnUpdateEvent -= HandleOnUserTrackerUpdateEvent;
+
+            if (SkeletonTracker != null) 
+                SkeletonTracker.OnSkeletonUpdateEvent -= HandleOnSkeletonUpdateEvent;
+
+            if (GestureRecognizer != null)
+                GestureRecognizer.OnNewGesturesEvent -= OnNewGestures;
+
+            if (HandTracker != null) 
+                HandTracker.OnUpdateEvent -= HandleOnHandsUpdateEvent;
+
+            DepthFrame = null;
+            ColorFrame = null;
+            UserFrame = null;
             skeletonData = null;
             handTrackerData = null;
 
-            depthSensor = null;
-            colorSensor = null;
-            userTracker = null;
-            skeletonTracker = null;
-            gestureRecognizer = null;
-            handTracker = null;
+            DepthSensor = null;
+            ColorSensor = null;
+            UserTracker = null;
+            SkeletonTracker = null;
+            GestureRecognizer = null;
+            HandTracker = null;
 
             nuitrack.Nuitrack.Release();
-            Debug.Log("CloseUserGen");
+            Debug.Log("Nuitrack Stop OK");
             nuitrackInitialized = false;
         }
         catch (System.Exception ex)
@@ -536,7 +889,6 @@ public class NuitrackManager : MonoBehaviour
         if (_threadRunning)
         {
             _threadRunning = false;
-
             _thread.Join();
         }
     }
