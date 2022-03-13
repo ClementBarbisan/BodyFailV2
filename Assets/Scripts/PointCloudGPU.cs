@@ -124,6 +124,8 @@ public class PointCloudGPU : MonoBehaviour {
                 glitch.enabled = true;
             matPointCloud.SetPass(0);
             Graphics.DrawProceduralNow(MeshTopology.Points, 1, width * height);
+            matPointCloud.SetPass(1);
+            Graphics.DrawProceduralNow(MeshTopology.Points, 1, width * height);
         }
         else 
         {
