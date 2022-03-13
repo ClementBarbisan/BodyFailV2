@@ -76,6 +76,11 @@ public class PointCloudGPU : MonoBehaviour {
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+
         valueNN = matPointCloud.GetFloat("_Value");
         if (valueNN > 0.975f || bug)
         {

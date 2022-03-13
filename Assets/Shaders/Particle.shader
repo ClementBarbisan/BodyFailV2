@@ -62,7 +62,7 @@ Shader "Particle"
 			o.position = float4(particleBuffer[instance_id].x, particleBuffer[instance_id].y, particleBuffer[instance_id].z, 1.0f);
 			o.instance = int(instance_id);
 			// o.position.z += sin(_Time.y) * 10.0f;
-			if (segmentBuffer[instance_id] == 0 || (int)(o.position.z) % 10 != 0)//((instance_id / _Width) % (20) != 0 && segmentBuffer[instance_id - 1] == 1 && segmentBuffer[instance_id + 1] == 1 && segmentBuffer[instance_id - _Width] == 1 && segmentBuffer[instance_id + _Width] == 1))
+			if (segmentBuffer[instance_id] == 0 || (int)(o.position.z * 2) % 5 != 0)//((instance_id / _Width) % (20) != 0 && segmentBuffer[instance_id - 1] == 1 && segmentBuffer[instance_id + 1] == 1 && segmentBuffer[instance_id - _Width] == 1 && segmentBuffer[instance_id + _Width] == 1))
 			{
 				o.keep.x = 0;
 			}
