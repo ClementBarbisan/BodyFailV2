@@ -159,7 +159,6 @@
      <Compile Include="Assets\NuitrackSDK\Nuitrack\Scripts\NuitrackUtils.cs" />
      <Folder Include="Assets" />
      <None Include="Assets\NuitrackSDK\Avatar\3D Avatar\Models\UnityChan\Models\UnityChanShader\Shader\Unitychan_chara_fuku.shader" />
-     <Folder Include="Library\PackageCache\com.unity.ads@3.7.5\Runtime" />
      <Folder Include="Assets\NuitrackSDK\Avatar\3D Avatar" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\mergetool.ja.txt" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\AR Nuitrack\Extensions\Scripts" />
@@ -169,7 +168,6 @@
      <Folder Include="Assets\NuitrackSDK\Faces\FaceView" />
      <Folder Include="Assets\NuitrackSDK\Frame\Croppers\FaceCropper\Prefabs" />
      <Folder Include="Library\PackageCache\com.unity.test-framework@1.1.31" />
-     <Folder Include="Library\PackageCache\com.unity.ads@3.7.5\Plugins\iOS\UnityAds.framework" />
      <Folder Include="Assets\NuitrackSDK\NuitrackDemos\Textures" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\Virtual Fitting Room\Models" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\Point Cloud\Materials" />
@@ -189,12 +187,10 @@
      <None Include="Assets\StreamingAssets\fann_neural_net.txt" />
      <None Include="Assets\NuitrackSDK\Nuitrack\Shaders\GvrUnlitTransparentOverlayColor.shader" />
      <Folder Include="Assets\RealSenseSDK2.0\Misc\Textures\Icons" />
-     <None Include="Library\PackageCache\com.unity.analytics@3.6.12\package.json" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\mergetool.es.txt" />
      <None Include="Assets\NuitrackSDK\Frame\Shaders\Segment2Texture.compute" />
      <Folder Include="Assets\NuitrackSDK\Frame\Prefabs" />
      <Folder Include="Assets\NuitrackSDK\NuitrackDemos" />
-     <Folder Include="Library\PackageCache\com.unity.analytics@3.6.12\Plugins" />
      <None Include="Library\PackageCache\com.unity.ext.nunit@1.0.6\package.json" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\basecommands.es.txt" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\cm.es.txt" />
@@ -208,14 +204,10 @@
      <Folder Include="Assets\NuitrackSDK\Tutorials\Motion Capture\Models" />
      <None Include="Library\PackageCache\com.unity.xr.legacyinputhelpers@2.1.10\package.json" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\SegmentExample\Scripts" />
-     <Folder Include="Library\PackageCache\com.unity.services.analytics@4.2.0" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\SegmentExample\Material" />
      <None Include="Assets\NuitrackSDK\Frame\Shaders\TextureUtils.compute" />
-     <Folder Include="Library\PackageCache\com.unity.purchasing@4.5.1\Plugins\UnityPurchasing\unitypurchasing.bundle\Contents\MacOS" />
      <Folder Include="Assets\NuitrackSDK\NuitrackDemos\All Modules\FPSCounter" />
      <None Include="Assets\NuitrackSDK\Avatar\3D Avatar\Models\UnityChan\Models\UnityChanShader\Shader\Unitychan_chara_akarami_blend.shader" />
-     <Folder Include="Library\PackageCache\com.unity.purchasing@4.5.1\Plugins\UnityPurchasing\unitypurchasing.bundle\Contents\Resources\en.lproj" />
-     <None Include="Library\PackageCache\com.unity.services.analytics@4.2.0\package.json" />
      <Folder Include="Assets\Kino\Glitch\Shader" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\RGBandSkeletons\FinalAssets\Prefabs" />
      <None Include="Library\PackageCache\com.unity.textmeshpro@3.0.6\package.json" />
@@ -224,7 +216,6 @@
      <Folder Include="Assets\NuitrackSDK\Avatar\3D Avatar\Models\UnityChan\Models\Materials" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\guihelp.ja.txt" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\JumpTrainer\Final Assets" />
-     <Folder Include="Library\PackageCache\com.unity.purchasing@4.5.1\Plugins\UnityPurchasing\unitypurchasing.bundle\Contents\Resources" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\ValidationExceptions.json" />
      <None Include="Assets\NuitrackSDK\NuitrackDemos\All Modules\Shaders\DepthSegmentationCustom.shader" />
      <None Include="Assets\Kino\Feedback\Shader\Feedback.shader" />
@@ -233,10 +224,8 @@
      <Folder Include="Assets\NuitrackSDK\Tutorials\Virtual Fitting Room\Prefabs" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\configurehelper.es.txt" />
      <None Include="Assets\StreamingAssets\fann_neural_net_rprop.txt" />
-     <Folder Include="Library\PackageCache\com.unity.purchasing@4.5.1\Plugins\UnityPurchasing\unitypurchasing.bundle\Contents" />
      <Folder Include="Assets\NuitrackSDK\NuitrackDemos\Multisensor" />
      <Folder Include="Assets\NuitrackSDK\Avatar\3D Avatar\Models\Mannequin\Ch36_nonPBR.fbm" />
-     <Folder Include="Library\PackageCache\com.unity.ads@3.7.5\Tests" />
      <Folder Include="Assets\NuitrackSDK\Avatar\3D Avatar\Models\Mannequin\Materials" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\Motion Capture\FinalAssets" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\FaceTracker\FinalAssets" />
@@ -276,8 +265,6 @@
      <Folder Include="Assets\NuitrackSDK\Nuitrack\NuitrackAssembly\iOS" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\differences.zh-Hant.txt" />
      <Folder Include="Library\PackageCache\com.unity.nuget.newtonsoft-json@3.0.2\Runtime\AOT" />
-     <Folder Include="Library\PackageCache\com.unity.purchasing@4.5.1\Plugins\UnityPurchasing\iOS" />
-     <Folder Include="Library\PackageCache\com.unity.ads@3.7.5\Plugins" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\AR Nuitrack\Final Assets\Scripts" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\HandTracker\Prefab" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\plastic-gui.ko.txt" />
@@ -309,10 +296,8 @@
      <Folder Include="Library\PackageCache\com.unity.ext.nunit@1.0.6" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\differences.ja.txt" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\configurehelper.ja.txt" />
-     <Folder Include="Library\PackageCache\com.unity.ads@3.7.5\Plugins\iOS" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\semantic.en.txt" />
      <Folder Include="Assets\NuitrackSDK\Avatar\UI Avatar\Prefabs" />
-     <Folder Include="Library\PackageCache\com.unity.purchasing@4.5.1\Plugins\UnityPurchasing\unitypurchasing.bundle" />
      <Folder Include="Assets\NuitrackSDK\SafetyGrid" />
      <Folder Include="Assets\NuitrackSDK\Avatar\3D Avatar\Prefabs" />
      <None Include="Library\PackageCache\com.unity.ide.visualstudio@2.0.16\package.json" />
@@ -344,7 +329,6 @@
      <Folder Include="Assets\NuitrackSDK\Tutorials\HandTracker\Scripts" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\i3.zh-Hans.txt" />
      <None Include="Assets\NuitrackSDK\Avatar\3D Avatar\Models\UnityChan\Models\UnityChanShader\Shader\Unitychan_chara_fuku_ds.shader" />
-     <Folder Include="Library\PackageCache\com.unity.analytics@3.6.12\AnalyticsStandardEvents" />
      <Folder Include="Assets\Kino" />
      <None Include="Assets\NuitrackSDK\Avatar\3D Avatar\Models\UnityChan\Models\UnityChanShader\Shader\Unitychan_chara_eyelash_blend.shader" />
      <None Include="Assets\NuitrackSDK\Tutorials\AR Football\README AR Football.txt" />
@@ -355,19 +339,16 @@
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\basecommands.en.txt" />
      <None Include="Assets\RealSenseSDK2.0\Shaders\Custom Skybox.shader" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\HandTracker\ImageAsset" />
-     <Folder Include="Library\PackageCache\com.unity.ads@3.7.5" />
      <None Include="Assets\NuitrackSDK\Avatar\README.txt" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\NuitrackAI\Final Assets" />
      <Folder Include="Assets\NuitrackSDK\Frame\Scripts" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\images.ko.txt" />
      <Folder Include="Assets\NuitrackSDK\NuitrackDemos\All Modules\Prefabs" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\workspaceserver.es.txt" />
-     <None Include="Library\PackageCache\com.unity.purchasing@4.5.1\package.json" />
      <Folder Include="Assets\NuitrackSDK\Avatar\3D Avatar\Models\Mannequin" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\Animated Emoji\Final Assets\Scenes" />
      <Folder Include="Assets\Kino\Glitch" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\Box (VR Mobile)\Textures" />
-     <None Include="Library\PackageCache\com.unity.services.analytics@4.2.0\ValidationConfig.json" />
      <Folder Include="Assets\NuitrackSDK\Avatar\Scripts" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\Point Cloud" />
      <Folder Include="Assets\NuitrackSDK\Faces\PointsFace" />
@@ -426,7 +407,6 @@
      <None Include="Assets\NuitrackSDK\Avatar\3D Avatar\Models\UnityChan\license.txt" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\cm.ko.txt" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\guihelp.zh-Hans.txt" />
-     <Folder Include="Library\PackageCache\com.unity.purchasing@4.5.1\Icons" />
      <Folder Include="Assets\RealSenseSDK2.0\Prefabs" />
      <Folder Include="Library\PackageCache\com.unity.services.core@1.6.0\Runtime" />
      <Folder Include="Assets\NuitrackSDK\Avatar\UI Avatar\Scripts" />
@@ -436,7 +416,6 @@
      <Folder Include="Assets\NuitrackSDK\Faces" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\FileSystemWatcherLicense.txt" />
      <Folder Include="Assets\NuitrackSDK\Frame\Blur\Prefabs" />
-     <Folder Include="Library\PackageCache\com.unity.purchasing@4.5.1\Plugins" />
      <Folder Include="Assets\GlitchFx\Shader" />
      <Folder Include="Assets\NuitrackSDK\Avatar\UI Avatar" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\AR Nuitrack\Final Assets\Shaders" />
@@ -451,13 +430,11 @@
      <Folder Include="Assets\NuitrackSDK\Tutorials\FrameVisualization" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\binmergetool.zh-Hans.txt" />
      <None Include="Assets\RealSenseSDK2.0\Shaders\PointCloudGeom.shader" />
-     <None Include="Library\PackageCache\com.unity.ads@3.7.5\LICENSE.txt" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\i3.es.txt" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\mergetool.zh-Hans.txt" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\commontypes.zh-Hant.txt" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\differences.ko.txt" />
      <None Include="Assets\NuitrackSDK\Avatar\3D Avatar\Models\UnityChan\Models\UnityChanShader\Shader\Unitychan_chara_hada_blend.shader" />
-     <Folder Include="Library\PackageCache\com.unity.analytics@3.6.12\Tests" />
      <Folder Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor" />
      <None Include="Assets\NuitrackSDK\Frame\Shaders\Depth2Texture.compute" />
      <Folder Include="Assets\NuitrackSDK\NuitrackCalibrationRGB" />
@@ -466,15 +443,12 @@
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\images.en.txt" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\binmergetool.ja.txt" />
      <None Include="Assets\Kino\Glitch\Shader\DigitalGlitch.shader" />
-     <Folder Include="Library\PackageCache\com.unity.ads@3.7.5\Plugins\Android" />
      <Folder Include="Assets\RealSenseSDK2.0\Shaders" />
-     <Folder Include="Library\PackageCache\com.unity.ads@3.7.5\Tests\Runtime" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\Motion Capture\Animations" />
      <Folder Include="Assets\NuitrackSDK\NuitrackDemos\All Modules\Materials" />
      <Folder Include="Library\PackageCache\com.unity.xr.legacyinputhelpers@2.1.10\Prefabs" />
      <Folder Include="Library\PackageCache\com.unity.textmeshpro@3.0.6" />
      <None Include="Assets\Kino\Glitch\Shader\AnalogGlitch.shader" />
-     <None Include="Library\PackageCache\com.unity.purchasing@4.5.1\ValidationConfig.json" />
      <Folder Include="Assets\RealSenseSDK2.0\Misc\Textures" />
      <Folder Include="Library\PackageCache\com.unity.ide.rider@3.0.16" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\SegmentExample\Prefab" />
@@ -496,7 +470,6 @@
      <None Include="Library\PackageCache\com.unity.textmeshpro@3.0.6\Editor Resources\Shaders\TMP_SDF_SSD.cginc" />
      <None Include="Assets\NuitrackSDK\Avatar\3D Avatar\Models\UnityChan\Models\UnityChanShader\Shader\Unitychan_chara_eye.shader" />
      <None Include="Assets\NuitrackSDK\NuitrackDemos\All Modules\Shaders\DiffuseVertexColored.shader" />
-     <Folder Include="Library\PackageCache\com.unity.purchasing@4.5.1\Runtime" />
      <Folder Include="Assets\NuitrackSDK\Documentation\TutorialsPreviews" />
      <Folder Include="Assets\RealSenseSDK2.0\Models" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\ValidationConfig.json" />
@@ -508,20 +481,17 @@
      <None Include="Assets\RealSenseSDK2.0\Shaders\PointCloud.shader" />
      <Folder Include="Assets\Textures" />
      <Folder Include="Library\PackageCache\com.unity.ide.vscode@1.2.5" />
-     <Folder Include="Library\PackageCache\com.unity.purchasing@4.5.1\Plugins\UnityPurchasing" />
      <Folder Include="Assets\RealSenseSDK2.0\Misc\Animation" />
      <Folder Include="Library\PackageCache\com.unity.textmeshpro@3.0.6\Tests" />
      <Folder Include="Library\PackageCache\com.unity.services.core@1.6.0" />
      <None Include="Library\PackageCache\com.unity.textmeshpro@3.0.6\Editor Resources\Shaders\TMP_Properties.cginc" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\NuitrackAI" />
-     <Folder Include="Library\PackageCache\com.unity.analytics@3.6.12" />
      <None Include="Assets\NuitrackSDK\NuitrackDemos\Multisensor\Readme.txt" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\Zombie Nightmare (VR)\Final Assets\Scripts" />
      <None Include="Assets\Resources\BillingMode.json" />
      <None Include="Library\PackageCache\com.unity.textmeshpro@3.0.6\Editor Resources\Shaders\TMP_SDF Internal Editor.shader" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\xdiff.es.txt" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\configurehelper.zh-Hans.txt" />
-     <Folder Include="Library\PackageCache\com.unity.purchasing@4.5.1\Plugins\UnityPurchasing\unitypurchasing.bundle\Contents\_CodeSignature" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\mergetool.zh-Hant.txt" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\clientcommon.zh-Hans.txt" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\Avatar Animation" />
@@ -529,7 +499,6 @@
      <Folder Include="Assets\NuitrackSDK\Frame\Croppers\Scripts" />
      <Folder Include="Assets\NuitrackSDK\Nuitrack" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\JumpTrainer" />
-     <None Include="Library\PackageCache\com.unity.ads@3.7.5\package.json" />
      <Folder Include="Assets\Materials" />
      <Folder Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib" />
      <Folder Include="Assets\NuitrackSDK\Pointer\Models" />
@@ -538,9 +507,7 @@
      <Folder Include="Assets\NuitrackSDK\PoseDetector\PosesCollection\Custom" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\AR Nuitrack\Extensions\Prefabs" />
      <Folder Include="Library\PackageCache\com.unity.textmeshpro@3.0.6\Editor Resources\Shaders" />
-     <Folder Include="Library\PackageCache\com.unity.ads@3.7.5\Plugins\iOS\UnityAds.framework\Headers" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\FaceTracker\Sprites\Smile" />
-     <Folder Include="Library\PackageCache\com.unity.ads@3.7.5\Plugins\iOS\UnityAds.framework\Modules" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\FaceTracker\Sprites" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\commontypes.ko.txt" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\AR Nuitrack" />
@@ -571,7 +538,6 @@
      <None Include="Assets\NuitrackSDK\Tutorials\AR Nuitrack\Final Assets\Shaders\ARNuitrack_Unlit.shader" />
      <Folder Include="Assets\NuitrackSDK\Faces\FaceView\Scripts" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\mergetool.ko.txt" />
-     <Folder Include="Library\PackageCache\com.unity.purchasing@4.5.1\Plugins\UnityPurchasing\Android" />
      <Folder Include="Assets\NuitrackSDK\Avatar\3D Avatar\Prefabs\SubPrefabs" />
      <None Include="Assets\RealSenseSDK2.0\Shaders\BW.shader" />
      <None Include="Assets\GlitchFx\Shader\GlitchFx.shader" />
@@ -581,7 +547,6 @@
      <Folder Include="Assets\NuitrackSDK\PoseDetector\PosesCollection\Default" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\i3.ja.txt" />
      <None Include="Assets\NuitrackSDK\Avatar\3D Avatar\Models\UnityChan\Models\UnityChanShader\Shader\Unitychan_chara_hair.shader" />
-     <Folder Include="Library\PackageCache\com.unity.ads@3.7.5\Tests\Editor" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\FinalIK" />
      <Folder Include="Assets\NuitrackSDK\Tutorials\Animated Emoji\Materials" />
      <Folder Include="Assets\NuitrackSDK\Avatar\3D Avatar\Scenes" />
@@ -591,7 +556,6 @@
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\cm.zh-Hans.txt" />
      <Folder Include="Assets\NuitrackSDK\PoseDetector" />
      <Folder Include="Assets\NuitrackSDK\SensorEnvironment\SensorSpace" />
-     <Folder Include="Library\PackageCache\com.unity.purchasing@4.5.1" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\plastic-gui.ja.txt" />
      <None Include="Assets\Shaders\StandardGeometry.shader" />
      <None Include="Library\PackageCache\com.unity.collab-proxy@1.17.7\Lib\Editor\PlasticSCM\localization\i3.en.txt" />
@@ -866,17 +830,8 @@
      <Reference Include="Intel.RealSense">
      <HintPath>J:\BodyFailV2\Assets\RealSenseSDK2.0\Plugins\Intel.RealSense.dll</HintPath>
      </Reference>
-     <Reference Include="Unity.Analytics.StandardEvents">
-     <HintPath>J:\BodyFailV2\Library\PackageCache\com.unity.analytics@3.6.12\AnalyticsStandardEvents\Unity.Analytics.StandardEvents.dll</HintPath>
-     </Reference>
-     <Reference Include="Unity.Analytics.Editor">
-     <HintPath>J:\BodyFailV2\Library\PackageCache\com.unity.analytics@3.6.12\Unity.Analytics.Editor.dll</HintPath>
-     </Reference>
      <Reference Include="FANNCSharp.Float">
      <HintPath>J:\BodyFailV2\Assets\Plugins\x64\FANNCSharp.Float.dll</HintPath>
-     </Reference>
-     <Reference Include="Unity.Analytics.Tracker">
-     <HintPath>J:\BodyFailV2\Library\PackageCache\com.unity.analytics@3.6.12\Unity.Analytics.Tracker.dll</HintPath>
      </Reference>
      <Reference Include="Unity.Android.Types">
      <HintPath>C:\Program Files\Unity\Hub\Editor\2021.3.15f1\Editor\Data\PlaybackEngines\AndroidPlayer\Unity.Android.Types.dll</HintPath>
@@ -1273,17 +1228,9 @@
      </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Purchasing.Common.csproj">
-      <Project>{30a11793-1efe-e37f-d15e-8c60a2bba1a0}</Project>
-      <Name>Purchasing.Common</Name>
-    </ProjectReference>
     <ProjectReference Include="Unity.VSCode.Editor.csproj">
       <Project>{de617fd2-e8ae-c2a5-3023-5568cff86352}</Project>
       <Name>Unity.VSCode.Editor</Name>
-    </ProjectReference>
-    <ProjectReference Include="UnityEngine.Purchasing.csproj">
-      <Project>{2882357f-29d4-c718-4689-bddfb8703d05}</Project>
-      <Name>UnityEngine.Purchasing</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.TextMeshPro.Editor.csproj">
       <Project>{eb82e80f-a6c0-0e95-6ff5-c5ea5ea371b7}</Project>
@@ -1301,29 +1248,13 @@
       <Project>{bcfdfb88-6d24-f28b-bcc2-c73c7343ab6a}</Project>
       <Name>Unity.Timeline</Name>
     </ProjectReference>
-    <ProjectReference Include="Unity.Services.Analytics.Editor.csproj">
-      <Project>{a2fd2006-3354-fd2b-acd5-cdc03f966129}</Project>
-      <Name>Unity.Services.Analytics.Editor</Name>
-    </ProjectReference>
     <ProjectReference Include="Unity.TextMeshPro.csproj">
       <Project>{8719e698-ad08-bf78-262f-7e04de3c3ed9}</Project>
       <Name>Unity.TextMeshPro</Name>
     </ProjectReference>
-    <ProjectReference Include="UnityEngine.Purchasing.SecurityStub.csproj">
-      <Project>{248a7d39-3be4-8320-c934-92ee3271a8fc}</Project>
-      <Name>UnityEngine.Purchasing.SecurityStub</Name>
-    </ProjectReference>
     <ProjectReference Include="RealSense.csproj">
       <Project>{ba85fa39-6ab8-6599-23cd-7c1910ce57cf}</Project>
       <Name>RealSense</Name>
-    </ProjectReference>
-    <ProjectReference Include="Unity.Services.Analytics.csproj">
-      <Project>{b6dbe3ce-1946-e970-d704-0d4ddfa3578c}</Project>
-      <Name>Unity.Services.Analytics</Name>
-    </ProjectReference>
-    <ProjectReference Include="UnityEngine.Advertisements.csproj">
-      <Project>{40685df5-bff5-bb53-3535-8705ce13db73}</Project>
-      <Name>UnityEngine.Advertisements</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.PlasticSCM.Editor.csproj">
       <Project>{6832b1c8-23bf-744d-3a54-f7edcf5d5cbb}</Project>
@@ -1333,10 +1264,6 @@
       <Project>{6e3ce169-8443-f25b-bc52-7ee46b82116d}</Project>
       <Name>Unity.Rider.Editor</Name>
     </ProjectReference>
-    <ProjectReference Include="Analytics.csproj">
-      <Project>{5e2b7461-2617-30c5-c8c5-237c95c8bd45}</Project>
-      <Name>Analytics</Name>
-    </ProjectReference>
     <ProjectReference Include="UnityEngine.SpatialTracking.csproj">
       <Project>{0691f36f-c42f-7f96-ab0c-4bb235fe0385}</Project>
       <Name>UnityEngine.SpatialTracking</Name>
@@ -1345,21 +1272,9 @@
       <Project>{1a872646-358a-bcfd-c24e-f32b243db4c1}</Project>
       <Name>Unity.Services.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="Unity.Analytics.DataPrivacy.csproj">
-      <Project>{750fd05e-9e52-6c69-7bd2-5d88f8e52370}</Project>
-      <Name>Unity.Analytics.DataPrivacy</Name>
-    </ProjectReference>
     <ProjectReference Include="Unity.Services.Core.Analytics.csproj">
       <Project>{c614a69a-bba2-9b55-505c-f71c280fcbab}</Project>
       <Name>Unity.Services.Core.Analytics</Name>
-    </ProjectReference>
-    <ProjectReference Include="UnityEngine.Purchasing.SecurityCore.csproj">
-      <Project>{35475e93-a2f4-187e-4704-efdd9ed63690}</Project>
-      <Name>UnityEngine.Purchasing.SecurityCore</Name>
-    </ProjectReference>
-    <ProjectReference Include="UnityEngine.Purchasing.Codeless.csproj">
-      <Project>{4cc1b6d8-4962-2d75-459b-e2f61c7b6f8e}</Project>
-      <Name>UnityEngine.Purchasing.Codeless</Name>
     </ProjectReference>
     <ProjectReference Include="UnityEngine.XR.LegacyInputHelpers.csproj">
       <Project>{663af793-4390-09f3-2ebe-32658df51752}</Project>
@@ -1373,29 +1288,13 @@
       <Project>{40cdb53d-6581-8835-1f58-83739cdd7c53}</Project>
       <Name>Unity.Timeline.Editor</Name>
     </ProjectReference>
-    <ProjectReference Include="UnityEngine.Purchasing.Stores.csproj">
-      <Project>{8bb8b37c-4d25-32c2-e8f3-3b47e6a8c0db}</Project>
-      <Name>UnityEngine.Purchasing.Stores</Name>
-    </ProjectReference>
     <ProjectReference Include="UnityEditor.XR.LegacyInputHelpers.csproj">
       <Project>{bc81031f-1a1d-e68c-6dc7-a51353effce8}</Project>
       <Name>UnityEditor.XR.LegacyInputHelpers</Name>
     </ProjectReference>
-    <ProjectReference Include="UnityEngine.Monetization.csproj">
-      <Project>{046391e6-5eab-11c2-c54a-fed1e6409875}</Project>
-      <Name>UnityEngine.Monetization</Name>
-    </ProjectReference>
-    <ProjectReference Include="UnityEditor.Purchasing.csproj">
-      <Project>{a1368529-7f44-e4e2-9a2c-92ba160463e2}</Project>
-      <Name>UnityEditor.Purchasing</Name>
-    </ProjectReference>
     <ProjectReference Include="UnityEditor.SpatialTracking.csproj">
       <Project>{409ff827-e9ba-7ef5-39ba-92efdf551ed5}</Project>
       <Name>UnityEditor.SpatialTracking</Name>
-    </ProjectReference>
-    <ProjectReference Include="UnityEngine.Advertisements.Editor.csproj">
-      <Project>{8c87cb46-24e5-dda5-eaae-95dd6ec7b106}</Project>
-      <Name>UnityEngine.Advertisements.Editor</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
