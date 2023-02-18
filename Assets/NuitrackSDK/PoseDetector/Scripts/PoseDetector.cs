@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace NuitrackSDK.Poses
 {
-    [AddComponentMenu("NuitrackSDK/Poses/PoseDetector")]
+    [AddComponentMenu("NuitrackSDK/Poses/Pose Detector")]
     public class PoseDetector : MonoBehaviour, IEnumerable<NuitrackPose>
     {
         /// <summary>

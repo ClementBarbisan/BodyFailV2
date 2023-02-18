@@ -53,16 +53,22 @@ namespace NuitrackSDK.Frame
             }
         }
 
+        protected void CheckModuleDisableIssue(bool useModule, string moduleName)
+        {
+            if (!useModule)
+                Debug.LogError(string.Format("{0} module is disabled! Enable it on the Nuitrack Manager component", moduleName));
+        }
+
         protected void InitShader(string kernelName)
         {
             if (!GPUSupported)
             {
 #if UNITY_EDITOR && !UNITY_STANDALONE
-            Debug.LogError("Compute shaders are not supported for the Android platform in the editor.\n" +
-                "A software conversion will be used (may cause performance issues)\n" +
-                "Switch the platform to Standalone (this is not relevant for the assembled project).");
+                Debug.LogWarning("Compute shaders are not supported for the Android platform in the editor.\n" +
+                    "A software conversion will be used (may cause performance issues)\n" +
+                    "Switch the platform to Standalone (this is not relevant for the assembled project).");
 #else
-                Debug.LogError("Compute shaders are not supported. A software conversion will be used (may cause performance issues).");
+                Debug.LogWarning("Compute shaders are not supported. A software conversion will be used (may cause performance issues).");
 #endif
             }
 
@@ -73,6 +79,9 @@ namespace NuitrackSDK.Frame
 
         protected RenderTexture InitRenderTexture(int width, int height)
         {
+            if (width == 0 || height == 0)
+                return null;
+
             RenderTexture renderTexture = new RenderTexture(width, height, 0, RenderTextureFormat.ARGB32);
             renderTexture.enableRandomWrite = true;
             renderTexture.Create();

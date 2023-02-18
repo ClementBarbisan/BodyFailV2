@@ -23,8 +23,6 @@ namespace NuitrackSDK.Calibration
 
         void Start()
         {
-            DontDestroyOnLoad(this);
-
             if (useCalibrationSensorOrientation)
             {
                 calibration = FindObjectOfType<CalibrationHandler>();

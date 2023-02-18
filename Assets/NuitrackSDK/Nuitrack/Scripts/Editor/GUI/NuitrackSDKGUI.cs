@@ -6,8 +6,6 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 
-using NuitrackSDK.Frame;
-
 
 namespace NuitrackSDKEditor
 {
@@ -441,9 +439,13 @@ namespace NuitrackSDKEditor
         /// <summary>
         /// Draw a default message with a warning that there should be a NuitrackManager component on the scene
         /// </summary>
-        public static void NuitrackNotExistMessage()
+        public static void MessageIfNuitrackNotExist()
         {
-            DrawMessage("Make sure that when the script is running, the NuitrackScripts prefab will be on the scene.", LogType.Warning);
+            if (UnityEngine.Object.FindObjectOfType<NuitrackManager>() == null)
+            {
+                DrawMessage("Make sure that when the script is running, the NuitrackScripts prefab will be on the scene.", LogType.Warning);
+                EditorGUILayout.Space();
+            }
         }
 
         /// <summary>
@@ -479,6 +481,46 @@ namespace NuitrackSDKEditor
         }
 
         #endregion
+
+
+        #region PropertyDrawer
+
+        public static SerializedProperty DrawPropertyField(this SerializedObject serializedObject, string propertyName, string label = null, string toolTip = null, string iconName = null)
+        {
+            serializedObject.Update();
+
+            label = label ?? ObjectNames.NicifyVariableName(propertyName);
+            toolTip = toolTip ?? string.Empty;
+            Texture icon = iconName != null ? EditorGUIUtility.IconContent(iconName).image : null;
+
+            GUIContent propertyContent = label != null || toolTip != null || icon != null ? new GUIContent(label, icon, toolTip) : null;
+
+            SerializedProperty property = serializedObject.FindProperty(propertyName);
+            EditorGUILayout.PropertyField(property, propertyContent);
+            serializedObject.ApplyModifiedProperties();
+
+            return property;
+        }
+
+        public static SerializedProperty DrawPropertyField(this SerializedProperty serializedProperty, string relativePropertyName, string label = null, string toolTip = null, string iconName = null)
+        {
+            serializedProperty.serializedObject.Update();
+
+            label = label ?? string.Empty;
+            toolTip = toolTip ?? string.Empty;
+            Texture icon = iconName != null ? EditorGUIUtility.IconContent(iconName).image : null;
+
+            GUIContent propertyContent = label != null || toolTip != null || icon != null ? new GUIContent(label, icon, toolTip) : null;
+
+            SerializedProperty property = serializedProperty.FindPropertyRelative(relativePropertyName);
+            EditorGUILayout.PropertyField(property, propertyContent);
+            serializedProperty.serializedObject.ApplyModifiedProperties();
+
+            return property;
+        }
+
+        #endregion
+
 
         #region Text
 

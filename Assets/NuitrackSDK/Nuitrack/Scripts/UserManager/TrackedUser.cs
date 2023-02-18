@@ -5,6 +5,8 @@ namespace NuitrackSDK
 {
     public abstract class TrackedUser : MonoBehaviour
     {
+        public int sensorId;
+
         [SerializeField, NuitrackSDKInspector]
         bool useCurrentUserTracker = true;
 
@@ -57,7 +59,7 @@ namespace NuitrackSDK
         }
 
         /// <summary>
-        /// True if there is a control skeleton.
+        /// True if there is a control user.
         /// </summary>
         public bool IsActive
         {
@@ -75,9 +77,9 @@ namespace NuitrackSDK
             get
             {
                 if (useCurrentUserTracker)
-                    return NuitrackManager.Users.Current;
+                    return NuitrackManager.UsersList[sensorId].Current;
                 else
-                    return NuitrackManager.Users.GetUser(userID);
+                    return NuitrackManager.UsersList[sensorId].GetUser(userID);
             }
         }
     }

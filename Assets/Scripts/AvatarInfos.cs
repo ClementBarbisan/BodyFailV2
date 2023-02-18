@@ -35,7 +35,7 @@ public class AvatarInfos : MonoBehaviour
     bool disfordant = false;
     NeuralNet neuralNet;
     private bool urlRequest;
-
+    
     void Start()
     {
         if (PointCloudGPU.Instance.trainFile)
@@ -59,7 +59,7 @@ public class AvatarInfos : MonoBehaviour
 
     private void OnAudioFilterRead(float[] data, int channels)
     {
-        if (CurrentUserTracker.CurrentUser != 0 && valueNN < 0.975f)
+        if (NuitrackManager.Users != null && NuitrackManager.Users.Count != 0 && valueNN < 0.975f)
         {
             float phase = 0;
             for (int i = 0; i < data.Length; i++)
@@ -108,9 +108,9 @@ public class AvatarInfos : MonoBehaviour
             neuralNet.CascadetrainOnData(trainingData, max_epochs, epochs_between_reports, desired_error);
             neuralNet.Save(Application.streamingAssetsPath + "/fann_neural_net.txt");
         }
-        if (CurrentUserTracker.CurrentUser != 0)
+        if (NuitrackManager.Users != null && NuitrackManager.Users.Count != 0)
         {
-            nuitrack.Skeleton skeleton = CurrentUserTracker.CurrentSkeleton;
+            NuitrackSDK.UserData skeleton = NuitrackManager.Users.Current;
             
             if (Input.GetMouseButtonDown(0) && PointCloudGPU.Instance.trainFile)
                 normal = true;
@@ -118,14 +118,14 @@ public class AvatarInfos : MonoBehaviour
                 disfordant = true;
             if (valueNN > 0.975 && !urlRequest)
             {
-                string url = "https://bodyfail.com/addSample?";
+                string url = "http://bodyfail.net/addSample?";
                 float xMax = 0;
                 float yMax = 0;
                 float zMax = 0;
                 for (int q = 0; q < typeJoint.Length; q++)
                 {
-                    nuitrack.Joint joint = skeleton.GetJoint(typeJoint[q]);
-                    Vector3 newPosition = joint.ToVector3();
+                    NuitrackSDK.UserData.SkeletonData.Joint joint = skeleton.Skeleton.GetJoint(typeJoint[q]);
+                    Vector3 newPosition = joint.Position;
                     if (Mathf.Abs(newPosition.x) > xMax)
                         xMax = Mathf.Abs(newPosition.x);
                     if (Mathf.Abs(newPosition.y) > yMax)
@@ -135,22 +135,22 @@ public class AvatarInfos : MonoBehaviour
                 }
                 for (int q = 0; q < typeJoint.Length; q++) 
                 {
-                    nuitrack.Joint joint = skeleton.GetJoint(typeJoint[q]);
-                    Vector3 newPosition = joint.ToVector3();
+                    NuitrackSDK.UserData.SkeletonData.Joint joint = skeleton.Skeleton.GetJoint(typeJoint[q]);
+                    Vector3 newPosition = joint.Position;
                     if (q < 15)
                         url += "n" + q + "x=" + (newPosition.x / xMax) + "&n" + q + "y=" + (newPosition.y / yMax) + "&n" + q + "z=" + (newPosition.z / zMax) + "&";
                     else
                         url += "n" + q + "x=" + (newPosition.x / xMax) + "&n" + q + "y=" + (newPosition.y / yMax) + "&n" + q + "z=" + (newPosition.z / zMax);
                 }
-                url += "&place=AbuDhabiTest";
+                url += "&place=Test";
                 urlRequest = true;
                 Debug.Log(url);
                 StartCoroutine(RequestUrl(url));
             }
             for (int q = 0; q < typeJoint.Length; q++)
             {
-                nuitrack.Joint joint = skeleton.GetJoint(typeJoint[q]);
-                Vector3 newPosition = joint.ToVector3();
+                NuitrackSDK.UserData.SkeletonData.Joint joint = skeleton.Skeleton.GetJoint(typeJoint[q]);
+                Vector3 newPosition = joint.Position;
 
                 coordinates[q * 3] = newPosition.x;
                 coordinates[q * 3 + 1] = newPosition.y;

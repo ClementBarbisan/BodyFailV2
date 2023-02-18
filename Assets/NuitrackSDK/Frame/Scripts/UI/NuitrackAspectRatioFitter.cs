@@ -1,9 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+
 namespace NuitrackSDK.Frame
 {
-    [AddComponentMenu("NuitrackSDK/Frame/Nuitrack Aspect Ratio Fitter")]
+    [AddComponentMenu("NuitrackSDK/Frame/UI/Nuitrack Aspect Ratio Fitter")]
     public class NuitrackAspectRatioFitter : AspectRatioFitter
     {
         public enum FrameMode
@@ -45,7 +46,6 @@ namespace NuitrackSDK.Frame
             }
         }
 
-
         protected override void OnDisable()
         {
             base.OnDisable();
@@ -63,7 +63,6 @@ namespace NuitrackSDK.Frame
                     break;
             }
         }
-
 
         void NuitrackManager_onFrameUpdate<T>(nuitrack.Frame<T> frame) where T : struct
         {

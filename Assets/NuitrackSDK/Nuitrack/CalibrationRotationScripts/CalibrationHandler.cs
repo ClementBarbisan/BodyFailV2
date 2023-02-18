@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
 using NuitrackSDK.Poses;
+using UnityEngine.Events;
 
 
 namespace NuitrackSDK.Calibration
@@ -8,6 +9,7 @@ namespace NuitrackSDK.Calibration
     public class CalibrationHandler : MonoBehaviour
     {
         [SerializeField] NuitrackPose callibrationPose;
+        [SerializeField] float calibrationTime;
 
         #region delegates and events
         public delegate void OnStartHandler();
@@ -19,9 +21,14 @@ namespace NuitrackSDK.Calibration
         public event OnProgressHandler onProgress;
         public event OnFailHandler onFail;
         public event OnSuccessHandler onSuccess;
+
+        [SerializeField, NuitrackSDKInspector] UnityEvent onStartEvent;
+        [SerializeField, NuitrackSDKInspector] UnityEvent<float> onProgressEvent;
+        [SerializeField, NuitrackSDKInspector] UnityEvent onFailEvent;
+        [SerializeField, NuitrackSDKInspector] UnityEvent<Quaternion> onSuccessEvent;
+
         #endregion
 
-        [SerializeField] float calibrationTime;
         public float CalibrationTime { get { return calibrationTime; } }
 
         float timer;
@@ -36,14 +43,11 @@ namespace NuitrackSDK.Calibration
                 if (instance == null)
                 {
                     instance = FindObjectOfType<CalibrationHandler>();
-                    if (instance)
-                        DontDestroyOnLoad(instance);
                 }
 
                 return instance;
             }
         }
-
 
         static Quaternion sensorOrientation = Quaternion.identity;
         static public Quaternion SensorOrientation { get { return sensorOrientation; } }
@@ -61,8 +65,6 @@ namespace NuitrackSDK.Calibration
 
         void Start()
         {
-            DontDestroyOnLoad(this);
-
             timer = 0f;
             cooldown = 0f;
             calibrationStarted = false;
@@ -90,7 +92,10 @@ namespace NuitrackSDK.Calibration
                             timer = 0f;
                             cooldown = calibrationTime;
 
-                            onSuccess?.Invoke(GetHeadAngles(skeleton));
+                            Quaternion headAngles = GetHeadAngles(skeleton);
+
+                            onSuccess?.Invoke(headAngles);
+                            onSuccessEvent.Invoke(headAngles);
                         }
                         else
                         {
@@ -99,10 +104,13 @@ namespace NuitrackSDK.Calibration
                             {
                                 timer = 0f;
                                 onFail?.Invoke();
+                                onFailEvent.Invoke();
                             }
                             else
                             {
                                 onProgress?.Invoke(timer / calibrationTime);
+                                onProgressEvent.Invoke(timer / calibrationTime);
+
                                 timer += Time.unscaledDeltaTime;
                             }
                         }
@@ -118,7 +126,9 @@ namespace NuitrackSDK.Calibration
             if (Mathf.Approximately((float)System.Math.Round(poseMath, 3), 1))
             {
                 calibrationStarted = true;
+
                 onStart?.Invoke();
+                onStartEvent.Invoke();
             }
         }
 

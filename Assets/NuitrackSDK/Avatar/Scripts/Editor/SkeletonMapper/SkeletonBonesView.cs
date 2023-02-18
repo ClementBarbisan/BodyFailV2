@@ -90,13 +90,9 @@ namespace NuitrackSDKEditor.Avatar
 
             // UI toolbar elements
 
-            GUIContent modelBonesContent = EditorGUIUtility.IconContent("scenepicking_pickable-mixed_hover");
-            modelBonesContent.text = "Model bones";
-
-            GUIContent assignBonesContent = EditorGUIUtility.IconContent("AvatarSelector");
-            assignBonesContent.text = "Assigned bones";
-
-            GUIContent noneContent = EditorGUIUtility.IconContent("animationvisibilitytoggleoff");
+            GUIContent modelBonesContent = new GUIContent("Model bones", EditorGUIUtility.IconContent("scenepicking_pickable-mixed_hover").image);
+            GUIContent assignBonesContent = new GUIContent("Assigned bones", EditorGUIUtility.IconContent("AvatarSelector").image);
+            GUIContent noneContent = new GUIContent(EditorGUIUtility.IconContent("animationvisibilitytoggleoff").image);
 
             skeletonModeGuiContent = new GUIContent[] { modelBonesContent, assignBonesContent, noneContent };
         }

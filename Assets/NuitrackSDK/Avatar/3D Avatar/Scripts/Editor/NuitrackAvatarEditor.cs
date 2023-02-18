@@ -8,7 +8,7 @@ using JointType = nuitrack.JointType;
 
 using NuitrackSDK;
 using NuitrackSDK.Avatar;
-
+using UnityEditor.SceneManagement;
 
 namespace NuitrackSDKEditor.Avatar
 {
@@ -212,33 +212,50 @@ namespace NuitrackSDKEditor.Avatar
             }
         }
 
+        void SetSensorSpace(SerializedProperty sensorSpaceProp, NuitrackSDK.SensorEnvironment.SensorSpace sensorSpace)
+        {
+            sensorSpaceProp.objectReferenceValue = sensorSpace.transform;
+            serializedObject.ApplyModifiedProperties();
+        }
+
         protected override void DrawAvatarGUI()
         {
             EditorGUILayout.Space();
 
-            SerializedProperty vrModeProperty = serializedObject.FindProperty("vrMode");
-            vrModeProperty.boolValue = EditorGUILayout.Toggle("VR mode", vrModeProperty.boolValue);
-            serializedObject.ApplyModifiedProperties();
+            SerializedProperty vrModeProperty = serializedObject.DrawPropertyField("vrMode", "VR mode");
 
             if (vrModeProperty.boolValue)
             {
-                SerializedProperty vrHeadProperty = serializedObject.FindProperty("vrHead");
-                EditorGUILayout.ObjectField(vrHeadProperty, typeof(GameObject));
-
-                SerializedProperty headTransformProperty = serializedObject.FindProperty("headTransform");
-                EditorGUILayout.ObjectField(headTransformProperty, typeof(Transform));
+                serializedObject.DrawPropertyField("vrHead", "VR head");
+                serializedObject.DrawPropertyField("headTransform", "Head transform");
+                EditorGUILayout.Space();
             }
 
-            SerializedProperty needBorderGrid = serializedObject.FindProperty("needBorderGrid");
-            EditorGUILayout.PropertyField(needBorderGrid, new GUIContent("Need border grid"));
-            serializedObject.ApplyModifiedProperties();
+            SerializedProperty needBorderGrid = serializedObject.DrawPropertyField("needBorderGrid", "Need border grid");
 
             if (needBorderGrid.boolValue)
             {
-                SerializedProperty borderGrid = serializedObject.FindProperty("borderGrid");
-                EditorGUILayout.PropertyField(borderGrid);
-                serializedObject.ApplyModifiedProperties();
+                serializedObject.DrawPropertyField("borderGrid", "Border grid");
+                EditorGUILayout.Space();
             }
+
+            SerializedProperty sensorSpaceProp = serializedObject.DrawPropertyField("sensorSpace", "Sensor space");
+
+            if (StageUtility.GetCurrentStage() == StageUtility.GetMainStage())
+            {
+                NuitrackSDK.SensorEnvironment.SensorSpace sensorSpace = FindObjectOfType<NuitrackSDK.SensorEnvironment.SensorSpace>();
+
+                if (sensorSpaceProp.objectReferenceValue == null && sensorSpace != null)
+                {
+                    UnityEngine.Events.UnityAction fixAction = delegate { SetSensorSpace(sensorSpaceProp, sensorSpace); };
+                    NuitrackSDKGUI.DrawMessage(string.Format("Hint. Assign transform \"{0}\" as SensorSpace?", sensorSpace.name), LogType.Log, fixAction, "Apply");
+                    EditorGUILayout.Space();
+                }
+            }
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Calibration", EditorStyles.boldLabel);
+            serializedObject.DrawPropertyField("recenterOnSuccess");
 
             DrawSkeletonMap();
         }
@@ -265,9 +282,7 @@ namespace NuitrackSDKEditor.Avatar
             if (skeletonMapper != null)
                 skeletonMapper.Draw(activeJoints.ToList());
 
-            GUIContent toObjectGUIContent = EditorGUIUtility.IconContent("SceneViewCamera");
-            toObjectGUIContent.text = "Centered in view";
-
+            GUIContent toObjectGUIContent = new GUIContent("Centered in view", EditorGUIUtility.IconContent("SceneViewCamera").image);
             if (GUILayout.Button(toObjectGUIContent))
             {
                 NuitrackAvatar avatar = target as NuitrackAvatar;

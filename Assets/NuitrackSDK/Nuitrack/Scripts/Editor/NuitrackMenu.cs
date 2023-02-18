@@ -6,7 +6,7 @@ using System;
 
 using NuitrackSDKEditor.ErrorSolver;
 using NuitrackSDKEditor.Documentation;
-using NuitrackSDKEditor.Activation;
+using NuitrackSDKEditor.Wizards;
 
 
 namespace NuitrackSDKEditor
@@ -47,7 +47,7 @@ namespace NuitrackSDKEditor
             Application.OpenURL("https://github.com/3DiVi/nuitrack-sdk/");
         }
 
-        [MenuItem("Nuitrack/Help/Open tutorials list", priority = 21)]
+        [MenuItem("Nuitrack/Help/Open Tutorials List", priority = 21)]
         public static void OpenTutoralList()
         {
             NuitrackTutorialsEditorWindow.Open();
@@ -59,44 +59,13 @@ namespace NuitrackSDKEditor
             Application.OpenURL("https://github.com/3DiVi/nuitrack-sdk/blob/master/doc/Troubleshooting.md#troubleshooting");
         }
 
-        [MenuItem("Nuitrack/Activate Nuitrack", priority = 0)]
+        [MenuItem("Nuitrack/Activation/Activate Nuitrack", priority = 0)]
         public static void ActivateNuitrackWizard()
         {
             NuitrackActivationWizard.Open();
         }
 
-        [MenuItem("Nuitrack/Play Test Unity Scene", priority = 1)]
-        public static void OpenNuitrackTestScene()
-        {
-            if (EditorApplication.isPlaying)
-                EditorApplication.ExitPlaymode();
-            else
-            {
-                if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
-                {
-                    EditorSceneManager.OpenScene(Path.Combine("Assets", "NuitrackSDK", "NuitrackDemos", "AllModulesScene.unity"));
-                    EditorApplication.EnterPlaymode();
-                }
-            }
-        }
-
-        [MenuItem("Nuitrack/Open Nuitrack Test Sample", priority = 2)]
-        public static void OpenNuitrackTestSample()
-        {
-#if !NUITRACK_PORTABLE
-            string nuitrackHomePath = Environment.GetEnvironmentVariable("NUITRACK_HOME");
-            string workingDir = Path.Combine(nuitrackHomePath, "bin");
-            if (nuitrackHomePath == null)
-                return;
-#else
-            string workingDir = Path.Combine(Application.dataPath, "NuitrackSDK", "Plugins", "x86_64");
-#endif
-            string path = Path.Combine(workingDir, "nuitrack_sample.exe");
-
-            ProgramStarter.Run(path, workingDir, true);
-        }
-
-        [MenuItem("Nuitrack/Open Nuitrack Activation Tool", priority = 3)]
+        [MenuItem("Nuitrack/Activation/Open Nuitrack Activation Tool", priority = 3)]
         public static void OpenNuitrackApp()
         {
 #if !NUITRACK_PORTABLE
@@ -111,10 +80,47 @@ namespace NuitrackSDKEditor
             ProgramStarter.Run(path, workingDir, true);
         }
 
-        [MenuItem("Nuitrack/Manage Nuitrack License", priority = 4)]
+        [MenuItem("Nuitrack/Activation/Manage Nuitrack License", priority = 4)]
         public static void GoToLicensePage()
         {
             Application.OpenURL("https://cognitive.3divi.com");
+        }
+
+        [MenuItem("Nuitrack/Tests/Problem Wizard", priority = 0)]
+        public static void ProblemWizard()
+        {
+            NuitrackProblemWizard.Open();
+        }
+
+        [MenuItem("Nuitrack/Tests/Play Test Unity Scene", priority = 1)]
+        public static void OpenNuitrackTestScene()
+        {
+            if (EditorApplication.isPlaying)
+                EditorApplication.ExitPlaymode();
+            else
+            {
+                if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                {
+                    EditorSceneManager.OpenScene(Path.Combine("Assets", "NuitrackSDK", "NuitrackDemos", "All Modules", "AllModulesScene.unity"));
+                    EditorApplication.EnterPlaymode();
+                }
+            }
+        }
+
+        [MenuItem("Nuitrack/Tests/Open Nuitrack Test Sample", priority = 2)]
+        public static void OpenNuitrackTestSample()
+        {
+#if !NUITRACK_PORTABLE
+            string nuitrackHomePath = Environment.GetEnvironmentVariable("NUITRACK_HOME");
+            string workingDir = Path.Combine(nuitrackHomePath, "bin");
+            if (nuitrackHomePath == null)
+                return;
+#else
+            string workingDir = Path.Combine(Application.dataPath, "NuitrackSDK", "Plugins", "x86_64");
+#endif
+            string path = Path.Combine(workingDir, "nuitrack_sample.exe");
+
+            ProgramStarter.Run(path, workingDir, true);
         }
     }
 }

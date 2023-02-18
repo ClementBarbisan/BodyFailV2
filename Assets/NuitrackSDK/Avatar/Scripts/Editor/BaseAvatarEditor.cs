@@ -23,9 +23,7 @@ namespace NuitrackSDKEditor.Avatar
         /// </summary>
         protected void DrawSkeletonSettings()
         {
-            SerializedProperty jointConfidence = serializedObject.FindProperty("jointConfidence");
-            jointConfidence.floatValue = EditorGUILayout.Slider("Joint confidence", jointConfidence.floatValue, 0, 1);
-            serializedObject.ApplyModifiedProperties();
+            serializedObject.DrawPropertyField("jointConfidence", "Joint confidence");
         }
 
         /// <summary>

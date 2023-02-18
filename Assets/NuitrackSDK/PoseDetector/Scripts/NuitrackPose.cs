@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace NuitrackSDK.Poses
 {
-    [System.Serializable, CreateAssetMenuAttribute(fileName = "Pose", menuName = "Nuitrack/Poses/Create pose")]
+    [System.Serializable, CreateAssetMenuAttribute(fileName = "Pose", menuName = "Nuitrack/Poses/Pose")]
     public class NuitrackPose : ScriptableObject, IEnumerable<nuitrack.JointType>
     {
         static Quaternion MirrorSensorPlane(Quaternion sourceRotation)

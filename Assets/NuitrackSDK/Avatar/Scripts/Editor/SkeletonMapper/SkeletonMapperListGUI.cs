@@ -62,40 +62,40 @@ namespace NuitrackSDKEditor.Avatar
 
                     EditorGUILayout.LabelField(guiBodyPart.Lable, EditorStyles.boldLabel);
 
-                    EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-
-                    foreach (SkeletonStyles.GUIJoint guiJoint in guiBodyPart.guiJoint)
+                    using (new VerticalGroup(EditorStyles.helpBox))
                     {
-                        JointType jointType = guiJoint.JointType;
-
-                        if (jointMask.Contains(jointType))
+                        foreach (SkeletonStyles.GUIJoint guiJoint in guiBodyPart.guiJoint)
                         {
-                            T jointItem = jointsDict.ContainsKey(jointType) ? jointsDict[jointType] : null;
+                            JointType jointType = guiJoint.JointType;
 
-                            Rect controlRect = EditorGUILayout.GetControlRect();
-                            Vector2 position = new Vector2(controlRect.x, controlRect.y);
+                            if (jointMask.Contains(jointType))
+                            {
+                                T jointItem = jointsDict.ContainsKey(jointType) ? jointsDict[jointType] : null;
 
-                            Rect jointRect = SkeletonStyles.Dot.Draw(position, optionalJoints.Contains(guiJoint.JointType), jointItem != null, jointType == SelectedJoint);
-                            controlRect.xMin += jointRect.width;
+                                Rect controlRect = EditorGUILayout.GetControlRect();
+                                Vector2 position = new Vector2(controlRect.x, controlRect.y);
 
-                            string displayName = NuitrackSDKGUI.GetUnityDisplayBoneName(jointType.ToUnityBones(), bodyPart);
+                                Rect jointRect = SkeletonStyles.Dot.Draw(position, optionalJoints.Contains(guiJoint.JointType), jointItem != null, jointType == SelectedJoint);
+                                controlRect.xMin += jointRect.width;
 
-                            T newJointObject = EditorGUI.ObjectField(controlRect, displayName, jointItem, typeof(T), true) as T;
+                                string displayName = NuitrackSDKGUI.GetUnityDisplayBoneName(jointType.ToUnityBones(), bodyPart);
 
-                            int keyboardID = GUIUtility.GetControlID(FocusType.Keyboard, controlRect);
-                            controlsID.Add(jointType, keyboardID);
+                                T newJointObject = EditorGUI.ObjectField(controlRect, displayName, jointItem, typeof(T), true) as T;
 
-                            if (newJointObject != jointItem)
-                                OnDropAction(newJointObject, jointType);
+                                int keyboardID = GUIUtility.GetControlID(FocusType.Keyboard, controlRect);
+                                controlsID.Add(jointType, keyboardID);
 
-                            if (HandleClick(keyboardID, controlRect))
-                                OnSelectedAction(jointType);
+                                if (newJointObject != jointItem)
+                                    OnDropAction(newJointObject, jointType);
 
-                            if (HandleDelete(keyboardID))
-                                OnDropAction(default, jointType);
+                                if (HandleClick(keyboardID, controlRect))
+                                    OnSelectedAction(jointType);
+
+                                if (HandleDelete(keyboardID))
+                                    OnDropAction(default, jointType);
+                            }
                         }
                     }
-                    EditorGUILayout.EndVertical();
                 }
             }
 

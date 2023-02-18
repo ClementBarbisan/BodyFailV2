@@ -94,8 +94,6 @@ namespace NuitrackSDKEditor.ErrorSolver
                 SwitchCompatibleWithPlatform(pluginMONO, true);
                 SwitchCompatibleWithPlatform(pluginIOS, false);
             }
-
-            NuitrackChecker.Check();
         }
 
         public static void SwitchCompatibleWithPlatform(PluginImporter plugin, bool value)

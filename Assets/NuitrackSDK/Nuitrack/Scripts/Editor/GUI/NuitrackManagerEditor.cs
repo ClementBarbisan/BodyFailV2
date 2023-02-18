@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
+using System.IO;
 using System.Collections.Generic;
 
 using NuitrackSDK;
@@ -12,17 +13,8 @@ namespace NuitrackSDKEditor
     [CustomEditor(typeof(NuitrackManager), true)]
     public class NuitrackManagerEditor : NuitrackSDKEditor
     {
-        readonly string[] modulesFlagNames = new string[]
-        {
-            "depthModuleOn",
-            "colorModuleOn",
-            "userTrackerModuleOn",
-            "skeletonTrackerModuleOn",
-            "gesturesRecognizerModuleOn",
-            "handsTrackerModuleOn"
-        };
-
-        bool openMdules = false;
+        bool openModules = false;
+        bool openSensorResolution = false;
 
         TextureCache rgbCache = null;
         TextureCache depthCache = null;
@@ -62,44 +54,69 @@ namespace NuitrackSDKEditor
 
             DrawDefaultInspector();
 
-            DrawConfiguration();
-            DrawSensorOptions();
-            DrawRecordFileGUI();
+            serializedObject.DrawPropertyField("runInBackground");
+            serializedObject.DrawPropertyField("dontDestroyOnLoad");
 
-            DrawInitEvetn();
+            DrawSensorOptions();
+            DrawAdvanced();
+
+            DrawInitEvent();
 
             DrawFramePreview();
         }
 
         void DrawModules()
         {
-            openMdules = EditorGUILayout.BeginFoldoutHeaderGroup(openMdules, "Modules");
+            openModules = EditorGUILayout.BeginFoldoutHeaderGroup(openModules, "Modules");
 
-            if (openMdules)
+            if (openModules)
             {
-                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-
-                foreach (string propertyName in modulesFlagNames)
+                using (new VerticalGroup(EditorStyles.helpBox))
                 {
-                    SerializedProperty property = serializedObject.FindProperty(propertyName);
-                    EditorGUILayout.PropertyField(property);
-                    serializedObject.ApplyModifiedProperties();
-                }
+                    serializedObject.DrawPropertyField("depthModuleOn");
+                    serializedObject.DrawPropertyField("colorModuleOn");
+                    serializedObject.DrawPropertyField("userTrackerModuleOn");
+                    serializedObject.DrawPropertyField("skeletonTrackerModuleOn");
+                    serializedObject.DrawPropertyField("gesturesRecognizerModuleOn");
+                    serializedObject.DrawPropertyField("handsTrackerModuleOn");
 
-                EditorGUILayout.EndVertical();
+                    NuitrackSDKGUI.PropertyWithHelpButton(
+                        serializedObject,
+                        "useFaceTracking",
+                        "https://github.com/3DiVi/nuitrack-sdk/blob/master/doc/Unity_Face_Tracking.md",
+                        "Track and get information about faces with Nuitrack (position, angle of rotation, box, emotions, age, gender)");
+                }
             }
 
             EditorGUILayout.EndFoldoutHeaderGroup();
         }
 
-        void DrawConfiguration()
+        void DrawSensorOptions()
         {
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Configuration", EditorStyles.boldLabel);
 
-            SerializedProperty runInBackground = serializedObject.FindProperty("runInBackground");
-            EditorGUILayout.PropertyField(runInBackground);
-            serializedObject.ApplyModifiedProperties();
+            EditorGUILayout.LabelField("Sensor options", EditorStyles.boldLabel);
+
+            serializedObject.DrawPropertyField("depth2ColorRegistration");
+
+            SerializedProperty mirrorProp = serializedObject.DrawPropertyField("mirror");
+            SerializedProperty sensorRotation = serializedObject.FindProperty("sensorRotation");
+
+            if (mirrorProp.boolValue)
+            {
+                sensorRotation.enumValueIndex = 0;
+                serializedObject.ApplyModifiedProperties();
+            }
+
+            using (new EditorGUI.DisabledGroupScope(mirrorProp.boolValue))
+                serializedObject.DrawPropertyField("sensorRotation");
+        }
+
+        void DrawAdvanced()
+        {
+            EditorGUILayout.Space();
+
+            EditorGUILayout.LabelField("Advanced", EditorStyles.boldLabel);
 
             NuitrackSDKGUI.PropertyWithHelpButton(
                 serializedObject,
@@ -114,47 +131,7 @@ namespace NuitrackSDKEditor
                 "https://github.com/3DiVi/nuitrack-sdk/blob/master/doc/Nuitrack_AI.md",
                 "ONLY PC! Nuitrack AI is the new version of Nuitrack skeleton tracking middleware");
 
-            NuitrackSDKGUI.PropertyWithHelpButton(
-                 serializedObject,
-                 "useFaceTracking",
-                 "https://github.com/3DiVi/nuitrack-sdk/blob/master/doc/Unity_Face_Tracking.md",
-                 "Track and get information about faces with Nuitrack (position, angle of rotation, box, emotions, age, gender)");
-        }
-
-        void DrawSensorOptions()
-        {
-            EditorGUILayout.Space();
-
-            EditorGUILayout.LabelField("Sensor options", EditorStyles.boldLabel);
-
-            SerializedProperty depth2ColorRegistration = serializedObject.FindProperty("depth2ColorRegistration");
-            EditorGUILayout.PropertyField(depth2ColorRegistration);
-            serializedObject.ApplyModifiedProperties();
-
-            SerializedProperty mirrorProp = serializedObject.FindProperty("mirror");
-            EditorGUILayout.PropertyField(mirrorProp);
-            serializedObject.ApplyModifiedProperties();
-
-            SerializedProperty sensorRotation = serializedObject.FindProperty("sensorRotation");
-
-            if (mirrorProp.boolValue)
-                sensorRotation.enumValueIndex = 0;
-
-            EditorGUI.BeginDisabledGroup(mirrorProp.boolValue);
-
-            EditorGUILayout.PropertyField(sensorRotation);
-            serializedObject.ApplyModifiedProperties();
-
-            EditorGUI.EndDisabledGroup();
-        }
-
-        void DrawRecordFileGUI()
-        {
-            EditorGUILayout.LabelField("Advanced", EditorStyles.boldLabel);
-
-            SerializedProperty useFileRecordProp = serializedObject.FindProperty("useFileRecord");
-            EditorGUILayout.PropertyField(useFileRecordProp, new GUIContent("Use record file"));
-            serializedObject.ApplyModifiedProperties();
+            SerializedProperty useFileRecordProp = serializedObject.DrawPropertyField("useFileRecord", "Use record file");
 
             if (useFileRecordProp.boolValue)
             {
@@ -164,19 +141,105 @@ namespace NuitrackSDKEditor
 
                 serializedObject.ApplyModifiedProperties();
             }
+
+            #region Object detector
+
+            UnityEngine.Events.UnityAction helpClick = delegate
+            {
+                Application.OpenURL("https://github.com/3DiVi/nuitrack-sdk/blob/master/doc/Nuitrack_AI.md#nuitrack-ai-object-detection");
+            };
+
+            Rect propertyRect = NuitrackSDKGUI.WithRightButton(helpClick, "_Help", "Track and get information about objects with Nuitrack");
+
+            string nuitrackHome = NuitrackSDK.ErrorSolver.NuitrackErrorSolver.NuitrackHomePath;
+            if (nuitrackHome != null)
+            {
+                string configPath = Path.Combine(nuitrackHome, "data", "nuitrack.config");
+
+                UnityEngine.Events.UnityAction openFolderClick = delegate { EditorUtility.RevealInFinder(configPath); };
+
+                using (new EditorGUI.DisabledGroupScope(!File.Exists(configPath)))
+                    propertyRect = NuitrackSDKGUI.WithRightButton(propertyRect, openFolderClick, "Project", "Open config file folder");
+            }
+
+            using (new EditorGUI.DisabledGroupScope(true))
+            {
+                GUIContent objDetectionGUIContent = new GUIContent("Use Object Detection",
+                    "Track and get information about objects with Nuitrack (set in nuitrack.config and restart scene)");
+
+                bool objDetectionActive = false;
+                if (nuitrackHome != null)
+                    objDetectionActive = nuitrack.Nuitrack.GetConfigValue("CnnDetectionModule.ToUse") == "true";
+
+                EditorGUI.Toggle(propertyRect, objDetectionGUIContent, objDetectionActive);
+            }
+
+            #endregion
+
+            using (new EditorGUI.DisabledGroupScope(true))
+            {
+                GUIContent objDetectionGUIContent = new GUIContent("Use Object Detection",
+                    "Track and get information about objects with Nuitrack (set in nuitrack.config and restart scene)");
+
+                bool objDetectionActive = nuitrack.Nuitrack.GetConfigValue("CnnDetectionModule.ToUse") == "true";
+
+                EditorGUI.Toggle(propertyRect, objDetectionGUIContent, objDetectionActive);
+            }
+
+            openSensorResolution = EditorGUILayout.BeginFoldoutHeaderGroup(openSensorResolution, "Sensor resolution");
+
+            if(openSensorResolution)
+            {
+                NuitrackSDKGUI.DrawMessage("Invalid sensor resolution will be reset to default", LogType.Log);
+
+                using (new VerticalGroup(EditorStyles.helpBox))
+                {
+                    SerializedProperty customColorResolution = serializedObject.DrawPropertyField("customColorResolution");
+
+                    using (new EditorGUI.DisabledGroupScope(!customColorResolution.boolValue))
+                    {
+                        serializedObject.DrawPropertyField("colorWidth");
+                        serializedObject.DrawPropertyField("colorHeight");
+                    }
+                }
+
+                using (new VerticalGroup(EditorStyles.helpBox))
+                {
+                    SerializedProperty customDepthResolution = serializedObject.DrawPropertyField("customDepthResolution");
+
+                    using (new EditorGUI.DisabledGroupScope(!customDepthResolution.boolValue))
+                    {
+                        serializedObject.DrawPropertyField("depthWidth");
+                        serializedObject.DrawPropertyField("depthHeight");
+                    }
+                }
+
+                NuitrackManager nuitrackManager = (serializedObject.targetObject as NuitrackManager);
+                if(nuitrackManager != null)
+                {
+                    if (nuitrackManager.ResolutionFailMessage != string.Empty)
+                        NuitrackSDKGUI.DrawMessage(nuitrackManager.ResolutionFailMessage, LogType.Error);
+                }
+            }
+
+            EditorGUILayout.EndFoldoutHeaderGroup();
         }
 
-        void DrawInitEvetn()
+        void DrawInitEvent()
         {
             EditorGUILayout.Space();
 
-            SerializedProperty asyncInit = serializedObject.FindProperty("asyncInit");
-            EditorGUILayout.PropertyField(asyncInit);
-            serializedObject.ApplyModifiedProperties();
+            EditorGUILayout.LabelField("Init", EditorStyles.boldLabel);
 
-            SerializedProperty initEvent = serializedObject.FindProperty("initEvent");
-            EditorGUILayout.PropertyField(initEvent);
-            serializedObject.ApplyModifiedProperties();
+            SerializedProperty useAsyncInit = serializedObject.DrawPropertyField("asyncInit");
+            if (useAsyncInit.boolValue)
+            {
+                NuitrackSDKGUI.DrawMessage(
+                    "Asynchronous initialization, allows you to turn on the nuitrack more smoothly. In this case, " +
+                    "you need to ensure that all components that use this script will start only after its initialization.", LogType.Warning);
+            }
+
+            serializedObject.DrawPropertyField("initEvent");
         }
 
         void DrawFramePreview()

@@ -8,7 +8,7 @@ namespace NuitrackSDK.Avatar
     /// </summary>
     public abstract class BaseAvatar : TrackedUser
     {
-        [SerializeField, NuitrackSDKInspector] 
+        [SerializeField, Range(0, 1), NuitrackSDKInspector]
         float jointConfidence = 0.1f;
 
         /// <summary>

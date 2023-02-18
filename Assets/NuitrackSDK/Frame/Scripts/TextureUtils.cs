@@ -11,6 +11,8 @@ namespace NuitrackSDK.Frame
         [SerializeField] ComputeShader computeShader;
         ComputeShader instanceShader;
 
+        TextureCache textureCache;
+
         ComputeShader ComputeShader
         {
             get
@@ -42,6 +44,12 @@ namespace NuitrackSDK.Frame
             {
                 Destroy(instanceShader);
                 instanceShader = null;
+            }
+
+            if (textureCache != null)
+            {
+                textureCache.Dispose();
+                textureCache = null;
             }
         }
 
@@ -121,7 +129,26 @@ namespace NuitrackSDK.Frame
             instanceShader.GetKernelThreadGroupSizes(kernelIndex, out uint x, out uint y, out uint z);
 
             instanceShader.SetTexture(kernelIndex, "Texture", texture);
-            instanceShader.SetTexture(kernelIndex, "Mask", mask);
+
+            if (textureCache == null)
+                textureCache = new TextureCache();
+
+            if (texture.width != mask.width || texture.height != mask.height)
+            {
+                if(textureCache.renderTexture == null || textureCache.renderTexture.width != texture.width || textureCache.renderTexture.height != texture.height)
+                {
+                    if (textureCache.renderTexture != null)
+                        Destroy(textureCache.renderTexture);
+
+                    textureCache.renderTexture = new RenderTexture(texture.width, texture.height, 0, RenderTextureFormat.ARGB32);
+                }
+
+                Graphics.Blit(mask, textureCache.renderTexture);
+
+                instanceShader.SetTexture(kernelIndex, "Mask", textureCache.renderTexture);
+            }
+            else
+                instanceShader.SetTexture(kernelIndex, "Mask", mask);
 
             if (dest == null)
             {

@@ -8,7 +8,7 @@ using NuitrackSDK.Calibration;
 
 namespace NuitrackSDK.Avatar
 {
-    [AddComponentMenu("NuitrackSDK/Avatar/3D/NuitrackAvatar")]
+    [AddComponentMenu("NuitrackSDK/Avatar/3D/Nuitrack Avatar")]
     public class NuitrackAvatar : BaseAvatar
     {
         [Header("Body")]
@@ -41,34 +41,31 @@ namespace NuitrackSDK.Avatar
         List<ModelJoint> modelJoints = new List<ModelJoint>();
 
         [Header ("Options")]
-        [Tooltip ("(optional) Specify the transform, which represents the sensor " +
-            "coordinate system, to display the Avatar in front of the sensor." +
-            "\nCalibration is not supported." +
-            "\n\nIf not specified, the object transformation is used.")]
-        [SerializeField] Transform sensorSpace;
-
         [Tooltip("Aligns the size of the model's bones with the size of the bones of the user's skeleton, " +
            "ensuring that the model's size best matches the user's size.")]
         [SerializeField] bool alignmentBoneLength = false;
 
         [SerializeField] JointType rootJoint = JointType.Waist;
 
-        [Header("VR settings")]
         [SerializeField, NuitrackSDKInspector] bool vrMode = false;
         [SerializeField, NuitrackSDKInspector] GameObject vrHead;
         [SerializeField, NuitrackSDKInspector] Transform headTransform;
         Transform spawnedHead;
 
-        [Header("Border Grid settings")]
         [SerializeField, NuitrackSDKInspector] bool needBorderGrid = false;
         [SerializeField, NuitrackSDKInspector] GameObject borderGrid;
         Transform spawnedBorderGrid;
 
-        [Header("Calibration")]
-        [SerializeField] bool recenterOnSuccess;
-
         Vector3 basePivotOffset = Vector3.zero;
         Vector3 startPoint; //Root joint model bone position on start
+
+        [Tooltip("(optional) Specify the transform, which represents the sensor " +
+         "coordinate system, to display the Avatar in front of the sensor." +
+         "\nCalibration is not supported." +
+         "\n\nIf not specified, the object transformation is used.")]
+        [SerializeField, NuitrackSDKInspector] Transform sensorSpace;
+
+        [SerializeField, NuitrackSDKInspector] bool recenterOnSuccess;
 
         /// <summary> Model bones </summary> Dictionary with joints
         Dictionary<JointType, ModelJoint> jointsRigged = new Dictionary<JointType, ModelJoint>();

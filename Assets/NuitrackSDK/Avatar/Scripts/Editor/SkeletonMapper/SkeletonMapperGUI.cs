@@ -139,8 +139,7 @@ namespace NuitrackSDKEditor.Avatar
                 }
             }
 
-            GUIContent gUIContent = EditorGUIUtility.IconContent("AvatarInspector/DotSelection");
-            gUIContent.text = "Deselect";
+            GUIContent gUIContent = new GUIContent("Deselect", EditorGUIUtility.IconContent("AvatarInspector/DotSelection").image);
 
             EditorGUI.BeginDisabledGroup(SelectedJoint == JointType.None);
 

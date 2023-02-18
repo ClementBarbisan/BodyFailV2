@@ -1,5 +1,4 @@
 using UnityEditor;
-using UnityEngine;
 
 using NuitrackSDK;
 
@@ -28,9 +27,7 @@ namespace NuitrackSDKEditor
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("User tracking options", EditorStyles.boldLabel);
 
-            SerializedProperty useCurrentUserTracker = serializedObject.FindProperty("useCurrentUserTracker");
-            EditorGUILayout.PropertyField(useCurrentUserTracker, new GUIContent("Use current user tracker"));
-            serializedObject.ApplyModifiedProperties();
+            SerializedProperty useCurrentUserTracker = serializedObject.DrawPropertyField("useCurrentUserTracker", "Use current user tracker");
 
             if (!useCurrentUserTracker.boolValue)
             {

@@ -108,12 +108,13 @@ namespace NuitrackSDK
                     }
                 }
 
-                /// Convert joint coordinates to virtual screen coordinates
+                /// <summary>
+                /// Get joint relative position on the rect
                 /// </summary>
-                /// <param name="width">Width of the virtual screen</param>
-                /// <param name="height">Width of the virtual screen</param>
-                /// <returns>Virtual screen coordinates</returns>
-                public Vector2 ScreenPosition(float width, float height)
+                /// <param name="width">Rect width</param>
+                /// <param name="height">Rect height</param>
+                /// <returns>Relative position on the rect</returns>
+                public Vector2 RelativePosition(float width, float height)
                 {
                     Vector2 projPos = Proj;
 
@@ -127,7 +128,7 @@ namespace NuitrackSDK
                 /// <param name="rectTransform">Parent Rect</param>
                 /// <param name="parentRect">RectTransform reference for current Joint</param>
                 /// <returns>Vector2 of the joint relative to the parent Rect (anchoredPosition)</returns>
-                public Vector2 AnchoredPoint(Rect parentRect, RectTransform rectTransform)
+                public Vector2 AnchoredPosition(Rect parentRect, RectTransform rectTransform)
                 {
                     return Vector2.Scale(Proj - rectTransform.anchorMin, parentRect.size);
                 }
@@ -215,7 +216,6 @@ namespace NuitrackSDK
             }
 
             /// <summary>
-            /// <summary>
             /// Projection and normalized joint coordinates
             /// Compression of the hand (in percent), where 0 - corresponds to an open palm, 1- a clenched fist
             /// </summary>
@@ -227,12 +227,13 @@ namespace NuitrackSDK
                 }
             }
 
-            /// Convert hand coordinates to virtual screen coordinates
+            /// <summary>
+            ///  Get hand relative position on the rect
             /// </summary>
-            /// <param name="width">Width of the virtual screen</param>
-            /// <param name="height">Width of the virtual screen</param>
-            /// <returns>Virtual screen coordinates</returns>
-            public Vector2 ScreenPosition(float width, float height)
+            /// <param name="width">Rect width</param>
+            /// <param name="height">Rect height</param>
+            /// <returns>Rect point</returns>
+            public Vector2 RelativePosition(float width, float height)
             {
                 Vector2 projPos = Proj;
 
@@ -246,7 +247,7 @@ namespace NuitrackSDK
             /// <param name="rectTransform">Parent Rect</param>
             /// <param name="parentRect">RectTransform reference for current Hand</param>
             /// <returns>Vector2 of the hand relative to the parent Rect (anchoredPosition)</returns>
-            public Vector2 AnchoredPoint(Rect parentRect, RectTransform rectTransform)
+            public Vector2 AnchoredPosition(Rect parentRect, RectTransform rectTransform)
             {
                 return Vector2.Scale(Proj - rectTransform.anchorMin, parentRect.size);
             }
@@ -329,6 +330,56 @@ namespace NuitrackSDK
             ID = id;
         }
 
+        /// <summary>
+        /// Get a BoundBox rectangle from a rect with the specified width and height
+        /// </summary>
+        /// <param name="width">Width of the rect</param>
+        /// <param name="height">Height of the rect</param>
+        /// <returns>BoundBox Rect</returns>
+        public Rect BoundingBox(float width, float height)
+        {
+            nuitrack.User user = NuitrackManager.UserFrame.GetUserByID(ID);
+
+            if (user.ID == 0)
+                return default;
+
+            nuitrack.BoundingBox boundingBox = user.Box;
+
+            Rect userRect = new Rect(boundingBox.Left, boundingBox.Top, boundingBox.Right - boundingBox.Left, boundingBox.Bottom - boundingBox.Top);
+            Vector2 rectSize = new Vector2(width, height);
+
+            userRect.position = Vector2.Scale(userRect.position, rectSize);
+            userRect.size = Vector2.Scale(userRect.size, rectSize);
+
+            return userRect;
+        }
+
+        /// <summary>
+        /// Get the Rect of the user relative to the parent Rect
+        /// for the corresponding RectTransform taking into account the anchor
+        /// </summary>
+        /// <param name="rectTransform">Parent Rect</param>
+        /// <param name="parentRect">RectTransform reference for current User</param>
+        /// <returns>Rect of the user relative to the parent Rect (anchoredPosition)</returns>
+        public Rect AnchoredRect(Rect parentRect, RectTransform rectTransform)
+        {
+            nuitrack.User user = NuitrackManager.UserFrame.GetUserByID(ID);
+
+            if (user.ID == 0)
+                return default;
+
+            nuitrack.BoundingBox boundingBox = user.Box;
+
+            Rect projRect = new Rect(boundingBox.Left, boundingBox.Top, boundingBox.Right - boundingBox.Left, boundingBox.Bottom - boundingBox.Top);
+
+            Vector2 pivot = Vector2.Scale(projRect.size, rectTransform.pivot);
+
+            Vector2 rectPosition = Vector2.Scale(projRect.position - rectTransform.anchorMin + pivot, parentRect.size);
+            Vector2 rectSize = Vector2.Scale(projRect.size, parentRect.size);
+
+            return new Rect(rectPosition, rectSize);
+        }
+
         TextureCache textureCache = null;
 
         public void Dispose()
@@ -342,9 +393,9 @@ namespace NuitrackSDK
 
         Color[] GetUserColors(Color userColor)
         {
-            Color[] userColors = new Color[Users.MaxID];
+            Color[] userColors = new Color[Users.MaxID + 1];
 
-            for (int id = 0; id <= userColors.Length; id++)
+            for (int id = 0; id < userColors.Length; id++)
                 userColors[id] = id == ID ? userColor : Color.clear;
 
             return userColors;

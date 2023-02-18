@@ -7,6 +7,7 @@ using System.Collections.Generic;
 
 namespace NuitrackSDKEditor.ErrorSolver
 {
+    [InitializeOnLoad]
     public class NuitrackChecker
     {
         static BuildTargetGroup buildTargetGroup;
@@ -14,69 +15,78 @@ namespace NuitrackSDKEditor.ErrorSolver
 
         static readonly string filename = "nuitrack.lock";
 
-        public static void Check()
+        static NuitrackChecker()
         {
-            buildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
-            backendMessage = "Current Scripting Backend " + PlayerSettings.GetScriptingBackend(buildTargetGroup) + "  Target:" + buildTargetGroup;
-
             PingNuitrack();
         }
 
-        static void PingNuitrack()
+        public static void PingNuitrack()
         {
-#if NUITRACK_PORTABLE
-            if (!Directory.Exists(Application.dataPath + "/NuitrackSDK/Plugins"))
+            if (PlayerPrefs.GetInt("failStart") == 1 && Application.isEditor)
             {
-                PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, "");
+                if (EditorUtility.DisplayDialog("Safe mode", "Nuitrack crashed last time. \n" +
+                    "Check your code or click the \"Do not run Nuitrack\" button and run \"Nuitrack\\Problem Wizard\"", "Do not run Nuitrack", "Continue launching Nuitrack"))
+                {
+                    return;
+                }
+            }
+
+            PlayerPrefs.SetInt("failStart", 1);
+            buildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
+            backendMessage = "Current Scripting Backend " + PlayerSettings.GetScriptingBackend(buildTargetGroup) + "  Target:" + buildTargetGroup;
+
+            bool isPortable = Directory.Exists(Application.dataPath + "/NuitrackSDK/Plugins/x86_64");
+
+            string scriptingDefineSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone);
+#if NUITRACK_PORTABLE
+            if (!isPortable)
+            {
+                scriptingDefineSymbols = scriptingDefineSymbols.Replace("NUITRACK_PORTABLE", "");
+                PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, scriptingDefineSymbols);
             }
 #endif
-
 #if !NUITRACK_PORTABLE
-            if (Directory.Exists(Application.dataPath + "/NuitrackSDK/Plugins"))
+            if (isPortable)
             {
-                PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, "NUITRACK_PORTABLE");
+                scriptingDefineSymbols += ";NUITRACK_PORTABLE";
+                PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, scriptingDefineSymbols);
                 Debug.Log("Switched to nuitrack_portable");
             }
 #endif
+
             try
             {
                 nuitrack.Nuitrack.Init();
 
-                string nuitrackType = "Runtime";
-                if (PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone).Contains("NUITRACK_PORTABLE"))
-                    nuitrackType = "Portable";
-
+                string nuitrackType = isPortable ? "Portable" : "Runtime";
                 string initSuccessMessage = "<color=green><b>Test Nuitrack (ver." + nuitrack.Nuitrack.GetVersion() + ") init was successful! (type: " + nuitrackType + ")</b></color>\n" + backendMessage;
 
-                bool haveActiveLicense = false;
-                bool deviceConnect = false;
+                //bool haveActiveLicense = false;
+                //bool deviceConnect = false;
 
-                if (nuitrack.Nuitrack.GetDeviceList().Count > 0)
+                nuitrack.device.NuitrackDevice[] devices = nuitrack.Nuitrack.GetDeviceList().ToArray();
+
+                foreach (nuitrack.device.NuitrackDevice device in devices)
                 {
-                    for (int i = 0; i < nuitrack.Nuitrack.GetDeviceList().Count; i++)
-                    {
-                        nuitrack.device.NuitrackDevice device = nuitrack.Nuitrack.GetDeviceList()[i];
-                        string sensorName = device.GetInfo(nuitrack.device.DeviceInfoType.DEVICE_NAME);
-                        nuitrack.device.ActivationStatus activationStatus = device.GetActivationStatus();
+                    string sensorName = device.GetInfo(nuitrack.device.DeviceInfoType.DEVICE_NAME);
+                    nuitrack.device.ActivationStatus activationStatus = device.GetActivationStatus();
 
-                        initSuccessMessage += "\nDevice " + i + " [Sensor Name: " + sensorName + ", License: " + activationStatus + "]";
+                    initSuccessMessage += "\nDevice " + " [Sensor Name: " + sensorName + ", License: " + activationStatus + "]";
 
-                        if (activationStatus != nuitrack.device.ActivationStatus.NONE)
-                            haveActiveLicense = true;
+                    //if (activationStatus != nuitrack.device.ActivationStatus.NONE)
+                    //    haveActiveLicense = true;
 
-                        deviceConnect = true;
-                    }
+                    //deviceConnect = true;
                 }
-                else
-                {
-                    initSuccessMessage += "\nSensor not connected";
-                }
-
-                nuitrack.Nuitrack.Release();
-                Debug.Log(initSuccessMessage);
 
                 //if (deviceConnect && !haveActiveLicense)
                 //    Activation.NuitrackActivationWizard.Open(false);
+
+                if (devices.Length == 0)
+                    initSuccessMessage += "\nSensor not connected";
+
+                nuitrack.Nuitrack.Release();
+                Debug.Log(initSuccessMessage);
             }
             catch (System.Exception ex)
             {
@@ -92,6 +102,8 @@ namespace NuitrackSDKEditor.ErrorSolver
                 fi.Create();
                 UnityEditor.Compilation.CompilationPipeline.RequestScriptCompilation();
             }
+
+            PlayerPrefs.SetInt("failStart", 0);
         }
 
         public static bool HaveConnectDevices(out List<string> sensorsNames, out List<nuitrack.device.ActivationStatus> licensesTypes)
@@ -99,11 +111,13 @@ namespace NuitrackSDKEditor.ErrorSolver
             sensorsNames = new List<string>();
             licensesTypes = new List<nuitrack.device.ActivationStatus>();
 
+            if (PlayerPrefs.GetInt("failStart") == 1 && Application.isEditor)
+                return false;
+
             try
             {
                 nuitrack.Nuitrack.Init();
                 bool haveDevices = nuitrack.Nuitrack.GetDeviceList().Count > 0;
-
 
                 if (haveDevices)
                 {
@@ -130,6 +144,9 @@ namespace NuitrackSDKEditor.ErrorSolver
 
         public static bool HaveConnectDevices()
         {
+            if (PlayerPrefs.GetInt("failStart") == 1 && Application.isEditor)
+                return false;
+
             try
             {
                 nuitrack.Nuitrack.Init();
@@ -147,6 +164,9 @@ namespace NuitrackSDKEditor.ErrorSolver
 
         public static Dictionary<string, nuitrack.device.ActivationStatus> GetLicensTypes()
         {
+            if (PlayerPrefs.GetInt("failStart") == 1 && Application.isEditor)
+                return null;
+
             try
             {
                 nuitrack.Nuitrack.Init();

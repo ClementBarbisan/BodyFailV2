@@ -145,11 +145,7 @@ namespace NuitrackSDKEditor.Poses
 
         public override void OnInspectorGUI()
         {
-            if (NuitrackManager == null)
-            {
-                NuitrackSDKGUI.NuitrackNotExistMessage();
-                EditorGUILayout.Space();
-            }
+            NuitrackSDKGUI.MessageIfNuitrackNotExist();
 
             DrawDefaultInspector();
             EditorGUILayout.Space();

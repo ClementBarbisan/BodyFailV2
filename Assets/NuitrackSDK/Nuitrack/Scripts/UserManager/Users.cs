@@ -7,7 +7,7 @@ using nuitrack;
 
 namespace NuitrackSDK
 {
-    public class Users : IEnumerable
+    public class Users : IEnumerable<UserData>
     {
         public delegate void UserHandler(UserData user);
 
@@ -38,9 +38,14 @@ namespace NuitrackSDK
 
         readonly Dictionary<int, UserData> users = new Dictionary<int, UserData>();
 
-        public IEnumerator GetEnumerator()
+        public IEnumerator<UserData> GetEnumerator()
         {
             return users.Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         /// <summary>
