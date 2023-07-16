@@ -196,16 +196,7 @@ public class NuitrackManager : MonoBehaviour
 
     public static Users Users
     {
-        get {
-            if (UsersList.Count > 0)
-            {
-                return UsersList[0];
-            }
-            else
-            {
-                return (null);
-            }
-        }
+        get { return UsersList[0]; }
     }
 
     public static JsonInfo NuitrackJson
